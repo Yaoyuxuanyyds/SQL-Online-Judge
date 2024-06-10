@@ -15,19 +15,7 @@ class TeacherSession(Resource):
     @auth_teacher
     def get(self, teacher):
         return {'name': teacher.username, 'id': teacher.id}, 200
-
-    def post(self):
-        args = teacher_login_parser.parse_args()
-        id = args["id"]
-        password = args["password"]
-        ret = User.query.filter_by(id=id, password=password, role=1).first()  # role 1 for teacher
-        if ret is not None:
-            teacher_session = hashlib.sha1(os.urandom(24)).hexdigest()
-            ret.session = teacher_session
-            db.session.commit()
-            return {"session": teacher_session, 'name': ret.username}, 201
-        abort(401)
-
+    
     @auth_teacher
     def delete(self, teacher):
         teacher.session = None

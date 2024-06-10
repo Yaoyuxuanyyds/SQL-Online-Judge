@@ -1,18 +1,14 @@
 from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
-import sys,os
-sys.path.append(os.getcwd())
 from exts import db
-from resources.adminSession import AdminSession
-from resources.studentSession import StudentSession
-from resources.teacherSession import TeacherSession
 from resources.students import StudentList, Students
 from resources.question import QuestionList, Questions
 from resources.answer import AnswerList, Answers
 from resources.submit import SubmitList, Submits
 from resources.register import Register
 import config
+from auth import auth  # 导入新的身份验证蓝图
 
 def create_app():
     app = Flask(__name__)
@@ -27,12 +23,12 @@ def create_app():
     def hello_world():
         return 'Hello World!'
 
+    # 注册蓝图
+    app.register_blueprint(auth)
+
     # 添加资源路由
     api.add_resource(Students, '/student/<string:student_id>')
     api.add_resource(StudentList, '/student')
-    api.add_resource(AdminSession, '/session/admin')
-    api.add_resource(StudentSession, '/session/student')
-    api.add_resource(TeacherSession, '/session/teacher')
     api.add_resource(Questions, '/question/<int:question_id>')
     api.add_resource(QuestionList, '/question')
     api.add_resource(Answers, '/question/<int:idQuestion>/answer/<int:answer_id>')

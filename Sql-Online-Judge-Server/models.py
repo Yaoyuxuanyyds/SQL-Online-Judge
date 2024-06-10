@@ -9,7 +9,8 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(INTEGER, nullable=False)
-
+    session = db.Column(db.String(255), nullable=True)
+    
 class Question(db.Model):
     __tablename__ = 'Question'
 

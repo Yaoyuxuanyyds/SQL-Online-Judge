@@ -1,44 +1,61 @@
 <template>
-
-  <el-container style="height: 2000px; border: 1px solid #eee">
-    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-      <el-menu :default-openeds="['1']">
-        <el-submenu index="1">
-          <template slot="title"><i class="el-icon-setting"></i>student</template>
-          <el-menu-item-group>
-            <el-menu-item index="1-1" :key="'Submit'" @click="routerToMain('Submit')">练习</el-menu-item>
-            <el-menu-item index="1-2" @click="routerToMain('Statistics')">统计</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-      </el-menu>
-    </el-aside>
-
-    <el-container>
-      <el-header style="text-align: right; font-size: 12px">
-        <Header></Header>
-      </el-header>
-
-      <el-main>
-        <router-view></router-view>
-      </el-main>
-    </el-container>
-  </el-container>
-
+  <div id="app">
+    <header>
+      <img src="@/assets/logo.png">
+      <nav>
+        <router-link to="/">Home</router-link>
+        <router-link to="/student/question">Questions</router-link>
+        <router-link to="/student/submit">Submit</router-link>
+        <router-link to="/student/statistics">Statistics</router-link>
+      </nav>
+    </header>
+    <router-view/>
+  </div>
 </template>
 
 <script>
-    import Header from "../Header";
-    export default {
-        name: "index",
-      components: {Header},
-      methods:{
-        routerToMain(name){
-          this.$router.push('/student/'+name)
-        }
-      }
-    }
+export default {
+  name: 'Index',
+  data() {
+    return {
+      //
+    };
+  },
+  methods: {
+    //
+  }
+};
 </script>
 
 <style scoped>
+nav {
+  display: flex;
+  justify-content: space-around;
+}
 
+nav a {
+  text-decoration: none;
+  color: #333;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+
+img {
+  height: 40px;
+}
+
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
 </style>

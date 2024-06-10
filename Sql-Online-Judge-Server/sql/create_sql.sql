@@ -4,12 +4,13 @@ CREATE TABLE User (
     username VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
     role INT NOT NULL CHECK (role IN (0, 1, 2)),
+    session VARCHAR(255),
     UNIQUE (username)
 );
 
 -- 题目表 (Question)
 CREATE TABLE Question (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(1000) NOT NULL,
     create_sql TEXT NOT NULL,
     description TEXT NOT NULL,
@@ -21,7 +22,7 @@ CREATE TABLE Question (
 
 -- 考试表 (Exam)
 CREATE TABLE Exam (
-    id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     teacher_id INT,
     start_time DATETIME NOT NULL,
     end_time DATETIME NOT NULL,

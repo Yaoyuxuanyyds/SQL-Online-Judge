@@ -1,114 +1,115 @@
 <template>
-  <div>
-    <Header />
-    <div class="login-container">
-      <h2>Login</h2>
-      <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="100px">
-        <el-form-item label="Role" prop="role">
-          <el-select v-model="loginForm.role" placeholder="Select Role">
-            <el-option label="Student" value="0"></el-option>
-            <el-option label="Teacher" value="1"></el-option>
-            <el-option label="Admin" value="2"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="ID" prop="id">
-          <el-input v-model="loginForm.id"></el-input>
-        </el-form-item>
-        <el-form-item label="Password" prop="password">
-          <el-input type="password" v-model="loginForm.password"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleLogin">Login</el-button>
-          <el-button type="text" @click="handleRegister">Register</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+  <div id="app">
+    <header>
+      <img src="@/assets/logo.png">
+    </header>
+    <main>
+      <h1>Login</h1>
+      <form @submit.prevent="login">
+        <div>
+          <label for="id">ID:</label>
+          <input type="text" v-model="id" required>
+        </div>
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" v-model="password" required>
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      <p>
+        Don't have an account? <router-link to="/register">Register here</router-link>
+      </p>
+    </main>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import Header from './Header.vue';
+import axios from 'axios';
 
 export default {
-  name: "Home",
-  components: {
-    Header
-  },
+  name: 'Home',
   data() {
-    const validateRole = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error('Role is required'));
-      }
-      callback();
-    };
-
-    const validateId = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error('ID is required'));
-      }
-      callback();
-    };
-
-    const validatePassword = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error('Password is required'));
-      }
-      callback();
-    };
-
     return {
-      loginForm: {
-        role: '',
-        id: '',
-        password: ''
-      },
-      rules: {
-        role: [{ validator: validateRole, trigger: 'change' }],
-        id: [{ validator: validateId, trigger: 'blur' }],
-        password: [{ validator: validatePassword, trigger: 'blur' }]
-      }
+      id: '',
+      password: ''
     };
   },
   methods: {
-    ...mapActions(['login']),
-    handleLogin() {
-      this.$refs.loginForm.validate((valid) => {
-        if (valid) {
-          const loginData = {
-            id: this.loginForm.id,
-            password: this.loginForm.password,
-            usertype: this.loginForm.role === 0 ? 'student' : (this.loginForm.role === 1 ? 'teacher' : 'admin')
-          };
-          this.login(loginData).then(() => {
-            this.$message.success('Login successful');
-            if (loginData.usertype === 'admin') {
-              this.$router.push('/admin');
-            } else if (loginData.usertype === 'student') {
-              this.$router.push('/student');
-            } else if (loginData.usertype === 'teacher') {
-              this.$router.push('/teacher');
-            }
-          }).catch((err) => {
-            this.$message.error(`Login failed: ${err.response.data.message}`);
-          });
+    async login() {
+      try {
+        const response = await axios.post('/api/login', {
+          id: this.id,
+          password: this.password
+        });
+        const userRole = response.data.role;
+        if (userRole === 0) {
+          this.$router.push('/student');
+        } else if (userRole === 1) {
+          this.$router.push('/teacher');
+        } else if (userRole === 2) {
+          this.$router.push('/admin');
         } else {
-          this.$message.error('Please fill in the form correctly');
-          return false;
+          alert('Invalid user role');
         }
-      });
-    },
-    handleRegister() {
-      this.$router.push('/register');
+      } catch (error) {
+        alert('Login failed: ' + error.response.data.message);
+      }
     }
   }
-}
+};
 </script>
 
 <style scoped>
-.login-container {
-  max-width: 400px;
-  margin: 0 auto;
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+
+img {
+  height: 40px;
+}
+
+main {
   padding: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+
+label {
+  margin-right: 10px;
+}
+
+input {
+  padding: 5px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+p {
+  margin-top: 20px;
 }
 </style>

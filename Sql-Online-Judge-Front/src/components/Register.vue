@@ -1,100 +1,101 @@
 <template>
-  <div>
-    <Header />
-    <div class="register-container">
-      <h2>Register</h2>
-      <el-form ref="registerForm" :model="registerForm" :rules="rules" label-width="100px">
-        <el-form-item label="ID" prop="id">
-          <el-input v-model="registerForm.id"></el-input>
-        </el-form-item>
-        <el-form-item label="Username" prop="username">
-          <el-input v-model="registerForm.username"></el-input>
-        </el-form-item>
-        <el-form-item label="Password" prop="password">
-          <el-input type="password" v-model="registerForm.password"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleRegister">Register</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+  <div id="app">
+    <header>
+      <img src="@/assets/logo.png">
+    </header>
+    <main>
+      <h1>Register</h1>
+      <form @submit.prevent="register">
+        <div>
+          <label for="id">ID:</label>
+          <input type="text" v-model="id" required>
+        </div>
+        <div>
+          <label for="username">Username:</label>
+          <input type="text" v-model="username" required>
+        </div>
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" v-model="password" required>
+        </div>
+        <button type="submit">Register</button>
+      </form>
+    </main>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import Header from './Header.vue';
-
 export default {
-  name: "Register",
-  components: {
-    Header
-  },
+  name: 'Register',
   data() {
-    const validateId = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error('ID is required'));
-      }
-      callback();
-    };
-
-    const validateUsername = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error('Username is required'));
-      }
-      callback();
-    };
-
-    const validatePassword = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error('Password is required'));
-      }
-      callback();
-    };
-
     return {
-      registerForm: {
-        id: '',
-        username: '',
-        password: ''
-      },
-      rules: {
-        id: [{ validator: validateId, trigger: 'blur' }],
-        username: [{ validator: validateUsername, trigger: 'blur' }],
-        password: [{ validator: validatePassword, trigger: 'blur' }]
-      }
+      id: '',
+      username: '',
+      password: ''
     };
   },
   methods: {
-    ...mapActions(['register']),
-    handleRegister() {
-      this.$refs.registerForm.validate((valid) => {
-        if (valid) {
-          const registerData = {
-            id: this.registerForm.id,
-            username: this.registerForm.username,
-            password: this.registerForm.password
-          };
-          this.register(registerData).then(() => {
-            this.$message.success('Registration successful');
-            this.$router.push('/home');
-          }).catch((err) => {
-            this.$message.error(`Registration failed: ${err.response.data.message}`);
-          });
-        } else {
-          this.$message.error('Please fill in the form correctly');
-          return false;
-        }
-      });
+    register() {
+      // 处理注册逻辑
+      console.log('Registering with', this.id, this.username, this.password);
+      // 假设注册成功后跳转到登录页面
+      this.$router.push('/');
     }
   }
-}
+};
 </script>
 
 <style scoped>
-.register-container {
-  max-width: 400px;
-  margin: 0 auto;
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+
+img {
+  height: 40px;
+}
+
+main {
   padding: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+
+label {
+  margin-right: 10px;
+}
+
+input {
+  padding: 5px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+p {
+  margin-top: 20px;
 }
 </style>

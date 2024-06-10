@@ -13,6 +13,8 @@ import QuestionManage from "@/components/admin/QuestionManage"
 import TableManage from "@/components/admin/TableManage"
 import AnswerManage from "@/components/admin/AnswerManage"
 import Register from '@/components/Register' // 新增注册组件
+import ImportQuestions from '@/components/teacher/ImportQuestions.vue' // 导入题目组件
+import CreateExam from '@/components/teacher/CreateExam.vue' // 发起竞赛组件
 
 Vue.use(Router)
 
@@ -38,7 +40,7 @@ export default new Router({
         },
         {
           path: 'QuestionManage',
-          component: QuestionManage,
+          component: QuestionManage
         },
         {
           path: 'TableManage',
@@ -55,7 +57,17 @@ export default new Router({
     {
       path: '/teacher',
       name: 'teacher/index',
-      component: TeacherHome
+      component: TeacherHome,
+      children: [
+        {
+          path: 'import',
+          component: ImportQuestions
+        },
+        {
+          path: 'create-exam',
+          component: CreateExam
+        }
+      ]
     },
     {
       path: '/student',
