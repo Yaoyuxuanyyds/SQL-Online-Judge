@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
+import sys,os
+sys.path.append(os.getcwd())
 from exts import db
 from resources.adminSession import AdminSession
 from resources.studentSession import StudentSession
