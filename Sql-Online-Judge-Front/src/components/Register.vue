@@ -37,7 +37,7 @@ export default {
   methods: {
     register() {
       // 处理注册逻辑
-      console.log('Registering with', this.id, this.username, this.password);
+      // console.log('Registering with', this.id, this.username, this.password);
       // 假设注册成功后跳转到登录页面
       this.$router.push('/');
     }
