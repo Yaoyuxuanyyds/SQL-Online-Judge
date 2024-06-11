@@ -1,7 +1,7 @@
 from flask_restful import Resource, fields, marshal_with, marshal, reqparse
 import models
 from exts import db
-from common.comm import auth_admin, auth_all, auth_student
+from common.comm import auth_role, auth_all
 from config import *
 from flask import request
 import json
@@ -30,7 +30,7 @@ class Submits(Resource):
         else:
             return {}, HTTP_NotFound
 
-    @auth_admin(False)
+    @auth_role(2,False)
     def delete(self, submit_id, student_id):
         ret = models.Submission.query.filter_by(id=submit_id).first()
         if ret is not None:
@@ -60,7 +60,7 @@ class SubmitList(Resource):
             data.append(ret)
         return {'data': data}, HTTP_OK
 
-    @auth_student()
+    @auth_role(0)
     def post(self, question_id, student, student_id=None):
         if student_id is not None and student_id != student.id:
             return get_common_error_dic('student id not match your account!'), HTTP_Forbidden

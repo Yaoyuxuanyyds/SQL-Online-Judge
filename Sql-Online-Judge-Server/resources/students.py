@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse, abort, fields, marshal_with, marshal
 import models
 from exts import db
-from common.comm import auth_admin, auth_student
+from common.comm import auth_role
 from config import *
 from flask import request
 
@@ -12,7 +12,7 @@ student_fields = {
 }
 
 class Students(Resource):
-    method_decorators = [auth_admin(False)]
+    method_decorators = [auth_role(2, False)]
 
     @marshal_with(student_fields)
     def get(self, student_id):
@@ -60,13 +60,13 @@ class Students(Resource):
 class StudentList(Resource):
     method_decorators = []
 
-    @auth_admin(inject=False)
+    @auth_role(2, False)
     def get(self):
         students = models.User.query.filter_by(role=0)
         data = [marshal(student, student_fields) for student in students]
         return {'data': data}, HTTP_OK
 
-    @auth_admin(inject=False)
+    @auth_role(2, False)
     def post(self):
         student = models.User()
         student.id = request.json.get('id')
@@ -80,7 +80,7 @@ class StudentList(Resource):
         else:
             return get_shortage_error_dic('id password username'), HTTP_Bad_Request
 
-    @auth_student()
+    @auth_role(0)
     def patch(self, student):
         name = request.json['username']
         password = request.json['password']

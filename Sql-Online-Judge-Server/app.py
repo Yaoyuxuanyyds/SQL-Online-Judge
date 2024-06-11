@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
+import os,sys
+sys.path.append(os.getcwd())
 from exts import db
 from resources.students import StudentList, Students
 from resources.question import QuestionList, Questions

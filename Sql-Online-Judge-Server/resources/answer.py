@@ -1,7 +1,7 @@
 from flask_restful import Resource, fields, marshal_with, marshal
 import models
 from exts import db
-from common.comm import auth_admin, auth_all
+from common.comm import auth_role, auth_all
 from config import *
 from flask import request
 
@@ -23,7 +23,7 @@ class Answers(Resource):
         else:
             return {}, HTTP_NotFound
 
-    @auth_admin(False)
+    @auth_role(2, False)
     def delete(self, idQuestion, answer_id):
         ret = models.Answer.query.filter_by(id=answer_id).first()
         if ret is not None:
@@ -38,7 +38,7 @@ class Answers(Resource):
         else:
             return {}, HTTP_NotFound
 
-    @auth_admin(False)
+    @auth_role(2,False)
     def patch(self, answer_id):
         ret = models.Answer.query.filter_by(id=answer_id).first()
         if ret is not None:
@@ -54,7 +54,7 @@ class AnswerList(Resource):
         data = [marshal(answer, answer_field) for answer in answers]
         return {'data': data}, HTTP_OK
 
-    @auth_admin(inject=False)
+    @auth_role(2,inject=False)
     def post(self, idQuestion):
         answer = models.Answer()
         answer.idQuestion = idQuestion
