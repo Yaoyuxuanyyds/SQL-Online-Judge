@@ -4,21 +4,21 @@
       <img src="@/assets/logo.png">
     </header>
     <main>
-      <h1>Register</h1>
+      <h1>用户注册</h1>
       <form @submit.prevent="register">
         <div>
-          <label for="id">ID:</label>
+          <label for="id">ID：</label>
           <input type="text" v-model="id" required>
         </div>
         <div>
-          <label for="username">Username:</label>
+          <label for="username">用户名：</label>
           <input type="text" v-model="username" required>
         </div>
         <div>
-          <label for="password">Password:</label>
+          <label for="password">密码：</label>
           <input type="password" v-model="password" required>
         </div>
-        <button type="submit">Register</button>
+        <button type="submit">注册</button>
       </form>
     </main>
   </div>

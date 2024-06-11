@@ -4,20 +4,20 @@
       <img src="@/assets/logo.png">
     </header>
     <main>
-      <h1>Login</h1>
+      <h1>用户登录</h1>
       <form @submit.prevent="login">
         <div>
-          <label for="id">ID:</label>
+          <label for="id">ID：</label>
           <input type="text" v-model="id" required>
         </div>
         <div>
-          <label for="password">Password:</label>
+          <label for="password">密码：</label>
           <input type="password" v-model="password" required>
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">登录</button>
       </form>
       <p>
-        Don't have an account? <router-link to="/register">Register here</router-link>
+        还没有账号？快去<router-link to="/register">注册</router-link>吧！
       </p>
     </main>
   </div>
