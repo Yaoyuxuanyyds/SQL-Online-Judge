@@ -27,10 +27,6 @@ def auth_role(role, inject=True):
         return wrapper
     return decorator
 
-# auth_role(2) = auth_role(2)
-# auth_teacher = auth_role(1)
-# auth_student = auth_role(0)
-
 def auth_all(inject=True):
     def decorator(func):
         @wraps(func)

@@ -1,89 +1,92 @@
+create database sql_online_judge;
+use sql_online_judge;
+
 -- 用户表 (User)
-CREATE TABLE User (
-    id INT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role INT NOT NULL CHECK (role IN (0, 1, 2)),
-    session VARCHAR(255),
-    UNIQUE (username)
+create table User (
+    id int primary key,
+    username varchar(50) not null,
+    password varchar(255) not null,
+    role int not null check (role in (0, 1, 2)),
+    session varchar(255),
+    unique (username)
 );
 
 -- 题目表 (Question)
-CREATE TABLE Question (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(1000) NOT NULL,
-    create_sql TEXT NOT NULL,
-    description TEXT NOT NULL,
-    output_description TEXT NOT NULL,
-    difficulty INT NOT NULL,
-    standard_answer TEXT NOT NULL,
-    is_public BOOLEAN NOT NULL DEFAULT TRUE
+create table Question (
+    id int auto_increment primary key,
+    title varchar(1000) not null,
+    create_sql text not null,
+    description text not null,
+    output_description text not null,
+    difficulty int not null,
+    standard_answer text not null,
+    is_public boolean not null default true
 );
 
 -- 考试表 (Exam)
-CREATE TABLE Exam (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    teacher_id INT,
-    start_time DATETIME NOT NULL,
-    end_time DATETIME NOT NULL,
-    FOREIGN KEY (teacher_id) REFERENCES User(id),
-    CHECK (end_time > start_time)
+create table Exam (
+    id int auto_increment primary key,
+    teacher_id int,
+    start_time datetime not null,
+    end_time datetime not null,
+    foreign key (teacher_id) references User(id),
+    check (end_time > start_time)
 );
 
 -- 考试-题目表 (Exam_Question)
-CREATE TABLE Exam_Question (
-    exam_id INT,
-    question_id INT,
-    score INT NOT NULL DEFAULT 10 CHECK (score > 0),
-    PRIMARY KEY (exam_id, question_id),
-    FOREIGN KEY (exam_id) REFERENCES Exam(id),
-    FOREIGN KEY (question_id) REFERENCES Question(id)
+create table Exam_Question (
+    exam_id int,
+    question_id int,
+    score int not null default 10 check (score > 0),
+    primary key (exam_id, question_id),
+    foreign key (exam_id) references Exam(id),
+    foreign key (question_id) references Question(id)
 );
 
 -- 考试-学生表 (Exam_Student)
-CREATE TABLE Exam_Student (
-    exam_id INT,
-    student_id INT,
-    score INT NOT NULL DEFAULT 0 CHECK (score >= 0),
-    PRIMARY KEY (exam_id, student_id),
-    FOREIGN KEY (exam_id) REFERENCES Exam(id),
-    FOREIGN KEY (student_id) REFERENCES User(id)
+create table Exam_Student (
+    exam_id int,
+    student_id int,
+    score int not null default 0 check (score >= 0),
+    primary key (exam_id, student_id),
+    foreign key (exam_id) references Exam(id),
+    foreign key (student_id) references User(id)
 );
 
 -- 测试用例表 (Test_Case)
-CREATE TABLE Test_Case (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    question_id INT,
-    input_sql VARCHAR(255) NOT NULL,
-    output VARCHAR(255) NOT NULL,
-    FOREIGN KEY (question_id) REFERENCES Question(id)
+create table Test_Case (
+    id int primary key auto_increment,
+    question_id int,
+    input_sql varchar(255) not null,
+    output varchar(255) not null,
+    foreign key (question_id) references Question(id)
 );
 
 -- 提交表 (Submission)
-CREATE TABLE Submission (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    student_id INT,
-    exam_id INT,
-    question_id INT,
-    submit_sql TEXT NOT NULL,
-    submit_time DATETIME NOT NULL,
-    pass_rate FLOAT NOT NULL CHECK (pass_rate BETWEEN 0 AND 1),
-    status INT NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES User(id),
-    FOREIGN KEY (exam_id) REFERENCES Exam(id),
-    FOREIGN KEY (question_id) REFERENCES Question(id)
+create table Submission (
+    id int primary key auto_increment,
+    student_id int,
+    exam_id int,
+    question_id int,
+    submit_sql text not null,
+    submit_time datetime not null,
+    pass_rate float not null check (pass_rate between 0 and 1),
+    status int not null,
+    foreign key (student_id) references User(id),
+    foreign key (exam_id) references Exam(id),
+    foreign key (question_id) references Question(id)
 );
 
 -- 文章表 (Article)
-CREATE TABLE Article (
-    id INT PRIMARY KEY,
-    title VARCHAR(1000) NOT NULL,
-    user_id INT,
-    question_id INT,
-    is_notice BOOLEAN NOT NULL,
-    content TEXT NOT NULL,
-    publish_time DATETIME NOT NULL,
-    last_modify_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES User(id),
-    FOREIGN KEY (question_id) REFERENCES Question(id)
+create table Article (
+    id int primary key,
+    title varchar(1000) not null,
+    user_id int,
+    question_id int,
+    is_notice boolean not null,
+    content text not null,
+    publish_time datetime not null,
+    last_modify_time datetime not null default current_timestamp,
+    foreign key (user_id) references User(id),
+    foreign key (question_id) references Question(id)
 );
