@@ -39,4 +39,4 @@ def get_session():
     if user:
         return jsonify(id=user.id, name=user.username, role=user.role), 200
     else:
-        return jsonify(message='身份信息无效！), 401
+        return jsonify(message='身份信息无效！'), 401
