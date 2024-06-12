@@ -49,10 +49,10 @@ export default {
         } else if (userRole === 2) {
           this.$router.push('/admin');
         } else {
-          alert('Invalid user role');
+          alert('用户身份无效！');
         }
       } catch (error) {
-        alert('Login failed: ' + error.response.data.message);
+        alert('登录失败：' + error.response.data.message);
       }
     }
   }

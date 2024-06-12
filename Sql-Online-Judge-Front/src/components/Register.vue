@@ -44,6 +44,7 @@ export default {
           username: this.username,
           password: this.password,
         });
+        alert(`注册成功！id: ${this.id}，现在请登录！`);
         this.$router.push('/home');
       } catch (error) {
         await axios.post('/register', {
@@ -51,6 +52,7 @@ export default {
           username: this.username,
           password: this.password,
         });
+        alert(`注册失败，请联系服务器管理员！`);
       }
     }
   }
