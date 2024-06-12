@@ -43,13 +43,16 @@ export default {
         });
         const userRole = response.data.role;
         if (userRole === 0) {
+          alert(`登录成功！\nid: ${this.id}，用户组：学生`)
           this.$router.push('/student');
         } else if (userRole === 1) {
+          alert(`登录成功！\nid: ${this.id}，用户组：教师`)
           this.$router.push('/teacher');
         } else if (userRole === 2) {
+          alert(`登录成功！\nid: ${this.id}，用户组：管理员`)
           this.$router.push('/admin');
         } else {
-          alert('用户身份无效！');
+          alert('用户身份无效，请重新注册！');
         }
       } catch (error) {
         alert('登录失败：' + error.response.data.message);
