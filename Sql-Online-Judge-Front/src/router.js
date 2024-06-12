@@ -29,7 +29,7 @@ export default new Router({
       path: '/admin',
       name: 'admin/index',
       component: AdminHome,
-      children:[
+      children: [
         {
           path: 'StudentManage',
           component: StudentManage
@@ -73,7 +73,7 @@ export default new Router({
       path: '/student',
       name: 'student/index',
       component: StudentHome,
-      children:[
+      children: [
         {
           path: 'Submit',
           component: Submit

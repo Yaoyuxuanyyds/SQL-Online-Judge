@@ -38,13 +38,20 @@ export default {
   },
   methods: {
     async register() {
-      await axios.post('/api/register', {
-          id: this.id,
+      try {
+        await axios.post('/register', {
+          id: parseInt(this.id),  // 确保 id 是整数
           username: this.username,
           password: this.password,
-      });
-      //console.log(response.data);
-      this.$router.push('/home');
+        });
+        this.$router.push('/home');
+      } catch (error) {
+        await axios.post('/register', {
+          id: parseInt(this.id),  // 确保 id 是整数
+          username: this.username,
+          password: this.password,
+        });
+      }
     }
   }
 };

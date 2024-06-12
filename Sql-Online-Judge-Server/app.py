@@ -21,7 +21,7 @@ def create_app():
     
     api = Api(app, errors=config.errors)
     
-    @app.route('/')
+    @app.route('/home')
     def hello_world():
         return 'Hello World!'
 
