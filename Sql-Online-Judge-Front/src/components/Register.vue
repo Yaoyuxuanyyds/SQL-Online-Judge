@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'Register',
   data() {
@@ -35,11 +37,14 @@ export default {
     };
   },
   methods: {
-    register() {
-      // 处理注册逻辑
-      // console.log('Registering with', this.id, this.username, this.password);
-      // 假设注册成功后跳转到登录页面
-      this.$router.push('/');
+    async register() {
+      await axios.post('/api/register', {
+          id: this.id,
+          username: this.username,
+          password: this.password,
+      });
+      //console.log(response.data);
+      this.$router.push('/home');
     }
   }
 };
