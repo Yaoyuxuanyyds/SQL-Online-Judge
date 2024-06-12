@@ -8,15 +8,15 @@
       <form @submit.prevent="register">
         <div>
           <label for="id">ID：</label>
-          <input type="text" v-model="id" required>
+          <input type="text" v-model="id">
         </div>
         <div>
           <label for="username">用户名：</label>
-          <input type="text" v-model="username" required>
+          <input type="text" v-model="username">
         </div>
         <div>
           <label for="password">密码：</label>
-          <input type="password" v-model="password" required>
+          <input type="password" v-model="password">
         </div>
         <button type="submit">注册</button>
       </form>
@@ -39,20 +39,21 @@ export default {
   methods: {
     async register() {
       try {
-        await axios.post('/register', {
+        const response = await axios.post('/register', {
           id: parseInt(this.id),  // 确保 id 是整数
           username: this.username,
           password: this.password,
         });
-        alert(`注册成功！id: ${this.id}，现在请登录！`);
+        alert(response.data.message);
         this.$router.push('/home');
       } catch (error) {
-        await axios.post('/register', {
-          id: parseInt(this.id),  // 确保 id 是整数
-          username: this.username,
-          password: this.password,
-        });
-        alert(`注册失败，请联系服务器管理员！`);
+        // 和后端沟通
+        if (error.response && error.response.data && error.response.data.message) {
+          alert(`注册失败：` + error.response.data.message)
+        } else {
+          alert('注册失败，找服务器管理员去！');
+        }
+        //alert(`注册失败，请联系服务器管理员！`);
       }
     }
   }

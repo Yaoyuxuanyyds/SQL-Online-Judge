@@ -17,7 +17,7 @@ def create_app():
     app.config.from_object(config)
     
     db.init_app(app)
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "*"}})  # 允许所有来源的请求
     
     api = Api(app, errors=config.errors)
     

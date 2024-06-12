@@ -44,7 +44,7 @@ export default new Vuex.Store({
         } else if (userType === 'teacher') {
           url += 'teacher';
         } else {
-          reject('用户身份无效，请重新注册！');
+          reject('用户身份无效，重新注册！');
           return;
         }
 
