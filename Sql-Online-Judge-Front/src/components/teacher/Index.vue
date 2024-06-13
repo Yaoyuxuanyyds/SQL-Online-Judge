@@ -54,7 +54,7 @@
   }
   
   #app {
-    font-family: 'Unifont', 'Source Code Pro', sans-serif;
+    font-family: 'Noto Sans', 'Microsoft YaHei UI', 'Source Code Pro', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;

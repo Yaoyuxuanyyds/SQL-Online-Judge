@@ -11,6 +11,11 @@ import ECharts from 'vue-echarts/components/ECharts'
 import 'echarts/lib/chart/line'
 import 'echarts/lib/chart/bar'
 import 'echarts/lib/chart/pie'
+
+import VueMaterial from 'vue-material'
+import 'vue-material/dist/vue-material.css'
+import 'vue-material/dist/theme/default.css'
+
 Vue.component('v-chart', ECharts)
 
 Vue.config.productionTip = false
@@ -19,6 +24,9 @@ Vue.prototype.$axios = axios;
 axios.defaults.baseURL = 'http://127.0.0.1:5000';
 Vue.use(VueAxios, axios);
 Vue.use(ElementUI)
+
+Vue.use(VueMaterial)
+
 
 // router.beforeEach((to, from, next) => {
 //   if (to.path === '/register') {

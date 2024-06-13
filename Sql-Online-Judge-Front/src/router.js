@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
-import Register from '@/components/Register' // 新增注册组件
+// import Register from '@/components/Register' // 新增注册组件
 
 // Admin
 import DatabaseManage from "@/components/admin/DatabaseManage"
@@ -33,11 +33,11 @@ export default new Router({
       name: 'home',
       component: Home
     },
-    {
-      path: '/register', // 注册页面路由
-      name: 'register',
-      component: Register
-    },
+    // {
+    //   path: '/register', // 注册页面路由
+    //   name: 'register',
+    //   component: Register
+    // },
     {
       path: '/admin',
       name: 'admin/index',
