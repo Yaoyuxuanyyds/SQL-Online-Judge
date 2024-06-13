@@ -1,22 +1,19 @@
 <template>
   <div id="app">
-    <h1>Sql Online Judge</h1>
+    <h1>MYWW OJ 数据库版</h1>
     <router-view/>
   </div>
 </template>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Unifont', 'Source Code Pro', sans-serif;
   text-align: center;
   color: #2c3e50;
 }
 #nav {
-  padding: 30px;
+  padding: 20px;
 }
-
 #nav a {
   font-weight: bold;
   color: #2c3e50;

@@ -3,6 +3,7 @@ from models import User
 from exts import db
 import hashlib
 import os
+from config import *
 
 auth = Blueprint('auth', __name__)
 
