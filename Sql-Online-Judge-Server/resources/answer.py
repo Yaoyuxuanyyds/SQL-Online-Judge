@@ -59,9 +59,11 @@ class AnswerList(Resource):
         answer = models.Answer()
         answer.idQuestion = idQuestion
         question = models.Question.query.get(answer.idQuestion)
-        answer.sql = request.json.get('sql')
-        if answer.idQuestion is None or answer.sql is None:
+        answer.sql = request.json.get('sql')    # 这里的sql是代码内容(code)
+        if answer.sql is None:
             return {"message": "没提供答案，无法提交！"}, HTTP_Bad_Request
+        if answer.idQuestion is None:
+            return {"message": "请指定答案对应的题目！"}, HTTP_Bad_Request
         if question is None:
             return {"message": "答案对应的题目不存在！"}, HTTP_Bad_Request
 

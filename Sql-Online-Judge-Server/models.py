@@ -1,3 +1,4 @@
+# ws3917 - 数据库里面所有的表
 from sqlalchemy import ForeignKey, String, TIMESTAMP, Text, text
 from sqlalchemy.dialects.mysql import INTEGER
 from exts import db

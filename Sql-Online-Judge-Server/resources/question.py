@@ -74,7 +74,7 @@ class QuestionList(Resource):
         q.difficulty = request.json['difficulty']
         q.standard_answer = request.json['standard_answer']
         if q.title is None or q.description is None or q.difficulty is None or q.standard_answer is None:
-            return get_shortage_error_dic("title description difficulty standard_answer"), HTTP_Bad_Request
+            return {"message": "题目信息不全，请补全缺失项！"}, HTTP_Bad_Request
         db.session.add(q)
         db.session.commit()
         return {}, HTTP_Created

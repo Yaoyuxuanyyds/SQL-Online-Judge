@@ -78,7 +78,7 @@ class StudentList(Resource):
             db.session.commit()
             return {}, HTTP_Created
         else:
-            return get_shortage_error_dic('id password username'), HTTP_Bad_Request
+            return {"message": "学生信息不全，请补全后提交！"}, HTTP_Bad_Request
 
     @auth_role(0)
     def patch(self, student):
