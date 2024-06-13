@@ -68,7 +68,7 @@
         methods:{
             addQuestion(){
                 this.newQuestionForm['session']=this.$store.getters.Token
-                this.$axios.post('/question',this.newQuestionForm).then(res=>{
+                this.$axios.post('/question',this.newQuestionForm).then(()=>{
                     this.$message.success('成功')
                     this.getQuestionList()
                     this.newQuestionForm.idSchema=''
@@ -103,7 +103,7 @@
                      data:{
                         'session':this.$store.getters.Token,
                     }
-                }).then(res=>{
+                }).then(()=>{
                     this.$message.success('done')
                     this.getQuestionList()
                 }).catch(res=>{

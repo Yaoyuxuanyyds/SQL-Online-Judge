@@ -19,9 +19,9 @@ def create_app():
     db.init_app(app)
     CORS(app, resources={r"/*": {"origins": "*"}})  # 允许所有来源的请求
     
-    api = Api(app, errors=config.errors)
+    api = Api(app)
     
-    @app.route('/home')
+    @app.route('/')
     def hello_world():
         return 'Hello World!'
 

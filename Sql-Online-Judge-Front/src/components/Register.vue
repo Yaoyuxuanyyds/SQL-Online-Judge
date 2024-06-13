@@ -45,7 +45,7 @@ export default {
           password: this.password,
         });
         alert(response.data.message);
-        this.$router.push('/home');
+        this.$router.push('/');
       } catch (error) {
         // 和后端沟通
         if (error.response && error.response.data && error.response.data.message) {

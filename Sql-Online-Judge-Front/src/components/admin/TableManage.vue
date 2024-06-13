@@ -36,7 +36,7 @@
                             <el-table-column
                                     v-for="row_name in tableInfo[props.row.name].cols"
                                     :label="row_name[1]" :key="row_name[0]" >
-                                <input v-model="tableInfo[props.row.name].new_rows[row_name[0]]"></input>
+                                <input v-model="tableInfo[props.row.name].new_rows[row_name[0]]"/>
                             </el-table-column>
 
                             <el-table-column>
@@ -122,17 +122,18 @@
                     data: {
                         'session': this.$store.getters.Token,
                     }
-                }).then(res => {
+                }).then(() => {
                     this.$message.success('success')
                     this.getTableList()
                 }).catch(res => {
                     this.$message.error(res.toString())
                 })
             },
-            handleDeleteRow(index, row){
+            //handleDeleteRow(index, row){
+            handleDeleteRow(index){
                 this.$axios.delete('/table/'+this.rows.data[index].idTable+'/rows/'+this.rows.data[index].id,{
                     data:{'session':this.$store.getters.Token}
-                }).then((res)=>{
+                }).then(()=>{
                     this.$message.success('成功')
                     this.$axios.get('table/'+ this.rows.data[index].idTable+'/rows',{headers: {'session': this.$store.getters.Token}}).then(res=>{
                         this.rows=res.data
@@ -177,7 +178,7 @@
                 this.$axios.post('/table/'+row.id+'/rows',{
                     'session':this.$store.getters.Token,
                     'data':this.tableInfo[row.name]['new_rows'],
-                }).then((res)=>{
+                }).then(()=>{
                     this.$message.success('成功')
                     this.handleShowRows(index,row)
                     this.tableInfo[row.name]['new_rows']=Array(this.tableInfo[row.name]['new_rows'].length).fill('')
@@ -191,7 +192,7 @@
                     'session':this.$store.getters.Token,
                     'sql':this.table_from.new_table_sql,
                     'description':this.table_from.new_description
-                }).then((res)=>{
+                }).then(()=>{
                     this.$message.success('成功')
                     this.getTableList()
                     this.table_from.new_table_sql=''

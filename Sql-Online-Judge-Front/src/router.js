@@ -12,7 +12,7 @@ import StudentManage from '@/components/admin/StudentManage'
 import AdminHome from '@/components/admin/Index'
 
 // Teacher
-import TeacherHome from '@/components/teacher/Index' 
+import TeacherHome from '@/components/teacher/Index'
 import ImportQuestions from '@/components/teacher/ImportQuestions.vue' // 导入题目组件
 import CreateExam from '@/components/teacher/CreateExam.vue' // 发起竞赛组件
 
@@ -29,7 +29,7 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/home',
+      path: '/',
       name: 'home',
       component: Home
     },

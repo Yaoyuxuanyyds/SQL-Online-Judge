@@ -174,8 +174,9 @@
                     this.$message.error(res.toString())
                 })
             },
-            tableSegmentRowClassName({row, rowIndex}) {
-                if(row.deduction===0) return {'background': 'greenyellow'}
+            //tableSegmentRowClassName({row, rowIndex}) {
+            tableSegmentRowClassName(row) {
+            if(row.deduction === 0) return { 'background': 'greenyellow' }
                 else if (row.right_segment==='') return {'background': 'oldlace'}
                 else return {'background': 'red'}
             }

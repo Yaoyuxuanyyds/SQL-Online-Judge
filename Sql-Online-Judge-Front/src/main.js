@@ -34,7 +34,7 @@ Vue.use(ElementUI)
 //     next('/teacher')
 //   }
 //   else if (!to.path.includes('home') && store.getters.Usertype === '') {
-//     next('/home')
+//     next('/')
 //   }
 //   else {
 //     next()

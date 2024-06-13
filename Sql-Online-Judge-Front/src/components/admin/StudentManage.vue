@@ -69,7 +69,7 @@
                         'id':this.new_id,
                         'name':this.new_name,
                         'password': this.new_password
-                    }).then((res)=>{
+                    }).then(()=>{
                         this.$message.info('成功')
                         this.new_password=''
                         this.new_id=''
@@ -93,7 +93,7 @@
                         'session':this.$store.getters.Token,
                         'name':row.name,
                         'password': row.password
-                    }).then((res)=>{
+                    }).then(()=>{
                         this.$message.info('成功')
                         row.edit=false
                         this.$set(this.studentList,index,row)
@@ -112,7 +112,7 @@
                     data:{
                         'session':this.$store.getters.Token,
                     }
-                }).then((res)=>{
+                }).then(() =>{
                     this.$message.info('删除成功')
                     this.refresh()
                 }).catch((res)=>{
