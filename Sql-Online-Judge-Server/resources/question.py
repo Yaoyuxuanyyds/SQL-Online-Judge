@@ -5,6 +5,7 @@ from common.comm import auth_role, auth_all
 from config import *
 from flask import request
 
+# ws3917 - 题目基本信息
 question_field = {
     'id': fields.Integer,
     'title': fields.String,
@@ -13,11 +14,13 @@ question_field = {
     'standard_answer': fields.String
 }
 
+# 处理单个题目的相关功能
 class Questions(Resource):
 
     @auth_all(False)
     @marshal_with(question_field)
     def get(self, question_id):
+        # 查询单个题目 -> 用于题目查询和显示
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret is not None:
             return ret, HTTP_OK
@@ -26,6 +29,7 @@ class Questions(Resource):
 
     @auth_role(2, False)
     def delete(self, question_id):
+        # 删除单个题目 -> 可能管理员用得到，但一般用户用不到
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret is not None:
             db.session.delete(ret)
@@ -36,6 +40,7 @@ class Questions(Resource):
 
     @auth_role(2, False)
     def patch(self, question_id):
+        # 更新单个题目的信息 -> 可能管理员用得到，但一般用户用不到
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret is not None:
             title = request.json.get('title')
@@ -51,16 +56,19 @@ class Questions(Resource):
         else:
             return {}, HTTP_NotFound
 
+# 处理题目列表的相关功能
 class QuestionList(Resource):
 
     @auth_all(inject=True)
     def get(self, student, admin):
+        # 查询所有题目 -> 用于题目列表的查询和显示
         questions = models.Question.query.filter_by()
         data = [marshal(q, question_field) for q in questions]
         return {'data': data}, HTTP_OK
 
     @auth_role(2, False)
     def post(self):
+        # 创建新的题目 -> 可能管理员用得到，但一般用户用不到
         q = models.Question()
         q.title = request.json['title']
         q.description = request.json['description']

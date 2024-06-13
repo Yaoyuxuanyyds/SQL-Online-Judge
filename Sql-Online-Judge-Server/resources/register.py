@@ -16,11 +16,11 @@ class Register(Resource):
         password = args.get('password', "")
 
         if not id:
-            return {"message": "没ID没成绩！"}, 403
+            return {"message": "没ID没成绩！"}, HTTP_Forbidden
         if not username:
-            return {"message": "不给名字谁认识你叫啥？"}, 403
+            return {"message": "不给名字谁认识你叫啥？"}, HTTP_Forbidden
         if not password:
-            return {"message": "你不怕号被盗？"}, 403
+            return {"message": "你不怕号被盗？"}, HTTP_Forbidden
 
         if User.query.filter_by(id=id).first():
             return {"message": "ID撞车了，换一个。"}, 409

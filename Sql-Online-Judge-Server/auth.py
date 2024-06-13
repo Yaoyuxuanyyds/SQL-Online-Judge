@@ -19,7 +19,7 @@ def login():
         db.session.commit()
         return jsonify(session=session_token, role=user.role, name=user.username), 200
     else:
-        return jsonify(message='用户名或密码无效'), 401
+        return jsonify(message='用户名或密码无效'), HTTP_Unauthorized
 
 @auth.route('/api/logout', methods=['POST'])
 def logout():
@@ -30,7 +30,7 @@ def logout():
         db.session.commit()
         return jsonify(message='成功退出登录'), 200
     else:
-        return jsonify(message='身份信息无效！'), 401
+        return jsonify(message='身份信息无效！'), HTTP_Unauthorized
 
 @auth.route('/api/session', methods=['GET'])
 def get_session():
@@ -39,4 +39,4 @@ def get_session():
     if user:
         return jsonify(id=user.id, name=user.username, role=user.role), 200
     else:
-        return jsonify(message='身份信息无效！'), 401
+        return jsonify(message='身份信息无效！'), HTTP_Unauthorized
