@@ -11,7 +11,7 @@ question_field = {
     'title': fields.String,
     'description': fields.String,
     'difficulty': fields.Integer,
-    'standard_answer': fields.String
+    'answer_example': fields.String
 }
 
 # 处理单个题目的相关功能
@@ -46,11 +46,11 @@ class Questions(Resource):
             title = request.json.get('title')
             description = request.json.get('description')
             difficulty = request.json.get('difficulty')
-            standard_answer = request.json.get('standard_answer')
+            answer_example = request.json.get('answer_example')
             ret.title = ret.title if title is None else title
             ret.description = ret.description if description is None else description
             ret.difficulty = ret.difficulty if difficulty is None else difficulty
-            ret.standard_answer = ret.standard_answer if standard_answer is None else standard_answer
+            ret.answer_example = ret.answer_example if answer_example is None else answer_example
             db.session.commit()
             return {}, HTTP_OK
         else:
@@ -72,8 +72,8 @@ class QuestionList(Resource):
         q.title = request.json['title']
         q.description = request.json['description']
         q.difficulty = request.json['difficulty']
-        q.standard_answer = request.json['standard_answer']
-        if q.title is None or q.description is None or q.difficulty is None or q.standard_answer is None:
+        q.answer_example = request.json['answer_example']
+        if q.title is None or q.description is None or q.difficulty is None or q.answer_example is None:
             return {"message": "题目信息不全，请补全缺失项！"}, HTTP_Bad_Request
         db.session.add(q)
         db.session.commit()

@@ -15,11 +15,11 @@ create table User (
 create table Question (
     id int auto_increment primary key,
     title varchar(1000) not null,
-    create_sql text not null,
+    create_code text not null,
     description text not null,
-    output_description text not null,
+    output text not null,
     difficulty int not null,
-    standard_answer text not null,
+    answer_example text not null,
     is_public boolean not null default true
 );
 
