@@ -22,7 +22,7 @@ class Questions(Resource):
     def get(self, question_id):
         # 查询单个题目 -> 用于题目查询和显示
         ret = models.Question.query.filter_by(id=question_id).first()
-        if ret is not None:
+        if ret:
             return ret, HTTP_OK
         else:
             return {}, HTTP_NotFound
@@ -31,7 +31,7 @@ class Questions(Resource):
     def delete(self, question_id):
         # 删除单个题目 -> 可能管理员用得到，但一般用户用不到
         ret = models.Question.query.filter_by(id=question_id).first()
-        if ret is not None:
+        if ret:
             db.session.delete(ret)
             db.session.commit()
             return {}, HTTP_OK
@@ -42,7 +42,7 @@ class Questions(Resource):
     def patch(self, question_id):
         # 更新单个题目的信息 -> 可能管理员用得到，但一般用户用不到
         ret = models.Question.query.filter_by(id=question_id).first()
-        if ret is not None:
+        if ret:
             title = request.json.get('title')
             description = request.json.get('description')
             difficulty = request.json.get('difficulty')
@@ -58,7 +58,6 @@ class Questions(Resource):
 
 # 处理题目列表的相关功能
 class QuestionList(Resource):
-
     @auth_all(inject=True)
     def get(self, student, admin):
         # 查询所有题目 -> 用于题目列表的查询和显示

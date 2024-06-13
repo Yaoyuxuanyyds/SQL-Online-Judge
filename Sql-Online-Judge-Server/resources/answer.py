@@ -18,7 +18,7 @@ class Answers(Resource):
     @marshal_with(answer_field)
     def get(self, idQuestion, answer_id):
         ret = models.Answer.query.filter_by(id=answer_id).first()
-        if ret is not None:
+        if ret:
             return ret, HTTP_OK
         else:
             return {}, HTTP_NotFound
@@ -26,7 +26,7 @@ class Answers(Resource):
     @auth_role(2, False)
     def delete(self, idQuestion, answer_id):
         ret = models.Answer.query.filter_by(id=answer_id).first()
-        if ret is not None:
+        if ret:
             question = ret.Question
             db.session.delete(ret)
             db.session.commit()
@@ -41,7 +41,7 @@ class Answers(Resource):
     @auth_role(2,False)
     def patch(self, answer_id):
         ret = models.Answer.query.filter_by(id=answer_id).first()
-        if ret is not None:
+        if ret:
             pass
         else:
             return {}, HTTP_NotFound
@@ -61,9 +61,9 @@ class AnswerList(Resource):
         question = models.Question.query.get(answer.idQuestion)
         answer.sql = request.json.get('sql')
         if answer.idQuestion is None or answer.sql is None:
-            return get_shortage_error_dic("idQuestion data"), HTTP_Bad_Request
+            return {"message": "没提供答案，无法提交！"}, HTTP_Bad_Request
         if question is None:
-            return get_common_error_dic("question id is wrong"), HTTP_Bad_Request
+            return {"message": "答案对应的题目不存在！"}, HTTP_Bad_Request
 
         db.session.add(answer)
         db.session.commit()

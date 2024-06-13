@@ -21,29 +21,6 @@ replace_threshold = 0.6
 
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Axxazj1314@localhost/sql_online_judge'
 
-errors = {
-    'UserAlreadyExistsError': {
-        'message': "A user with that username already exists.",
-        'status': 409,
-    },
-    'ResourceDoesNotExist': {
-        'message': "A resource with that ID no longer exists.",
-        'status': 410,
-        'extra': "Any extra information you want.",
-    },
-    'sqlalchemy.exc.IntegrityError': {
-        'message': "your commit is wrong",
-        'status': HTTP_Server_Error,
-        'extra': "IntegrityError"
-    },
-    'IntegrityError': {
-        'message': "your commit is wrong",
-        'status': HTTP_Server_Error,
-        'extra': "IntegrityError"
-    }
-}
-
-
 @unique
 class type_submit(Enum):
     all_right = 0
@@ -53,7 +30,7 @@ class type_submit(Enum):
 
 
 def get_shortage_error_dic(name):
-    return {'msg': 'required %s parameter' % (name,)}
+    return {'msg': '缺少以下信息：%s' % (name,)}
 
 
 def get_common_error_dic(msg):

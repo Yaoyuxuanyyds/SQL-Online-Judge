@@ -17,14 +17,14 @@ class Students(Resource):
     @marshal_with(student_fields)
     def get(self, student_id):
         ret = models.User.query.filter_by(id=student_id).first()
-        if ret is not None:
+        if ret:
             return ret, HTTP_OK
         else:
             return {}, HTTP_NotFound
 
     def delete(self, student_id):
         ret = models.User.query.filter_by(id=student_id).first()
-        if ret is not None:
+        if ret:
             db.session.delete(ret)
             db.session.commit()
             return {}, HTTP_OK
@@ -33,7 +33,7 @@ class Students(Resource):
 
     def put(self, student_id):
         ret = models.User.query.filter_by(id=student_id).first()
-        if ret is not None:
+        if ret:
             ret.password = request.json['password']
             ret.name = request.json['username']
             try:
@@ -46,7 +46,7 @@ class Students(Resource):
 
     def patch(self, student_id):
         ret = models.User.query.filter_by(id=student_id).first()
-        if ret is not None:
+        if ret:
             ret.password = ret.password if request.json['password'] is None else request.json['password']
             ret.name = ret.name if request.json['username'] is None else request.json['username']
             try:

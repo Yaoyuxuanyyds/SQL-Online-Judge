@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse, abort
 from models import User
 from exts import db
+from config import *
 
 register_parser = reqparse.RequestParser()
 register_parser.add_argument('id', type=int, required=True, help='ID不能为空')

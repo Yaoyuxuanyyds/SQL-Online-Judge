@@ -25,7 +25,7 @@ class Submits(Resource):
         if student is not None and student.id != student_id:
             return get_common_error_dic("you not allow to access this resource"), HTTP_Forbidden
         ret = models.Submission.query.filter_by(id=submit_id).first()
-        if ret is not None:
+        if ret:
             return ret, HTTP_OK
         else:
             return {}, HTTP_NotFound
@@ -33,7 +33,7 @@ class Submits(Resource):
     @auth_role(2,False)
     def delete(self, submit_id, student_id):
         ret = models.Submission.query.filter_by(id=submit_id).first()
-        if ret is not None:
+        if ret:
             db.session.delete(ret)
             db.session.commit()
             return {}, HTTP_OK
