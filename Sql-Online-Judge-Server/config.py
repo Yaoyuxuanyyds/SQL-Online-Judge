@@ -19,7 +19,7 @@ save_db_path = 'db'
 
 replace_threshold = 0.6
 
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:4546@localhost/sql_online_judge'
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Axxazj1314@localhost/sql_online_judge'
 
 errors = {
     'UserAlreadyExistsError': {

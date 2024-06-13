@@ -3,10 +3,10 @@
     <header>
       <img src="@/assets/logo.png">
       <nav>
-        <router-link to="/">Home</router-link>
-        <router-link to="/student/question">Questions</router-link>
-        <router-link to="/student/submit">Submit</router-link>
-        <router-link to="/student/statistics">Statistics</router-link>
+        <router-link to="/student">Home</router-link>
+        <router-link to="/student/Question">Questions</router-link>
+        <router-link to="/student/Submit">Submit</router-link>
+        <router-link to="/student/Statistics">Statistics</router-link>
       </nav>
     </header>
     <router-view/>

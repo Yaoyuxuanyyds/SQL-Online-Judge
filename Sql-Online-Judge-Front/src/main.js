@@ -20,26 +20,26 @@ axios.defaults.baseURL = 'http://127.0.0.1:5000';
 Vue.use(VueAxios, axios);
 Vue.use(ElementUI)
 
-router.beforeEach((to, from, next) => {
-  if (to.path === '/register') {
-    next(); // 允许跳转到注册页面
-  }
-  else if (store.getters.Usertype === 'admin' && !to.path.includes('admin')) {
-    next('/admin')
-  }
-  else if (store.getters.Usertype === 'student' && !to.path.includes('student')) {
-    next('/student')
-  }
-  else if (store.getters.Usertype === 'teacher' && !to.path.includes('teacher')) {
-    next('/teacher')
-  }
-  else if (!to.path.includes('home') && store.getters.Usertype === '') {
-    next('/home')
-  }
-  else {
-    next()
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   if (to.path === '/register') {
+//     next(); // 允许跳转到注册页面
+//   }
+//   else if (store.getters.Usertype === 'admin' && !to.path.includes('admin')) {
+//     next('/admin')
+//   }
+//   else if (store.getters.Usertype === 'student' && !to.path.includes('student')) {
+//     next('/student')
+//   }
+//   else if (store.getters.Usertype === 'teacher' && !to.path.includes('teacher')) {
+//     next('/teacher')
+//   }
+//   else if (!to.path.includes('home') && store.getters.Usertype === '') {
+//     next('/home')
+//   }
+//   else {
+//     next()
+//   }
+// })
 
 new Vue({
   router,
