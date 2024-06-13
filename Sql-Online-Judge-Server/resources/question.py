@@ -74,7 +74,7 @@ class QuestionList(Resource):
         q.difficulty = request.json['difficulty']
         q.answer_example = request.json['answer_example']
         if q.title is None or q.description is None or q.difficulty is None or q.answer_example is None:
-            return {"message": "题目信息不全，请补全缺失项！"}, HTTP_Bad_Request
+            return {"message": "题目信息不全，补全缺失项！"}, HTTP_Bad_Request
         db.session.add(q)
         db.session.commit()
         return {}, HTTP_Created

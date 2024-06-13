@@ -23,7 +23,7 @@ class Submits(Resource):
     @marshal_with(submit_field)
     def get(self, admin, student, submit_id, student_id):
         if student is not None and student.id != student_id:
-            return get_common_error_dic("you not allow to access this resource"), HTTP_Forbidden
+            return {"message": "权限不够。想看？没门！"}, HTTP_Forbidden
         ret = models.Submission.query.filter_by(id=submit_id).first()
         if ret:
             return ret, HTTP_OK
@@ -63,7 +63,7 @@ class SubmitList(Resource):
     @auth_role(0)
     def post(self, question_id, student, student_id=None):
         if student_id is not None and student_id != student.id:
-            return get_common_error_dic('student id not match your account!'), HTTP_Forbidden
+            return {"message": "身为学生，id和名字都记不准..."}, HTTP_Forbidden
         submit = models.Submission()
         submit.student_id = student.id
         submit.question_id = question_id

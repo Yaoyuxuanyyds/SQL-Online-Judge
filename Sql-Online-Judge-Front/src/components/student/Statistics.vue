@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-row>
-            <el-select v-model="select_question_id" placeholder="请选择" @change="handle_change_question">
+            <el-select v-model="select_question_id" placeholder="选择" @change="handle_change_question">
                 <el-option
                         v-for="item in questionList"
                         :key="item.id"

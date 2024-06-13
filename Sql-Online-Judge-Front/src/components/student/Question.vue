@@ -55,7 +55,7 @@
             <p>你的答案: <span v-html="result['errorInfo']"></span></p>
             <p>格式化后的答案: <span>{{result['correct']}}</span></p>
             <p>正确答案: <span>{{result['right_answer']}}</span></p>
-            <p>语法错误: <span style="color:red ;">{{result['syntax_error_msg']}}</span></p>
+            <p>语法错误: <span style="color:red ;">{{result['syntax_error_message']}}</span></p>
             <p>结果对比:</p>
             <el-table :data="result['compare_result']">
                 <el-table-column label="你的结果" prop="your_result"></el-table-column>
@@ -109,7 +109,7 @@
                     'answer': this.answer
                 }).then((res)=>{
                     this.result=res.data
-                    this.result['syntax_error_msg']=this.result['info'].slice(this.result['info'].indexOf('\n')+1)
+                    this.result['syntax_error_message']=this.result['info'].slice(this.result['info'].indexOf('\n')+1)
                     var erroInfo = this.result['info'].slice(0,this.result['info'].indexOf('\n')).split(' ').map(x=>{
                         return Number(x)
                     })

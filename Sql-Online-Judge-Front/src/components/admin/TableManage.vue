@@ -141,7 +141,7 @@
                     })
 
                 }).catch((res)=>{
-                    this.$message.error(res.response.data[0]['msg'])
+                    this.$message.error(res.response.data[0]["message"])
                 })
 
             },
@@ -182,7 +182,7 @@
                     this.handleShowRows(index,row)
                     this.tableInfo[row.name]['new_rows']=Array(this.tableInfo[row.name]['new_rows'].length).fill('')
                 }).catch((res)=>{
-                    this.$message.error(res.response.data[0]['msg'])
+                    this.$message.error(res.response.data[0]["message"])
                 })
             },
             hanldeNewTable(){
@@ -197,7 +197,7 @@
                     this.table_from.new_table_sql=''
                     this.table_from.new_description=''
                 }).catch((res)=>{
-                    this.$message.error(res.response.data[0]['msg'])
+                    this.$message.error(res.response.data[0]["message"])
                 })
 
             }

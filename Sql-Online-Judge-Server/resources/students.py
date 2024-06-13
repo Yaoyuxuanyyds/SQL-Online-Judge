@@ -39,7 +39,7 @@ class Students(Resource):
             try:
                 db.session.commit()
             except Exception as e:
-                return get_except_error(e)
+                return {"message": f"错误：{str(e)}"}, HTTP_Bad_Request
             return {}, HTTP_OK
         else:
             return {}, HTTP_NotFound
@@ -52,7 +52,7 @@ class Students(Resource):
             try:
                 db.session.commit()
             except Exception as e:
-                return get_except_error(e)
+                return {"message": f"错误：{str(e)}"}, HTTP_Bad_Request
             return {}, HTTP_OK
         else:
             return {}, HTTP_NotFound
@@ -78,7 +78,7 @@ class StudentList(Resource):
             db.session.commit()
             return {}, HTTP_Created
         else:
-            return {"message": "学生信息不全，请补全后提交！"}, HTTP_Bad_Request
+            return {"message": "学生信息不全，补全后提交！"}, HTTP_Bad_Request
 
     @auth_role(0)
     def patch(self, student):
@@ -89,5 +89,5 @@ class StudentList(Resource):
         try:
             db.session.commit()
         except Exception as e:
-            return get_except_error(e)
+            return {"message": f"错误：{str(e)}"}, HTTP_Bad_Request
         return {}, HTTP_OK

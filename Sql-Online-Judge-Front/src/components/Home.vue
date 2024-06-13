@@ -52,7 +52,7 @@ export default {
           alert(`登录成功！id: ${this.id}\n管理员，您好！`)
           this.$router.push('/admin');
         } else {
-          alert('用户身份无效，请重新注册！');
+          alert('用户身份无效，重新注册！');
         }
       } catch (error) {
         alert('登录失败：' + error.response.data.message);

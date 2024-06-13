@@ -30,12 +30,12 @@ class type_submit(Enum):
 
 
 def get_shortage_error_dic(name):
-    return {'msg': '缺少以下信息：%s' % (name,)}
+    return {"message": '缺少以下信息：%s' % (name,)}
 
 
-def get_common_error_dic(msg):
-    return {'msg': msg}, HTTP_Bad_Request
+def get_common_error_dic(message):
+    return {"message": message}, HTTP_Bad_Request
 
 
 def get_except_error(e, state=HTTP_Bad_Request):
-    return {'msg': str(e)}, state
+    return {"message": str(e)}, state

@@ -91,7 +91,7 @@
                     this.newAnswerForm['session']=''
                     this.newAnswerForm['sql']=''
                 }).catch(res=>{
-                    this.$message.error(res.response.data['msg'])
+                    this.$message.error(res.response.data["message"])
                 })
             },
             handleDeleteAnswer(index,row){

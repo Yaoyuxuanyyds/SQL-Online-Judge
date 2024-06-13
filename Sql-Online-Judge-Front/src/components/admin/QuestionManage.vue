@@ -30,7 +30,7 @@
 
             <el-form-item label="database">
 
-                <el-select v-model="newQuestionForm.idSchema" placeholder="请选择一个数据库">
+                <el-select v-model="newQuestionForm.idSchema" placeholder="选择一个数据库">
                     <el-option v-for="item in databaseOptions" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                 </el-select>
