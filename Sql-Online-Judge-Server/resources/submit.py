@@ -71,7 +71,7 @@ class SubmitList(Resource):
         submit.pass_rate = 1.0
         submit.status = 0
         if submit.question_id is None or submit.submit_sql is None:
-            return get_shortage_error_dic('question_id or submit_sql'), HTTP_Bad_Request
+            return {"message": "看不到提交的代码！"}, HTTP_Bad_Request
         db.session.add(submit)
         db.session.commit()
         return {
