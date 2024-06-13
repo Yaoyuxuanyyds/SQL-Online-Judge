@@ -2,7 +2,7 @@
 from sqlalchemy import ForeignKey, String, TIMESTAMP, Text, text
 from sqlalchemy.dialects.mysql import INTEGER
 from exts import db
-
+# 用户表
 class User(db.Model):
     __tablename__ = 'User'
 
