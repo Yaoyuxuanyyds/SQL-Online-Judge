@@ -15,7 +15,7 @@ answer_field = {
 }
 
 class Answers(Resource):
-    @auth_role(AUTH_ALL,False)
+    @auth_role(AUTH_ALL)
     @marshal_with(answer_field)
     def get(self):
         question_id = request.json.get('question_id')
@@ -25,7 +25,7 @@ class Answers(Resource):
         else:
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
 
-    @auth_role(AUTH_ADMIN,False)
+    @auth_role(AUTH_ADMIN)
     def delete(self):
         question_id = request.json.get('question_id')
         ret = models.Question.query.filter_by(id=question_id).first()
@@ -36,6 +36,51 @@ class Answers(Resource):
         else:
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
 
+# community
+class Community(Resource):
+    @auth_role(AUTH_ALL)
+    def get(self):
+        article_id = request.json.get("article_id")
+        article = models.Article.query.filter_by(id=article_id)
+        if article:
+            return article, HTTP_OK
+        else:
+            return {"message": "文章不存在"}, HTTP_NOT_FOUND
+    
+    @auth_role(AUTH_ALL)
+    def add(self):
+        article = models.Article()
+        article.title = request.json.get('title')
+        article.user_id = request.json.get('user_id', None)
+        article.question_id = request.json.get('user_id', None)
+        article.is_notice = request.json.get('is_notice', False)
+        article.content = request.json.get('content', None)
+        article.publish_time = request.json.get('publish_time')
+        article.last_modify_time = request.json.get('last_modify_time')
+        if article.title and article.content:
+            db.session.add(article)
+            db.session.commit()
+            return {}, HTTP_CREATED
+        else:
+            return {"message": "文章缺少标题或内容！"}, HTTP_BAD_REQUEST
+    
+    # TODO: 添加修改文章的类方法
+    @auth_role(AUTH_ALL)
+    def modify(self):
+        # 权限组
+        role = request.json.get('role', AUTH_STUDENT)
+        article_id = request.json.get('article_id')
+        article = models.Article.query.filter_by(id=article_id)
+        
+        if role > AUTH_STUDENT:
+
+    @auth_role(AUTH_ADMIN)
+    def delete(self):
+
+# 文章列表类
+class CommunityList(Resource):
+    def get(self):
+        
 # judge
 # 定义返回结果的字段
 submit_judge = {
@@ -206,7 +251,7 @@ question_field = {
 
 # 处理单个题目的相关功能
 class Questions(Resource):
-    @auth_role(AUTH_ALL,False)
+    @auth_role(AUTH_ALL)
     @marshal_with(question_field)
     def get(self, question_id):
         # 查询单个题目 -> 用于题目查询和显示
@@ -216,7 +261,7 @@ class Questions(Resource):
         else:
             return {"message": "该题目不存在"}, HTTP_NOT_FOUND
 
-    @auth_role(AUTH_ADMIN,False)
+    @auth_role(AUTH_ADMIN)
     def delete(self, question_id):
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
@@ -226,7 +271,7 @@ class Questions(Resource):
         else:
             return {"message": "该题目不存在"}, HTTP_NOT_FOUND
     
-    @auth_role(AUTH_ADMIN, False)
+    @auth_role(AUTH_ADMIN)
     def post(self):
         q = models.Question()
         q.title = request.json['title']
@@ -241,7 +286,7 @@ class Questions(Resource):
 
 # 处理题目列表的相关功能
 class QuestionList(Resource):
-    @auth_role(AUTH_ALL, inject=False)
+    @auth_role(AUTH_ALL)
     def get(self):
         # 查询所有题目 -> 用于题目列表的查询和显示
         questions = models.Question.query.all()
@@ -272,7 +317,7 @@ student_fields = {
 }
 
 class Students(Resource):
-    @auth_role(AUTH_ALL, False)
+    @auth_role(AUTH_ALL)
     @marshal_with(student_fields)
     def get(self):
         student_id = request.json.get('student_id')
@@ -282,7 +327,7 @@ class Students(Resource):
         else:
             return {"message": "该学生不存在"}, HTTP_NOT_FOUND
         
-    @auth_role(AUTH_ADMIN, False)
+    @auth_role(AUTH_ADMIN)
     def delete(self):
         student_id = request.json.get('student_id')
         ret = models.User.query.filter_by(id=student_id).first()
@@ -293,27 +338,27 @@ class Students(Resource):
         else:
             return {"message": "该学生不存在"}, HTTP_NOT_FOUND
 
-    @auth_role(AUTH_ADMIN, False)
+    @auth_role(AUTH_ADMIN)
     def add(self):
-        student_id = request.json.get('student_id')
-        ret = models.User.query.filter_by(id=student_id).first()
-        if ret:
-            return {"message": "该学生已存在"}, HTTP_CONFLICT
-        
         student = models.User()
         student.id = request.json.get('id')
         student.password = request.json.get('password')
         student.username = request.json.get('username')
         student.role = AUTH_STUDENT
         if student.id and student.password:
+            ret = models.User.query.filter_by(id=student.id).first()
+            if ret:
+                return {"message": "该学生已存在"}, HTTP_CONFLICT
             db.session.add(student)
             db.session.commit()
             return {}, HTTP_CREATED
         else:
             return {"message": "学生信息不全，补全后提交！"}, HTTP_BAD_REQUEST
+    
+    # TODO: 添加修改学生信息的函数
 
 class StudentList(Resource):
-    @auth_role(AUTH_ADMIN, False)
+    @auth_role(AUTH_ADMIN)
     def get(self):
         students = models.User.query.filter_by(role=AUTH_STUDENT)
         data = [marshal(student, student_fields) for student in students]
@@ -346,7 +391,7 @@ class Submits(Resource):
             return {"message": "该提交记录不存在"}, HTTP_NOT_FOUND
 
     # 删除提交信息
-    @auth_role(AUTH_ADMIN,False)
+    @auth_role(AUTH_ADMIN)
     def delete(self):
         submit_id = request.json.get("submit_id")
         ret = models.Submission.query.filter_by(id=submit_id).first()
@@ -379,9 +424,9 @@ class Submits(Resource):
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
-        role = request.json.get('role')
+        role = request.json.get('role', AUTH_STUDENT)
         student_id = request.json.get('student_id', None)
-        if role == AUTH_ADMIN or AUTH_TEACHER:
+        if role > AUTH_STUDENT:
             submits = models.Submission.query.filter_by()
         elif student_id:
             submits = models.Submission.query.filter_by(student_id=student_id)

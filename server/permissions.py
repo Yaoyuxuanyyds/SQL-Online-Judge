@@ -11,7 +11,7 @@ def get_session():
         return request.json.get('session', None)
     return None
 
-def auth_role(role, inject=True):
+def auth_role(role):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -24,9 +24,6 @@ def auth_role(role, inject=True):
                 user = models.User.query.filter_by(session=session, role=role).first()
             if user is None:
                 abort(HTTP_UNAUTHORIZED)
-            if inject:
-                return func(user=user, *args, **kwargs)
-            else:
-                return func(*args, **kwargs)
+            return func(*args, **kwargs)
         return wrapper
     return decorator

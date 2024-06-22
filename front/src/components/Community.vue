@@ -47,7 +47,7 @@ export default {
   },
   data() {
     return {
-      articles: []  // 这个应根据实际数据结构初始化
+      articles: []
     };
   },
   methods: {
