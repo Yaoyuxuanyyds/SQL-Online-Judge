@@ -51,7 +51,8 @@ export default {
           this.questions = response.data.data;
         })
         .catch(error => {
-          console.error("There was an error fetching the questions:", error);
+          // 替代 console
+          this.$emit('error', error);
         });
     },
     enterQuestion(id) {
