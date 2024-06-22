@@ -15,26 +15,12 @@ def auth_role(role, inject=True):
         @wraps(func)
         def wrapper(*args, **kwargs):
             session = get_session()
-            if session is None:
-                abort(400)
-            user = User.query.filter_by(session=session, role=role).first()
-            if user is None:
-                abort(401)
-            if inject:
-                return func(user=user, *args, **kwargs)
+            # if session is None:
+            #     abort(400)
+            if role == 3:       # role = 3 即为all
+                user = User.query.filter_by(session=session).first()
             else:
-                return func(*args, **kwargs)
-        return wrapper
-    return decorator
-
-def auth_all(inject=True):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            session = get_session()
-            if session is None:
-                abort(400)
-            user = User.query.filter_by(session=session).first()
+                user = User.query.filter_by(session=session, role=role).first()
             if user is None:
                 abort(401)
             if inject:

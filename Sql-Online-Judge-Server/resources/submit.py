@@ -1,7 +1,7 @@
 from flask_restful import Resource, fields, marshal_with, marshal, reqparse
 import models, time
 from exts import db
-from common.comm import auth_role, auth_all
+from common.comm import auth_role
 from config import *
 from flask import request
 import json
@@ -18,7 +18,7 @@ submit_field = {
 }
 
 class Submits(Resource):
-    @auth_all()
+    @auth_role(3)
     @marshal_with(submit_field)
     def get(self, admin, student, submit_id, student_id):
         if student is not None and student.id != student_id:
@@ -40,8 +40,7 @@ class Submits(Resource):
             return {}, HTTP_NotFound
 
 class SubmitList(Resource):
-
-    @auth_all(inject=True)
+    @auth_role(3)
     def get(self, admin, student, question_id=None, student_id=None):
         if question_id is None and student_id is None and student is not None:
             submits = models.Submission.query.filter_by(student_id=student.id)
