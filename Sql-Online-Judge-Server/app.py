@@ -5,6 +5,7 @@ import os,sys
 sys.path.append(os.getcwd())
 from exts import db
 from resources.question import QuestionList, Questions
+from resources.register import Register
 
 import config
 from auth import auth  # 导入新的身份验证蓝图
@@ -25,8 +26,9 @@ def create_app():
     app.register_blueprint(auth)
 
     # 注册资源API
-    api.add_resource(QuestionList, '/api/questions')  # 注册题目列表API
-    api.add_resource(Questions, '/api/question')
+    api.add_resource(QuestionList, '/api/questionlist')  # 注册题目列表API
+    api.add_resource(Questions, '/api/questions')
+    api.add_resource(Register, '/api/reguester')
 
     with app.app_context():
         db.create_all()
