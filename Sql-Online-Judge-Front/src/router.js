@@ -1,10 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
-// import Register from '@/components/Register' // 新增注册组件
 
 // Admin
-import DatabaseManage from "@/components/admin/DatabaseManage"
 import QuestionManage from "@/components/admin/QuestionManage"
 import TableManage from "@/components/admin/TableManage"
 import AnswerManage from "@/components/admin/AnswerManage"
@@ -13,16 +11,15 @@ import AdminHome from '@/components/admin/Index'
 
 // Teacher
 import TeacherHome from '@/components/teacher/Index'
-import ImportQuestions from '@/components/teacher/ImportQuestions.vue' // 导入题目组件
-import CreateExam from '@/components/teacher/CreateExam.vue' // 发起竞赛组件
+import ImportQuestions from '@/components/teacher/ImportQuestions.vue'
+import CreateExam from '@/components/teacher/CreateExam.vue'
 
 // Student
 import StudentHome from '@/components/student/Index'
 import Submit from '@/components/student/Submit'
-import Statistics from '@/components/student/Statistics'
 import Question from "@/components/student/Question"
-
-
+import Contest from "@/components/student/Contest"
+import Community from "@/components/student/Community"
 
 Vue.use(Router)
 
@@ -33,11 +30,6 @@ export default new Router({
       name: 'home',
       component: Home
     },
-    // {
-    //   path: '/register', // 注册页面路由
-    //   name: 'register',
-    //   component: Register
-    // },
     {
       path: '/admin',
       name: 'admin/index',
@@ -46,10 +38,6 @@ export default new Router({
         {
           path: 'StudentManage',
           component: StudentManage
-        },
-        {
-          path: 'DatabaseManage',
-          component: DatabaseManage
         },
         {
           path: 'QuestionManage',
@@ -84,24 +72,28 @@ export default new Router({
     },
     {
       path: '/student',
-      name: 'student/index',
+      name: 'student',
       component: StudentHome,
-      children: [
-        {
-          path: 'Submit',
-          component: Submit
-        },
-        {
-          path: 'Statistics',
-          component: Statistics
-        },
-        {
-          path: 'Question',
-          component: Question,
-          name: 'Question'
-        }
-      ]
+    },
+    {
+      path: '/student/submit',
+      name: 'submit',
+      component: Submit
+    },
+    {
+      path: '/student/contest',
+      name: 'contest',
+      component: Contest
+    },
+    {
+      path: '/student/question',
+      name: 'question',
+      component: Question
+    },
+    {
+      path: '/student/community',
+      name: 'community',
+      component: Community
     }
-
   ]
 })

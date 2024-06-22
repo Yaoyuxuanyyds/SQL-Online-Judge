@@ -12,6 +12,7 @@
           <router-link to="/teacher/create-exam">Create Exam</router-link>
         </nav>
       </header>
+      
       <router-view/>
     </div>
   </template>

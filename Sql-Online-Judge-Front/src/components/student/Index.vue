@@ -1,61 +1,24 @@
 <template>
-  <div id="app">
-    <header>
-      <img src="@/assets/logo.png">
-      <nav>
-        <router-link to="/student">Home</router-link>
-        <router-link to="/student/Question">Questions</router-link>
-        <router-link to="/student/Submit">Submit</router-link>
-        <router-link to="/student/Statistics">Statistics</router-link>
-      </nav>
-    </header>
-    <router-view/>
+  <div>
+    <Navbar />
+    <div>
+      <!-- 临时内容 -->
+      <h1>欢迎来到主页</h1>
+      <p>这里展示一些个人信息。</p>
+    </div>
   </div>
 </template>
 
 <script>
+import Navbar from './Navbar.vue';
+
 export default {
-  name: 'Index',
-  data() {
-    return {
-      //
-    };
-  },
-  methods: {
-    //
+  components: {
+    Navbar
   }
-};
+}
 </script>
 
-<style scoped>
-nav {
-  display: flex;
-  justify-content: space-around;
-}
-
-nav a {
-  text-decoration: none;
-  color: #333;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background-color: #f5f5f5;
-}
-
-img {
-  height: 40px;
-}
-
-#app {
-  font-family: 'Noto Sans', 'Microsoft YaHei UI', 'Source Code Pro', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style>
+/* 添加任何 Home.vue 特定的样式 */
 </style>
