@@ -91,7 +91,7 @@ class Community(Resource):
 # 文章列表类
 class CommunityList(Resource):
     def get(self):
-
+        pass
 # TODO: Contest后端
 
 # judge
