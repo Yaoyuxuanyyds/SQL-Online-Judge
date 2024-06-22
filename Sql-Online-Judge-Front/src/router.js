@@ -13,14 +13,20 @@ import AdminHome from '@/components/admin/Index'
 import TeacherHome from '@/components/teacher/Index'
 import ImportQuestions from '@/components/teacher/ImportQuestions.vue'
 import CreateExam from '@/components/teacher/CreateExam.vue'
+import Submit_t from '@/components/teacher/Submit'
+import Question_t from "@/components/teacher/Question"
+import AnswerQuestion_t from '@/components/teacher/AnswerQuestion.vue'
+import Contest_t from "@/components/teacher/Contest"
 
 // Student
 import StudentHome from '@/components/student/Index'
 import Submit from '@/components/student/Submit'
 import Question from "@/components/student/Question"
-import AnswerQuestion from './components/student/AnswerQuestion.vue'
+import AnswerQuestion from '@/components/student/AnswerQuestion.vue'
 import Contest from "@/components/student/Contest"
 import Community from "@/components/Community"
+import Question_contest from "@/components/student/Question_contest"
+import AnswerQuestion_contest from '@/components/student/AnswerQuestion_contest.vue'
 
 Vue.use(Router)
 
@@ -64,19 +70,40 @@ export default new Router({
     },
     {
       path: '/teacher',
-      name: 'teacher/index',
+      name: 'teacher',
       component: TeacherHome,
-      children: [
-        {
-          path: 'import',
-          component: ImportQuestions
-        },
-        {
-          path: 'create-exam',
-          component: CreateExam
-        }
-      ]
     },
+    {
+      path: '/teacher/import',
+      name: 'import',
+      component: ImportQuestions
+    },
+    {
+      path: '/teacher/create',
+      name: 'create',
+      component: CreateExam
+    },
+    {
+      path: '/teacher/submit',
+      name: 'submit_t',
+      component: Submit_t
+    },
+    {
+      path: '/teacher/contest',
+      name: 'contest_t',
+      component: Contest_t
+    },
+    {
+      path: '/teacher/question',
+      name: 'question_t',
+      component: Question_t
+    },
+    {
+      path: '/teacher/question/:id',
+      name: 'answer-question_t',
+      component: AnswerQuestion_t
+    },
+
     {
       path: '/student',
       name: 'student',
@@ -88,11 +115,6 @@ export default new Router({
       component: Submit
     },
     {
-      path: '/student/contest',
-      name: 'contest',
-      component: Contest
-    },
-    {
       path: '/student/question',
       name: 'question',
       component: Question
@@ -101,6 +123,21 @@ export default new Router({
       path: '/student/question/:id',
       name: 'answer-question',
       component: AnswerQuestion
+    },
+    {
+      path: '/student/contest',
+      name: 'contest',
+      component: Contest
+    },
+    {
+      path: '/student/contest/:id',
+      name: 'question_contest',
+      component: Question_contest
+    },
+    {
+      path: '/student/contest/:id/answer',
+      name: 'answer-question_contest',
+      component: AnswerQuestion_contest
     }
 
   ]

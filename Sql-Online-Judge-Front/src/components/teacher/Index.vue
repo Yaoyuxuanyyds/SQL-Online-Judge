@@ -1,66 +1,24 @@
 <template>
-    <div id="app">
-      <header>
-        <img src="@/assets/logo.png">
-        <nav>
-          <router-link to="/">Home</router-link>
-          <router-link to="/question">Questions</router-link>
-          <router-link to="/statistics">Statistics</router-link>
-          <router-link to="/submit">Submit</router-link>
-          <!-- 新增的导航栏选项 -->
-          <router-link to="/teacher/import">Import Questions</router-link>
-          <router-link to="/teacher/create-exam">Create Exam</router-link>
-        </nav>
-      </header>
-      
-      <router-view/>
+  <div>
+    <Navbar />
+    <div>
+      <!-- 临时内容 -->
+      <h1>欢迎来到主页</h1>
+      <p>这里展示一些个人信息。</p>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'Index',
-    data() {
-      return {
-        //
-      };
-    },
-    methods: {
-      //
-    }
-  };
-  </script>
-  
-  <style scoped>
-  nav {
-    display: flex;
-    justify-content: space-around;
+  </div>
+</template>
+
+<script>
+import Navbar from './Navbar.vue';
+
+export default {
+  components: {
+    Navbar
   }
-  
-  nav a {
-    text-decoration: none;
-    color: #333;
-  }
-  
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #f5f5f5;
-  }
-  
-  img {
-    height: 40px;
-  }
-  
-  #app {
-    font-family: 'Noto Sans', 'Microsoft YaHei UI', 'Source Code Pro', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
-  }
-  </style>
-  
+}
+</script>
+
+<style>
+/* 添加任何 Home.vue 特定的样式 */
+</style>
