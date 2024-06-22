@@ -44,27 +44,8 @@ export default {
   name: 'Community',
   components: {
     Navbar
-  },
-  data() {
-    return {
-      articles: []  // 这个应根据实际数据结构初始化
-    };
-  },
-  methods: {
-    likeArticle(articleId) {
-      // 实际情况下应发送一个axios或fetch请求去后端处理点赞
-    },
-    filterArticles(filter) {
-      // 实际情况下应与后端交互，过滤数据
-    },
-    changeEntries(event) {
-      // Change display entries, actual implementation needed with backend support
-    },
-    goToEditor() {
-      window.location = 'editor.html';
-    }
   }
-};
+}
 </script>
 
 <style scoped>

@@ -4,7 +4,7 @@
     <router-link :to="{ path: '/student/question' }" :class="{ active: isActive('/student/question') }">Questions</router-link>
     <router-link :to="{ path: '/student/contest' }" :class="{ active: isActive('/student/contest') }">Contest</router-link>
     <router-link :to="{ path: '/student/submit' }" :class="{ active: isActive('/student/submit') }">Submit</router-link>
-    <router-link :to="{ path: '/community' }" :class="{ active: isActive('/student/community') }">Community</router-link>
+    <router-link :to="{ path: '/student/community' }" :class="{ active: isActive('/student/community') }">Community</router-link>
 
     <!-- 比赛信息显示区域 -->
     <div v-if="contestInfo" class="contest-info">
