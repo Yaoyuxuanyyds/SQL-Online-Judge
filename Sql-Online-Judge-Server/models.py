@@ -1,6 +1,6 @@
 from sqlalchemy import ForeignKey, text, CheckConstraint, Column
 from sqlalchemy.dialects.mysql import INTEGER, VARCHAR, FLOAT, TEXT, BOOLEAN, TIMESTAMP
-from exts import db
+from app import db
 
 # 用户表
 class User(db.Model):

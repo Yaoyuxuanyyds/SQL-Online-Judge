@@ -1,15 +1,11 @@
 from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
-import os,sys
+import os,sys,config
 sys.path.append(os.getcwd())
-from exts import db
-from resources.question import QuestionList, Questions
-from resources.register import Register
-from resources.submit import SubmitList
-
-import config
-from auth import auth  # 导入新的身份验证蓝图
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
+from resources import *
 
 def create_app():
     app = Flask(__name__)
@@ -20,19 +16,16 @@ def create_app():
     api = Api(app)
     
     @app.route('/')
-    def hello_world():
-        return 'Hello World!'
-
-    # 注册蓝图
-    app.register_blueprint(auth)
+    def h():
+        return ''
 
     # 注册资源API
     api.add_resource(QuestionList, '/api/questionlist')  # 注册题目列表API
     api.add_resource(Register, '/api/reguester')
     api.add_resource(Questions, '/api/questions/<int:question_id>')
+    api.add_resource(Login, '/api/login')
     with app.app_context():
         db.create_all()
-    
     return app
 
 if __name__ == '__main__':
