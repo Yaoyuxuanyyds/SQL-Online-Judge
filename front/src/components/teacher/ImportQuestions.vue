@@ -1,25 +1,24 @@
 <template>
+  <div>
+    <Navbar />
     <div>
+      <!-- 临时内容 -->
       <h1>Import Questions</h1>
-      <!-- 实现导入题目的表单或功能 -->
+      <p>导入题目</p>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'ImportQuestions',
-    data() {
-      return {
-        //
-      };
-    },
-    methods: {
-      //
-    }
-  };
-  </script>
-  
-  <style scoped>
-  /* 样式定义 */
-  </style>
-  
+  </div>
+</template>
+
+<script>
+import Navbar from '@/components/teacher/Navbar.vue';
+
+export default {
+  components: {
+    Navbar
+  }
+}
+</script>
+
+<style>
+/* 添加任何 Home.vue 特定的样式 */
+</style>

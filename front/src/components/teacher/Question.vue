@@ -1,8 +1,6 @@
 <template>
   <div class="container">
-    <div class="nav">
     <Navbar />
-  </div>
     <h1>题目列表</h1>
     <div class="header">
       <span class="header-item">ID</span>
@@ -25,7 +23,7 @@
 
 <script>
 import axios from 'axios'
-import Navbar from '@/components/student/Navbar.vue';
+import Navbar from '@/components/teacher/Navbar.vue';
 
 export default {
   name: 'QuestionList',
@@ -44,7 +42,7 @@ export default {
     fetchQuestions() {
       axios.get(`/api/questionlist`, {
         headers: {
-          'session': "27a3ffefde5a62b818bdaab3a1a11a33f1d2c2bd"
+          'session': " 1dd2bc692f6c307d3fc242c71562c8a9524ebdbe"
         }
       })
         .then(response => {

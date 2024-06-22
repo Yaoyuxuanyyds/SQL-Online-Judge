@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <Navbar />
+
     <div class="question-container">
       <div class="card">
         <h1>{{ question.title }}</h1>
@@ -27,7 +28,7 @@
 
 <script>
 import axios from 'axios';
-import Navbar from '@/components/student/Navbar.vue';
+import Navbar from '@/components/teacher/Navbar.vue';
 
 export default {
   components: {
@@ -48,7 +49,7 @@ export default {
       const questionId = this.$route.params.id;
       axios.get(`/api/questions/${questionId}`, {
         headers: {
-          'session': "f834cfc29a496d93ff627f9220287e0bfffcbc9a"
+          'session': "1dd2bc692f6c307d3fc242c71562c8a9524ebdbe"
         }
       })
       .then(response => {
