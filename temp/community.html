@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!--社群界面-->
+<head>
+    <meta charset="UTF-8">
+    <title>Community</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>社群分享</h2>
+    <ul class="list-group mb-4">
+        {% for article in articles %}
+        <li class="list-group-item">
+            #{{ article.id }} - <strong>{{ article.author }}</strong> 分享于 {{ article.date }}
+            <a href="{{ article.url }}" target="_blank">{{ article.title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+</body>
+<!--创建一篇新的文档-->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章编辑器</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 编辑器容器 -->
+    <div id="editor" style="height: 500px;"></div>
+    <!-- 操作按钮 -->
+    <button id="save-btn">保存为TXT</button>
+    <button id="export-doc-btn">导出为DOC</button>
+    <button id="export-pdf-btn">导出为PDF</button>
+
+    <!-- 引入 Quill 库 -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <!-- 引入 FileSaver.js 用于保存文件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
+    <!-- 引入 jsPDF 用于生成 PDF 文件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+
+    <script>
+        var quill = new Quill('#editor', {
+            theme: 'snow'
+        });
+
+        // 文件上传并显示在编辑器中
+        function loadFile(event) {
+            var input = event.target;
+            if ('files' in input && input.files.length > 0) {
+                let reader = new FileReader();
+                reader.onload = function() {
+                    var text = reader.result;
+                    quill.root.innerHTML = text;
+                };
+                reader.readAsText(input.files[0]);
+            }
+        }
+
+        document.getElementById('save-btn').addEventListener('click', function() {
+            var text = quill.root.innerHTML;
+            var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            saveAs(blob, 'document.txt');
+        });
+
+        document.getElementById('export-doc-btn').addEventListener('asyccess', function() {
+            var htmlContent = quill.root.innerHTML;
+            var blob = new Blob([`<html><body>${htmlContent}</body></html>`], {type: 'application/msword'});
+            saveAs(blob, 'document.doc');
+        });
+
+        document.getElementById('export-pdf-btn').addEventListener('click', function() {
+            var jsPDF = window.jspdf.jsPDF;
+            var doc = new jsPDF();
+            var source = quill.root.innerHTML;
+
+            doc.html(source, {
+                callback: function(doc) {
+                    doc.save('document.pdf');
+                },
+                autopadding: true,
+                x: 10,
+                y: 10
+            });
+        });
+    </script>
+</body>
+</html>

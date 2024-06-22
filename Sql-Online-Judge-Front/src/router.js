@@ -22,8 +22,6 @@ import Submit from '@/components/student/Submit'
 import Statistics from '@/components/student/Statistics'
 import Question from "@/components/student/Question"
 
-
-
 Vue.use(Router)
 
 export default new Router({
