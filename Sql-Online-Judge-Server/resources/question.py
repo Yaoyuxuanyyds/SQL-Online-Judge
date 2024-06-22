@@ -55,16 +55,7 @@ class Questions(Resource):
             return {}, HTTP_OK
         else:
             return {}, HTTP_NotFound
-
-# 处理题目列表的相关功能
-class QuestionList(Resource):
-    @auth_all(inject=True)
-    def get(self, student, admin):
-        # 查询所有题目 -> 用于题目列表的查询和显示
-        questions = models.Question.query.filter_by()
-        data = [marshal(q, question_field) for q in questions]
-        return {'data': data}, HTTP_OK
-
+    
     @auth_role(2, False)
     def post(self):
         # 创建新的题目 -> 可能管理员用得到，但一般用户用不到
@@ -78,3 +69,13 @@ class QuestionList(Resource):
         db.session.add(q)
         db.session.commit()
         return {}, HTTP_Created
+
+# 处理题目列表的相关功能
+class QuestionList(Resource):
+    @auth_all(inject=True)
+    def get(self, student, admin):
+        # 查询所有题目 -> 用于题目列表的查询和显示
+        questions = models.Question.query.filter_by()
+        data = [marshal(q, question_field) for q in questions]
+        return {'data': data}, HTTP_OK
+

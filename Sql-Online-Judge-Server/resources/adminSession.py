@@ -1,6 +1,5 @@
 import hashlib
 import os
-
 from flask_restful import Resource, reqparse, abort
 from models import User
 from exts import db
