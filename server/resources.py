@@ -113,8 +113,6 @@ class CommunityList(Resource):
         articles = models.Article.query.all()
         data = [marshal(article, community_field) for article in articles]
         return {'data': data}, HTTP_OK
-    
-    
 # TODO: Contest后端
 
 # judge
@@ -193,13 +191,15 @@ class SQLJudge(Resource):
         finally:
             session.close()  # 关闭会话
 
-    def judge(self, submit_sql, question_id):
+    def judge(self):
         """
         根据question_id从测试用例表读取对应的input_sql和output_sql，执行用户提交的SQL语句并判断结果
         :param submit_sql: 用户提交的SQL语句
         :param question_id: 问题ID
         :return: 测试结果字典，格式为 {测试用例ID: (error: bool, output: int)}
         """
+        submit_sql = request.json.get('submit_sql')
+        question_id = request.json.get('question_id')
         # 从TestCase表中获取对应question_id的所有测试用例
         test_cases = models.TestCase.query.filter_by(question_id=question_id).all()
         results = {}  # 存储测试结果的字典
@@ -289,8 +289,9 @@ question_field = {
 class Questions(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(question_field)
-    def get(self, question_id):
+    def get(self):
         # 查询单个题目 -> 用于题目查询和显示
+        question_id = request.json.get('question_id')
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             return ret, HTTP_OK
@@ -298,7 +299,8 @@ class Questions(Resource):
             return {"message": "该题目不存在"}, HTTP_NOT_FOUND
 
     @auth_role(AUTH_ADMIN)
-    def delete(self, question_id):
+    def delete(self):
+        question_id = request.json.get('question_id')
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             db.session.delete(ret)
@@ -415,9 +417,10 @@ class Submits(Resource):
     # 获取自己的提交信息
     @auth_role(AUTH_ALL)
     @marshal_with(submit_field)
-    def get(self, submit_id, student):
+    def get(self):
+        submit_id = request.json.get('submit_id')
+        student = request.json.get('student')
         ret = models.Submission.query.filter_by(id=submit_id).first()
-        
         if ret:
             if student and ret['student_id'] == student.id:
                 return ret, HTTP_OK
