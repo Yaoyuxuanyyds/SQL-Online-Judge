@@ -29,7 +29,6 @@ def create_app():
     api.add_resource(QuestionList, '/api/questionlist')  # 注册题目列表API
     api.add_resource(Register, '/api/reguester')
     api.add_resource(Questions, '/api/questions/<int:question_id>')
-    api.add_resource()
     with app.app_context():
         db.create_all()
     

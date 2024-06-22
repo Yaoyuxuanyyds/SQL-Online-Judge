@@ -30,28 +30,38 @@ export default new Vuex.Store({
   actions: {
     login(context, data) {
       return new Promise((resolve, reject) => {
-        const userType = data['usertype'];
+        const userTypeMap = {
+          'admin': 0,
+          'student': 1,
+          'teacher': 2
+        };
+        const userType = data['role'];
+        const role = userTypeMap[userType];
+
+        if (role === undefined) {
+          reject('用户身份无效，重新注册！');
+          return;
+        }
+
         const loginData = {
           id: data['id'],
           password: data['password']
         };
 
         let url = '/session/';
-        if (userType === 'admin') {
+        if (role === 0) {
           url += 'admin';
-        } else if (userType === 'student') {
+        } else if (role === 1) {
           url += 'student';
-        } else if (userType === 'teacher') {
+        } else if (role === 2) {
           url += 'teacher';
-        } else {
-          reject('用户身份无效，重新注册！');
-          return;
         }
 
         return axios.post(url, loginData).then((response) => {
           context.commit('setToken', response.data['session']);
           context.commit('setUsertype', userType);
           context.commit('setUsername', response.data['name']);
+          context.commit('setUserID', response.data['id'])
           resolve();
         }).catch((response) => {
           reject(response);
