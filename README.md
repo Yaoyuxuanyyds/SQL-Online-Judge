@@ -1,2 +1,1 @@
 # Sql-Online-Judge
-
