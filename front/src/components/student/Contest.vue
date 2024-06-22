@@ -1,29 +1,31 @@
 <template>
-  <div class="contest-container">
+  <div class="page-container">
     <Navbar />
-
-    <div class="container">
-      <h1>Available Contests</h1>
-      <div class="contest-list">
-        <table class="contest-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="contest in contests" :key="contest.id">
-              <td>
-                <!-- 使用路由链接跳转到题目列表页面 -->
-                <router-link :to="{ name: 'question_contest', params: { id: contest.id }}">{{ contest.name }}</router-link>
-              </td>
-              <td>{{ contest.category }}</td>
-              <td>{{ contest.completed ? '已完成' : '未完成' }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <!-- 竞赛内容 -->
+    <div class="contest-content">
+      <div class="container">
+        <div class="contest-list">
+          <h1>Available Contests</h1>
+          <table class="contest-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="contest in contests" :key="contest.id">
+                <td>
+                  <!-- 使用路由链接跳转到题目列表页面 -->
+                  <router-link :to="{ name: 'question_contest', params: { id: contest.id }}">{{ contest.name }}</router-link>
+                </td>
+                <td>{{ contest.category }}</td>
+                <td>{{ contest.completed ? '已完成' : '未完成' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- 右侧栏位显示竞赛的剩余时间和得分情况 -->
@@ -32,11 +34,6 @@
         <p v-if="selectedContest">Remaining Time: {{ selectedContest.remainingTime }}</p>
         <p v-if="selectedContest">Score: {{ selectedContest.score }}</p>
       </div>
-    </div>
-
-    <!-- 当没有选择比赛时显示的内容 -->
-    <div v-if="!selectedContest">
-      <p>No contest selected.</p>
     </div>
   </div>
 </template>
@@ -102,18 +99,31 @@ export default {
 </script>
 
 <style scoped>
-.contest-container {
+.page-container {
   display: flex;
   flex-direction: column;
 }
 
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 10px 0;
+}
+
+.contest-content {
+  display: flex;
+  flex: 1;
+}
+
 .container {
+  flex: 1;
   padding: 20px;
-  flex: 1; /* 让内容区域占满剩余空间 */
 }
 
 .contest-list {
-  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .contest-table {
@@ -128,20 +138,12 @@ export default {
 }
 
 .contest-info {
-  margin-top: 20px;
+  width: 20%;
   padding: 10px;
   border: 1px solid #ccc;
 }
 
 .contest-info h2 {
   margin-bottom: 10px;
-}
-
-div {
-  /* 确保占位组件的高度不会过小 */
-  min-height: 200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>

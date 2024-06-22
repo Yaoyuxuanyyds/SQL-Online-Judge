@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar />
+    <!-- <Navbar /> -->
     <div class="create-exam-container">
       <h1>Create Exam</h1>
       <p>创建竞赛</p>
@@ -10,14 +10,14 @@
         <label>Exam Name:</label>
         <input v-model="examName" placeholder="Exam Name" @input="updateExamName">
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label>Start Time:</label>
         <input type="datetime-local" v-model="startTime" @input="updateExamTime('start')">
       </div>
       <div class="form-group">
         <label>End Time:</label>
         <input type="datetime-local" v-model="endTime" @input="updateExamTime('end')">
-      </div>
+      </div> -->
       
       <!-- 学生添加 -->
       <div class="form-group">
@@ -64,25 +64,25 @@
 </template>
 
 <script>
-import Navbar from '@/components/teacher/Navbar.vue';
+// import Navbar from '@/components/teacher/Navbar.vue';
 import { mapState, mapActions } from 'vuex';
 
 export default {
-  components: {
-    Navbar
-  },
+  // components: {
+  //   Navbar
+  // },
   data() {
     return {
       examName: '',
-      startTime: '',
-      endTime: '',
+      // startTime: '',
+      // endTime: '',
       studentId: '',
       questions: [{ number: '', score: '' }]
     };
   },
   computed: {
     ...mapState({
-      students: state => state.newExam.students,
+      // students: state => state.newExam.students,
       totalQuestions: state => state.newExam.questions.length,
       totalScore: state => state.newExam.questions.reduce((acc, cur) => acc + cur.score, 0)
     })
@@ -92,10 +92,10 @@ export default {
     updateExamName() {
       this.$store.commit('SET_EXAM_NAME', this.examName);
     },
-    updateExamTime(type) {
-      const time = type === 'start' ? this.startTime : this.endTime;
-      this.$store.commit('SET_EXAM_TIME', { startTime: this.startTime, endTime: this.endTime });
-    },
+    // updateExamTime(type) {
+    //   const time = type === 'start' ? this.startTime : this.endTime;
+    //   this.$store.commit('SET_EXAM_TIME', { startTime: this.startTime, endTime: this.endTime });
+    // },
     addStudent() {
       if (this.studentId) {
         this.$store.dispatch('addStudent', { id: this.studentId });
@@ -109,7 +109,7 @@ export default {
       this.$store.dispatch('removeQuestion', index);
     },
     submitExam() {
-      if (this.questions.length > 0 && this.examName && this.startTime && this.endTime && this.students.length > 0) {
+      if (this.questions.length > 0 && this.examName) {
         this.$store.dispatch('submitExam');
       } else {
         alert('请填写完整的考试信息！');
