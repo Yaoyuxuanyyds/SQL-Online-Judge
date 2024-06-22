@@ -81,17 +81,38 @@ class Community(Resource):
         newcontent = request.json.get('newcontent')
         if newcontent:
             article.content = newcontent
+            db.session.add(article) # 更改文章，不确定add方法对不对
             db.session.commit()     # 提交更改
         
         return {}, HTTP_OK
             
     @auth_role(AUTH_ADMIN)
     def delete(self):
-        pass
+        article_id = request.json.get('article_id')
+        article = models.Article.query.filter_by(id=article_id)
+        if not article:
+            return {"message": "未找到文章！"}, HTTP_NOT_FOUND
+        
+        # 删除文章
+        db.session.remove(article)
+        db.session.commit()
+        return {}, HTTP_OK
+
 # 文章列表类
+community_field = {
+    'id': fields.Integer,
+    'user_id': fields.Integer,
+    'question_id': fields.Integer,
+    'publish_time': fields.DateTime,
+    'is_notice': fields.Boolean
+}
 class CommunityList(Resource):
+    @auth_role(AUTH_ALL)
+    @marshal_with(community_field)
     def get(self):
-        pass
+        articles = models.Article.query.all()
+        data = [marshal(article, community_field) for article in articles]
+        return {'data': data}, HTTP_OK
 # TODO: Contest后端
 
 # judge
@@ -303,7 +324,7 @@ class QuestionList(Resource):
     def get(self):
         # 查询所有题目 -> 用于题目列表的查询和显示
         questions = models.Question.query.all()
-        data = [marshal(q, question_field) for q in questions]
+        data = [marshal(question, question_field) for question in questions]
         return {'data': data}, HTTP_OK
 
 # register
@@ -445,8 +466,5 @@ class SubmitList(Resource):
             submits = models.Submission.query.filter_by(student_id=student_id)
         else:
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
-        data = []
-        for submit in submits:
-            ret = marshal(submit, submit_field)
-            data.append(ret)
+        data = [marshal(submit, submit_field) for submit in submits]
         return {'data': data}, HTTP_OK
