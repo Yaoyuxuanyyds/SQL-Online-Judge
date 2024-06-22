@@ -71,7 +71,7 @@ class Questions(Resource):
 
 # 处理题目列表的相关功能
 class QuestionList(Resource):
-    @auth_role(3)
+    @auth_role(3, inject=False)
     def get(self):
         # 查询所有题目 -> 用于题目列表的查询和显示
         questions = models.Question.query.all()

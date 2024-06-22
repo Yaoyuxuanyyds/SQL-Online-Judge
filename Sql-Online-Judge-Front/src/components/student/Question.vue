@@ -23,10 +23,9 @@ export default {
   },
   methods: {
     fetchQuestions() {
-      const session = localStorage.getItem('session') || this.$store.state.session;  
-      axios.get('/api/questionlist', {
+      axios.get(`/api/questionlist`, {
         headers: {
-          'session': session
+          'session': "a9d975af9b4a8820d62aa2c76770bfb695481149"
         }
       })  // 确保这是正确的API URL
         .then(response => {
