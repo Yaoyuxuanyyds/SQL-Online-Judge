@@ -70,17 +70,30 @@ class Community(Resource):
         # 权限组
         role = request.json.get('role', AUTH_STUDENT)
         article_id = request.json.get('article_id')
+        user_id = request.json.get('user_id')
         article = models.Article.query.filter_by(id=article_id)
+        if not article:
+            return {"message": "未找到文章！"}, HTTP_NOT_FOUND
+        if role == AUTH_STUDENT and article.user_id != user_id:
+            return {"message": "没有编辑权限！"}, HTTP_FORBIDDEN
         
-        if role > AUTH_STUDENT:
-
+        # 新文章内容
+        newcontent = request.json.get('newcontent')
+        if newcontent:
+            article.content = newcontent
+            db.session.commit()     # 提交更改
+        
+        return {}, HTTP_OK
+            
     @auth_role(AUTH_ADMIN)
     def delete(self):
-
+        pass
 # 文章列表类
 class CommunityList(Resource):
     def get(self):
-        
+
+# TODO: Contest后端
+
 # judge
 # 定义返回结果的字段
 submit_judge = {
