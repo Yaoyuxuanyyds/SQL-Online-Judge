@@ -66,7 +66,7 @@ class Community(Resource):
     
     # TODO: 添加修改文章的类方法
     @auth_role(AUTH_ALL)
-    def modify(self):
+    def update(self):
         # 权限组
         role = request.json.get('role', AUTH_STUDENT)
         article_id = request.json.get('article_id')
