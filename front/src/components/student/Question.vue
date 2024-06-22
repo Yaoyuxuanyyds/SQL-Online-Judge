@@ -42,7 +42,7 @@ export default {
     fetchQuestions() {
       axios.get(`/api/questionlist`, {
         headers: {
-          'session': "27a3ffefde5a62b818bdaab3a1a11a33f1d2c2bd"
+          'session': localStorage.getItem('session')
         }
       })
         .then(response => {

@@ -86,6 +86,8 @@ export default {
             password: this.password,
           });
           const userRole = response.data.role;
+          const sessionToken = response.data.session; // 获取session token
+          localStorage.setItem('session', sessionToken); // 存储到LocalStorage
           if (userRole === 0) {
             alert(`登录成功！id: ${this.id}\n欢迎来做作业或打比赛！`)
             this.$router.push('/student');

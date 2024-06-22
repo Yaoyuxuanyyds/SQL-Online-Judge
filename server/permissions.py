@@ -5,11 +5,7 @@ import models
 from config import *
 # permissions
 def get_session():
-    if request.method == 'GET':
-        return request.headers.get('session')
-    if request.is_json:
-        return request.json.get('session', None)
-    return None
+    return request.headers.get('session')
 
 def auth_role(role):
     def decorator(func):

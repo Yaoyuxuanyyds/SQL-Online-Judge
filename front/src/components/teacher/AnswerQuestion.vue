@@ -49,7 +49,7 @@ export default {
       const questionId = this.$route.params.id;
       axios.get(`/api/questions/${questionId}`, {
         headers: {
-          'session': "1dd2bc692f6c307d3fc242c71562c8a9524ebdbe"
+          'session': localStorage.getItem('session')
         }
       })
       .then(response => {
