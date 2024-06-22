@@ -48,13 +48,14 @@ class Submits(Resource):
     def post(self):
         s = models.Submission()
         s.student_id = request.json['student_id']
+        s.question_id = request.json['question_id']
         s.exam_id = request.json['request_id']
         s.submit_sql = request.json['submit_sql']
         s.submit_time = request.json['submit_time']
         s.pass_rate = 0
-        s.status = 0
+        s.status = -1
 
-        if not (s.student_id and s.exam_id and s.submit_sql):
+        if not (s.student_id and s.question_id and s.exam_id and s.submit_sql):
             return {"message": "提交信息不全"}, HTTP_Bad_Request
         
         db.session.add(s)
