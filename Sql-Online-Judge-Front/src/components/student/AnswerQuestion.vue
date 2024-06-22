@@ -64,7 +64,7 @@ export default {
         })
         .catch(error => {
           alert(`提交失败: ${error.response.data.message}`);
-        });
+        }); 
     }
   }
 };
