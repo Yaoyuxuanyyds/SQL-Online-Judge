@@ -1,6 +1,9 @@
 <template>
+
   <div>
+    <div class="nav">
     <Navbar />
+  </div>
     <h1>Submissions</h1>
     <button @click="fetchAll">All Submissions</button>
     <button @click="fetchMine">My Submissions</button>

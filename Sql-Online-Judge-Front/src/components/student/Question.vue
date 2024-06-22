@@ -1,6 +1,8 @@
 <template>
   <div class="container">
+    <div class="nav">
     <Navbar />
+  </div>
     <h1>题目列表</h1>
     <div class="header">
       <span class="header-item">ID</span>

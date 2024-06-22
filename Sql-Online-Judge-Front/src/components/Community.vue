@@ -1,6 +1,10 @@
 <template>
+
   <div>
+    
+  <div class="nav">
     <Navbar />
+  </div>
     <meta charset="UTF-8">
     <title>Community</title>
     <!-- Bootstrap for styling -->

@@ -1,10 +1,10 @@
 <template>
     <nav class="navbar">
       <router-link :to="{ path: '/student' }" :class="{ active: isActive('/student') }">Home</router-link>
-      <router-link :to="{ path: '/student/question' }" :class="{ active: isActive('/student/Question') }">Questions</router-link>
-      <router-link :to="{ path: '/student/submit' }" :class="{ active: isActive('/student/Submit') }">Submit</router-link>
-      <router-link :to="{ path: '/student/contest' }" :class="{ active: isActive('/student/Contest') }">Contest</router-link>
-      <router-link :to="{ path: '/community' }" :class="{ active: isActive('/student/Community') }">Community</router-link>
+      <router-link :to="{ path: '/student/question' }" :class="{ active: isActive('/student/question') }">Questions</router-link>
+      <router-link :to="{ path: '/student/contest' }" :class="{ active: isActive('/student/contest') }">Contest</router-link>
+      <router-link :to="{ path: '/student/submit' }" :class="{ active: isActive('/student/submit') }">Submit</router-link>
+      <router-link :to="{ path: '/community' }" :class="{ active: isActive('/student/community') }">Community</router-link>
     </nav>
   </template>
   

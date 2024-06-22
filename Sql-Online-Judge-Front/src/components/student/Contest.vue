@@ -1,6 +1,9 @@
 <template>
+
   <div>
+    <div class="nav">
     <Navbar />
+  </div>
     <h1>Contest Page</h1>
     <p>This is the Contest page. Test your navigation here.</p>
   </div>
