@@ -9,6 +9,7 @@ import AnswerManage from "@/components/admin/AnswerManage"
 import StudentManage from '@/components/admin/StudentManage'
 import AdminHome from '@/components/admin/Index'
 
+
 // Teacher
 import TeacherHome from '@/components/teacher/Index'
 import ImportQuestions from '@/components/teacher/ImportQuestions.vue'
@@ -17,6 +18,8 @@ import Submit_t from '@/components/teacher/Submit'
 import Question_t from "@/components/teacher/Question"
 import AnswerQuestion_t from '@/components/teacher/AnswerQuestion.vue'
 import Contest_t from "@/components/teacher/Contest"
+import Community_t from "@/components/teacher/Community"
+
 
 // Student
 import StudentHome from '@/components/student/Index'
@@ -24,9 +27,10 @@ import Submit from '@/components/student/Submit'
 import Question from "@/components/student/Question"
 import AnswerQuestion from '@/components/student/AnswerQuestion.vue'
 import Contest from "@/components/student/Contest"
-import Community from "@/components/Community"
 import Question_contest from "@/components/student/Question_contest"
 import AnswerQuestion_contest from '@/components/student/AnswerQuestion_contest.vue'
+import Community from "@/components/student/Community"
+
 
 Vue.use(Router)
 
@@ -37,11 +41,6 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home
-    },
-    {
-      path: '/community',
-      name: 'community',
-      component: Community
     },
     {
       path: '/admin',
@@ -103,6 +102,11 @@ export default new Router({
       name: 'answer-question_t',
       component: AnswerQuestion_t
     },
+    {
+      path: '/teacher/community',
+      name: 'community_t',
+      component: Community_t
+    },
 
     {
       path: '/student',
@@ -138,7 +142,12 @@ export default new Router({
       path: '/student/contest/:id/answer',
       name: 'answer-question_contest',
       component: AnswerQuestion_contest
-    }
+    },
+    {
+      path: '/student/community',
+      name: 'community',
+      component: Community
+    },
 
   ]
 })
