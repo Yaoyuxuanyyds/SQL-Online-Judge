@@ -36,31 +36,6 @@ class Answers(Resource):
         else:
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
 
-class AnswerList(Resource):
-    @auth_role(AUTH_ALL,False)
-    def get(self, idQuestion):
-        answers = models.Question.query.filter_by(idQuestion=idQuestion)
-        data = [marshal(answer, answer_field) for answer in answers]
-        return {'data': data}, HTTP_OK
-
-    @auth_role(AUTH_ADMIN,False)
-    def post(self, idQuestion):
-        answer = models.Question()
-        answer.idQuestion = idQuestion
-        question = models.Question.query.get(answer.idQuestion)
-        answer.sql = request.json.get('sql')    # 这里的sql是代码内容(code)
-        if answer.sql is None:
-            return {"message": "没提供答案，无法提交！"}, HTTP_BAD_REQUEST
-        if answer.idQuestion is None:
-            return {"message": "指定答案对应的题目！"}, HTTP_BAD_REQUEST
-        if question is None:
-            return {"message": "答案对应的题目不存在！"}, HTTP_BAD_REQUEST
-
-        db.session.add(answer)
-        db.session.commit()
-
-        return {}, HTTP_CREATED
-
 # judge
 # 定义返回结果的字段
 submit_judge = {
@@ -119,7 +94,7 @@ class SQLJudge(Resource):
         :param tablename: 需要删除的表名（可能有多个表名，以逗号分隔）
         """
         # 创建数据库引擎，连接到testdb数据库
-        engine = create_engine('mysql+pymysql://low_permission_user:password@localhost/testdb')
+        engine = create_engine('mysql+pymysql://test:4546@localhost/testdb')
         Session = sessionmaker(bind=engine)
         session = Session()
 
