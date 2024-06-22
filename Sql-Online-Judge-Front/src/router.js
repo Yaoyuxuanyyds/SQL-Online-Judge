@@ -18,6 +18,7 @@ import CreateExam from '@/components/teacher/CreateExam.vue'
 import StudentHome from '@/components/student/Index'
 import Submit from '@/components/student/Submit'
 import Question from "@/components/student/Question"
+import AnswerQuestion from './components/student/AnswerQuestion.vue'
 import Contest from "@/components/student/Contest"
 import Community from "@/components/Community"
 
@@ -94,6 +95,11 @@ export default new Router({
       path: '/student/question',
       name: 'question',
       component: Question
+    },
+    {
+      path: '/student/answer_question/:id',
+      name: 'answer-question',
+      component: AnswerQuestion
     }
 
   ]

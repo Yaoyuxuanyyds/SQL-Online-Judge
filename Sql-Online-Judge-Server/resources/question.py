@@ -9,6 +9,7 @@ from flask import request
 question_field = {
     'id': fields.Integer,
     'title': fields.String,
+    'create_code': fields.String,
     'description': fields.String,
     'difficulty': fields.Integer,
     'answer_example': fields.String

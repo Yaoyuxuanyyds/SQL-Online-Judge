@@ -55,8 +55,8 @@ export default {
         });
     },
     enterQuestion(id) {
-      // 在这里加入进入题目详细页的逻辑
-      this.$router.push(`/question/${id}`);
+      // 导航到问题详细页面，传递问题的 ID
+      this.$router.push({ name: 'answer-question', params: { id: id } });
     }
   }
 }
