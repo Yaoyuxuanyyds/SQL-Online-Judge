@@ -1,19 +1,30 @@
 <template>
-  <div class="contest-list">
-    <h1>Available Contests</h1>
-    <ul>
-      <li v-for="contest in contests" :key="contest.id">
-        <h2>{{ contest.name }} ({{ contest.category }}) - [ID: {{ contest.id }}]</h2>
-        <button @click="enterContest(contest)" :disabled="!contest.hasAccess">
-          Enter
-        </button>
-      </li>
-    </ul>
+  <div>
+    <!-- 页面导航 -->
+    <navbar></navbar>
+
+    <!-- 比赛列表部分 -->
+    <div class="contest-list">
+      <h1>Available Contests</h1>
+      <ul>
+        <li v-for="contest in contests" :key="contest.id">
+          <h2>{{ contest.name }} ({{ contest.category }}) - [ID: {{ contest.id }}]</h2>
+          <button @click="enterContest(contest)" :disabled="!contest.hasAccess">
+            Enter
+          </button>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
+import Navbar from '@/components/student/Navbar.vue';
+
 export default {
+  components: {
+    Navbar
+  },
   data() {
     return {
       contests: []

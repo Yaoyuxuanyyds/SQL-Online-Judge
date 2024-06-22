@@ -31,7 +31,7 @@ def auth_role(role, inject=True):
             if role == 3:       # role = 3 即为all
                 user = User.query.filter_by(session=session).first()
             else:
-                # role = 0 学生，1 老师， 2 管理员
+                # role = 0 学生，1 老师，2 管理员
                 user = User.query.filter_by(session=session, role=role).first()
             if user is None:
                 abort(401)

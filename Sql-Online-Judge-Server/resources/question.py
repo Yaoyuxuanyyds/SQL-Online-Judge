@@ -68,7 +68,7 @@ class Questions(Resource):
             return {"message": "题目信息不全，补全缺失项！"}, HTTP_Bad_Request
         db.session.add(q)
         db.session.commit()
-        return {}, HTTP_Created
+        return {"message": "新增题目成功"}, HTTP_Created
 
 # 处理题目列表的相关功能
 class QuestionList(Resource):

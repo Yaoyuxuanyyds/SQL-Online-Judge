@@ -97,7 +97,7 @@ export default new Router({
       component: Question
     },
     {
-      path: '/student/answer_question/:id',
+      path: '/student/question/:id',
       name: 'answer-question',
       component: AnswerQuestion
     }

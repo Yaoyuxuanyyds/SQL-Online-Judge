@@ -47,7 +47,7 @@ export default {
       const questionId = this.$route.params.id;
       axios.get(`/api/questions/${questionId}`, {
         headers: {
-          'session': "27a3ffefde5a62b818bdaab3a1a11a33f1d2c2bd"
+          'session': "f834cfc29a496d93ff627f9220287e0bfffcbc9a"
         }
       })
       .then(response => {
@@ -59,13 +59,13 @@ export default {
     },
     submitAnswer() {
       const questionId = this.$route.params.id;
-      axios.post(`/api/submit-answer/${questionId}`, { answer: this.userAnswer })
+      axios.post(`/api/submit/${questionId}`, { answer: this.userAnswer })
         .then(response => {
           alert(`提交成功: ${response.data.message}`);
         })
         .catch(error => {
           alert(`提交失败: ${error.response.data.message}`);
-        });
+        }); 
     }
   }
 };
