@@ -11,32 +11,27 @@ from sqlalchemy.orm import sessionmaker
 # answer
 answer_field = {
     'id': fields.Integer,
-    'idQuestion': fields.Integer,
-    'sql': fields.String,
-    'json': fields.String,
+    'answer_example': fields.String
 }
 
 class Answers(Resource):
     @auth_role(AUTH_ALL,False)
     @marshal_with(answer_field)
-    def get(self, question_id):
-        ret = models.Answer.query.filter_by(id=answer_id).first()
+    def get(self):
+        question_id = request.json.get('question_id')
+        ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             return ret, HTTP_OK
         else:
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
 
     @auth_role(AUTH_ADMIN,False)
-    def delete(self, idQuestion, answer_id):
-        ret = models.Answer.query.filter_by(id=answer_id).first()
+    def delete(self):
+        question_id = request.json.get('question_id')
+        ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
-            question = ret.Question
             db.session.delete(ret)
             db.session.commit()
-            answer_left = models.Answer.query.filter_by(idQuestion=question.id).first()
-            if answer_left is None:
-                question.result = None
-                db.session.commit()
             return {}, HTTP_OK
         else:
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
@@ -44,13 +39,13 @@ class Answers(Resource):
 class AnswerList(Resource):
     @auth_role(AUTH_ALL,False)
     def get(self, idQuestion):
-        answers = models.Answer.query.filter_by(idQuestion=idQuestion)
+        answers = models.Question.query.filter_by(idQuestion=idQuestion)
         data = [marshal(answer, answer_field) for answer in answers]
         return {'data': data}, HTTP_OK
 
     @auth_role(AUTH_ADMIN,False)
     def post(self, idQuestion):
-        answer = models.Answer()
+        answer = models.Question()
         answer.idQuestion = idQuestion
         question = models.Question.query.get(answer.idQuestion)
         answer.sql = request.json.get('sql')    # 这里的sql是代码内容(code)
