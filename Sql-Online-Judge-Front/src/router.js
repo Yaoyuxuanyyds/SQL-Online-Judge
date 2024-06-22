@@ -31,6 +31,11 @@ export default new Router({
       component: Home
     },
     {
+      path: '/community',
+      name: 'community',
+      component: Community
+    },
+    {
       path: '/admin',
       name: 'admin/index',
       component: AdminHome,
@@ -89,11 +94,7 @@ export default new Router({
       path: '/student/question',
       name: 'question',
       component: Question
-    },
-    {
-      path: '/community',
-      name: 'community',
-      component: Community
     }
+
   ]
 })
