@@ -1,88 +1,81 @@
 <template>
   <div>
     <Navbar />
-    <div class="question-list">
-      <div v-for="question in paginatedQuestions" :key="question.id" class="question-card" @click="goToQuestion(question.id)">
-        <h3>{{ question.title }}</h3>
-        <p>ID: {{ question.id }}</p>
-        <p>难度: {{ question.difficulty }}</p>
+      <div>
+        <button @click="handlePageChange(currentPage - 1)" :disabled="currentPage <= 1">上一页</button>
+        <span>Page {{ currentPage }}</span>
+        <button @click="handlePageChange(currentPage + 1)" :disabled="currentPage >= totalPages">下一页</button>
       </div>
-    </div>
-    <div class="pagination">
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">下一页</button>
+    <div class="question-list">
+      <ul>
+        <li v-for="question in paginatedQuestions" :key="question.id">
+          <h2>{{ question.title }}</h2>
+          <p>{{ question.description }}</p>
+          <span>Difficulty: {{ question.difficulty }}</span>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import Navbar from '@/components/student/Navbar.vue';
+
 export default {
   name: 'QuestionList',
   components: {
-    Navbar,
+    Navbar
   },
   data() {
     return {
       questions: [],
       currentPage: 1,
       pageSize: 10,
+      totalPages: 1
     };
   },
   computed: {
-    totalPages() {
-      return Math.ceil(this.questions.length / this.pageSize);
-    },
     paginatedQuestions() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
       return this.questions.slice(start, end);
-    },
+    }
+  },
+  created() {
+    this.fetchQuestions();
   },
   methods: {
     fetchQuestions() {
-      fetch('/api/questions')
-        .then(response => response.json())
-        .then(data => {
-          this.questions = data.data;
+      axios.get('/question')
+        .then(response => {
+          this.questions = response.data.data;
+          this.totalPages = Math.ceil(this.questions.length / this.pageSize);
+        })
+        .catch(error => {
+          console.error("There was an error fetching the questions:", error);
         });
     },
-    goToQuestion(questionId) {
-      this.$router.push({ name: 'QuestionDetail', params: { id: questionId } });
-    },
-    prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage -= 1;
-      }
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage += 1;
-      }
-    },
-  },
-  mounted() {
-    this.fetchQuestions();
-  },
-};
+    handlePageChange(page) {
+      if (page < 1 || page > this.totalPages) return;
+      this.currentPage = page;
+    }
+  }
+}
 </script>
 
 <style>
-.question-list {
-  display: flex;
-  flex-direction: column;
+/* Add your styles here */
+.question-list ul {
+  list-style-type: none;
+  padding: 0;
 }
-.question-card {
-  border: 1px solid #ccc;
-  padding: 16px;
-  margin: 8px 0;
-  cursor: pointer;
+.question-list li {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
 }
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 16px;
+nav div {
+  margin-bottom: 20px;
 }
 </style>

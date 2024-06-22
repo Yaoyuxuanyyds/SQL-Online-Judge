@@ -74,8 +74,6 @@ class Questions(Resource):
 class QuestionList(Resource):
     @auth_all(inject=True)
     def get(self, student, admin):
-        # 查询所有题目 -> 用于题目列表的查询和显示
-        questions = models.Question.query.filter_by()
-        data = [marshal(q, question_field) for q in questions]
-        return {'data': data}, HTTP_OK
+        questions = models.Question.query.all()
+        return {'data': [marshal(q, question_field) for q in questions]}, HTTP_OK
 
