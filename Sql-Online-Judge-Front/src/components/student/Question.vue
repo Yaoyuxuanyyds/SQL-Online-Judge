@@ -44,7 +44,7 @@ export default {
     fetchQuestions() {
       axios.get(`/api/questionlist`, {
         headers: {
-          'session': "f834cfc29a496d93ff627f9220287e0bfffcbc9a"
+          'session': "27a3ffefde5a62b818bdaab3a1a11a33f1d2c2bd"
         }
       })
         .then(response => {
