@@ -1,8 +1,9 @@
 from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
-import os,sys,config
+import os,sys
 sys.path.append(os.getcwd())
+import config
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 from resources import *

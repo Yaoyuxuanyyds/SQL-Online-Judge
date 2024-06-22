@@ -55,7 +55,7 @@ export default {
         this.question = response.data;
       })
       .catch(error => {
-        console.error("Error fetching the question:", error);
+        //console.error("Error fetching the question:", error);
       });
     },
     submitAnswer() {

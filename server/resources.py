@@ -227,7 +227,6 @@ class Login(Resource):
         else:
             return jsonify(message='身份信息无效！'), HTTP_Unauthorized
 
-
 # questions
 question_field = {
     'id': fields.Integer,

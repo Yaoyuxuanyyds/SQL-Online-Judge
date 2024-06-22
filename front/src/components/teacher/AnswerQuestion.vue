@@ -54,8 +54,8 @@ export default {
       .then(response => {
         this.question = response.data;
       })
-      .catch(error => {
-        console.error("Error fetching the question:", error);
+      .catch(() => {
+        //console.error("Error fetching the question:", error);
       });
     },
     submitAnswer() {
