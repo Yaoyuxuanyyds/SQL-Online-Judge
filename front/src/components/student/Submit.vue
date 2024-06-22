@@ -12,9 +12,9 @@
 </template>
 
 <script>
-import Navbar from './Navbar.vue';
+import Navbar from '@/components/student/Navbar.vue';
 import SubmissionRecord from './SubmissionRecord.vue';
-
+// 
 export default {
   name: 'Submit',
   components: {

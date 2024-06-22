@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import Navbar from '@/components/student/Navbar.vue';
+import Navbar from '@/components/teacher/Navbar.vue';
 export default {
   name: 'Community',
   components: {
@@ -47,7 +47,7 @@ export default {
   },
   data() {
     return {
-      articles: []
+      articles: []  // 这个应根据实际数据结构初始化
     };
   },
   methods: {

@@ -1,8 +1,6 @@
 <template>
   <div class="container">
-    <div class="nav">
     <Navbar />
-  </div>
     <h1>题目列表</h1>
     <div class="header">
       <span class="header-item">ID</span>
@@ -25,7 +23,7 @@
 
 <script>
 import axios from 'axios'
-import Navbar from '@/components/student/Navbar.vue';
+import Navbar from '@/components/teacher/Navbar.vue';
 
 export default {
   name: 'QuestionList',

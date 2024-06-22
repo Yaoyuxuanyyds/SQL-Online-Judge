@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <Navbar />
+
     <div class="question-container">
       <div class="card">
         <h1>{{ question.title }}</h1>
@@ -27,7 +28,7 @@
 
 <script>
 import axios from 'axios';
-import Navbar from '@/components/student/Navbar.vue';
+import Navbar from '@/components/teacher/Navbar.vue';
 
 export default {
   components: {

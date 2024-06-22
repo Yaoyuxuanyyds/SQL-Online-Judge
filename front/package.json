@@ -12,16 +12,12 @@
     "core-js": "^2.6.5",
     "echarts": "^4.2.1",
     "element-ui": "^2.8.2",
-    "file-saver": "^2.0.5",
-    "npm": "^10.8.1",
-    "quill": "^2.0.2",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
     "vue-echarts": "^4.0.3",
     "vue-material": "^1.0.0-beta-16",
     "vue-router": "^3.0.3",
-    "vuex": "^3.0.1",
-    "yarn": "^1.22.22"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.7.0",
