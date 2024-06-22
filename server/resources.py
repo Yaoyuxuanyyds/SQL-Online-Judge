@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from flask_restful import Resource, reqparse, fields, marshal_with, marshal
+from flask_restful import Resource, fields, marshal_with, marshal
 import models, time, hashlib, os
 from app import db
 from config import *
@@ -24,7 +24,7 @@ class Answers(Resource):
         if ret:
             return ret, HTTP_OK
         else:
-            return {}, HTTP_NotFound
+            return {"message": "该答案不存在"}, HTTP_NotFound
 
     @auth_role(2,False)
     def delete(self, idQuestion, answer_id):
@@ -39,15 +39,7 @@ class Answers(Resource):
                 db.session.commit()
             return {}, HTTP_OK
         else:
-            return {}, HTTP_NotFound
-
-    @auth_role(2,False)
-    def patch(self, answer_id):
-        ret = models.Answer.query.filter_by(id=answer_id).first()
-        if ret:
-            pass
-        else:
-            return {}, HTTP_NotFound
+            return {"message": "该答案不存在"}, HTTP_NotFound
 
 class AnswerList(Resource):
     @auth_role(3,False)
@@ -195,19 +187,20 @@ class SQLJudge(Resource):
 
 # login
 class Login(Resource):
-    def login(self):
-        data = request.get_json()
-        user_id = data.get('id')
-        password = data.get('password')
-        user = models.User.query.filter_by(id=user_id, password=password).first()
+    def post(self):
+        user_id = request.json.get('id')
+        password = request.json.get('password')
+        user = models.User.query.filter_by(id=user_id, password=hashlib.sha256(password.encode('utf8')).hexdigest()).first()
 
         if user:
             session_token = hashlib.sha1(os.urandom(24)).hexdigest()
             user.session = session_token
             db.session.commit()
-            return jsonify(session=session_token, role=user.role, name=user.username), HTTP_OK
+            return {"session": session_token, 
+                    "role": user.role, 
+                    "name": user.username}, HTTP_OK
         else:
-            return jsonify(message='用户名或密码无效'), HTTP_Unauthorized
+            return {"message": '用户名或密码无效'}, HTTP_Unauthorized
         
     def logout(self):
         session = request.json.get('session')
@@ -215,17 +208,21 @@ class Login(Resource):
         if user:
             user.session = None
             db.session.commit()
-            return jsonify(message='成功退出登录'), HTTP_OK
+            return {"message": '成功退出登录'}, HTTP_OK
         else:
-            return jsonify(message='身份信息无效！'), HTTP_Unauthorized
+            return {"message": '身份信息无效！请重新登录。'}, HTTP_Unauthorized
         
-    def get_session(self):
+    def get(self):
         session = request.headers.get('session')
         user = models.User.query.filter_by(session=session).first()
         if user:
-            return jsonify(id=user.id, name=user.username, role=user.role), HTTP_OK
+            return {
+                "id": user.id, 
+                "name": user.username, 
+                "role": user.role
+            }, HTTP_OK
         else:
-            return jsonify(message='身份信息无效！'), HTTP_Unauthorized
+            return {"message": '身份信息无效！请重新登录。'}, HTTP_Unauthorized
 
 # questions
 question_field = {
@@ -247,40 +244,20 @@ class Questions(Resource):
         if ret:
             return ret, HTTP_OK
         else:
-            return {}, HTTP_NotFound
+            return {"message": "该题目不存在"}, HTTP_NotFound
 
     @auth_role(2,False)
     def delete(self, question_id):
-        # 删除单个题目 -> 可能管理员用得到，但一般用户用不到
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             db.session.delete(ret)
             db.session.commit()
             return {}, HTTP_OK
         else:
-            return {}, HTTP_NotFound
-
-    @auth_role(2, False)
-    def patch(self, question_id):
-        # 更新单个题目的信息 -> 可能管理员用得到，但一般用户用不到
-        ret = models.Question.query.filter_by(id=question_id).first()
-        if ret:
-            title = request.json.get('title')
-            description = request.json.get('description')
-            difficulty = request.json.get('difficulty')
-            answer_example = request.json.get('answer_example')
-            ret.title = ret.title if title is None else title
-            ret.description = ret.description if description is None else description
-            ret.difficulty = ret.difficulty if difficulty is None else difficulty
-            ret.answer_example = ret.answer_example if answer_example is None else answer_example
-            db.session.commit()
-            return {}, HTTP_OK
-        else:
-            return {}, HTTP_NotFound
+            return {"message": "该题目不存在"}, HTTP_NotFound
     
     @auth_role(2, False)
     def post(self):
-        # 创建新的题目 -> 可能管理员用得到，但一般用户用不到
         q = models.Question()
         q.title = request.json['title']
         q.description = request.json['description']
@@ -301,29 +278,13 @@ class QuestionList(Resource):
         data = [marshal(q, question_field) for q in questions]
         return {'data': data}, HTTP_OK
 
-
 # register
-register_parser = reqparse.RequestParser()
-register_parser.add_argument('id', type=int, required=True, help='ID不能为空')
-register_parser.add_argument('username', type=str, required=True, help='用户名不能为空')
-register_parser.add_argument('password', type=str, required=True, help='密码不能为空')
-
-
 class Register(Resource):
     def post(self):
-        args = register_parser.parse_args()
-        print(args)
-        id = args.get('id', "")
-        username = args.get('username', "")
-        password = args.get('password', "")
-
-        if not id:
-            return {"message": "没ID没成绩！"}, HTTP_Forbidden
-        if not username:
-            return {"message": "不给名字谁认识你叫啥？"}, HTTP_Forbidden
-        if not password:
-            return {"message": "你不怕号被盗？"}, HTTP_Forbidden
-
+        id = request.json.get('id', None)
+        username = request.json.get('username', None)
+        password = hashlib.sha256(request.json.get('password', 0).encode('utf8')).hexdigest() 
+        
         if models.User.query.filter_by(id=id).first():
             return {"message": "ID撞车了，换一个。"}, HTTP_Conflict
         if models.User.query.filter_by(username=username).first():
@@ -341,7 +302,6 @@ student_fields = {
     'password': fields.String
 }
 
-
 class Students(Resource):
     method_decorators = [auth_role(2, False)]
 
@@ -351,7 +311,7 @@ class Students(Resource):
         if ret:
             return ret, HTTP_OK
         else:
-            return {}, HTTP_NotFound
+            return {"message": "该学生不存在"}, HTTP_NotFound
 
     def delete(self, student_id):
         ret = models.User.query.filter_by(id=student_id).first()
@@ -360,7 +320,7 @@ class Students(Resource):
             db.session.commit()
             return {}, HTTP_OK
         else:
-            return {}, HTTP_NotFound
+            return {"message": "该学生不存在"}, HTTP_NotFound
 
     def put(self, student_id):
         ret = models.User.query.filter_by(id=student_id).first()
@@ -373,7 +333,7 @@ class Students(Resource):
                 return {"message": f"错误：{str(e)}"}, HTTP_Bad_Request
             return {}, HTTP_OK
         else:
-            return {}, HTTP_NotFound
+            return {"message": "该学生不存在"}, HTTP_NotFound
 
     def patch(self, student_id):
         ret = models.User.query.filter_by(id=student_id).first()
@@ -386,7 +346,7 @@ class Students(Resource):
                 return {"message": f"错误：{str(e)}"}, HTTP_Bad_Request
             return {}, HTTP_OK
         else:
-            return {}, HTTP_NotFound
+            return {"message": "该学生不存在"}, HTTP_NotFound
 
 class StudentList(Resource):
     method_decorators = []

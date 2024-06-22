@@ -22,10 +22,10 @@
         <form @submit.prevent="handleSubmit" class="form">
           <button type="button" class="back-btn" @click="showForm = false">&larr;</button>
           <h2>{{ isLogin ? '用户登录' : '用户注册' }}</h2>
+          <input type="text" v-model="id" placeholder="id" required>
           <div v-if="!isLogin">
             <input type="text" v-model="username" placeholder="用户名" required>
           </div>
-          <input type="text" v-model="id" placeholder="电子邮箱或手机" required>
           <input type="password" v-model="password" placeholder="密码" required>
           <button type="submit">{{ isLogin ? '登录' : '注册' }}</button>
           <button type="button" @click="toggleForm(isLogin ? 'register' : 'login')">
@@ -82,8 +82,8 @@ export default {
       if (this.isLogin) {
         try {
           const response = await axios.post('/api/login', {
-            id: this.id,
-            password: this.password
+            id: parseInt(this.id),
+            password: this.password,
           });
           const userRole = response.data.role;
           if (userRole === 0) {
@@ -103,7 +103,7 @@ export default {
         }
       } else {
         try {
-          const response = await axios.post('/register', {
+          const response = await axios.post('/api/register', {
             id: parseInt(this.id),
             username: this.username,
             password: this.password,
@@ -114,7 +114,7 @@ export default {
           if (error.response && error.response.data && error.response.data.message) {
             alert(`注册失败：` + error.response.data.message);
           } else {
-            alert('注册失败，找服务器管理员去！');
+            alert('注册失败！');
           }
         }
       }
