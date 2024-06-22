@@ -18,26 +18,48 @@ submit_field = {
 }
 
 class Submits(Resource):
+    # 获取自己的提交信息
     @auth_role(3)
     @marshal_with(submit_field)
-    def get(self, admin, student, submit_id, student_id):
-        if student is not None and student.id != student_id:
-            return {"message": "权限不够。想看？没门！"}, HTTP_Forbidden
+    def get(self, submit_id, student):
         ret = models.Submission.query.filter_by(id=submit_id).first()
+        
         if ret:
-            return ret, HTTP_OK
+            if student and ret['student_id'] == student.id:
+                return ret, HTTP_OK
+            else:
+                return {"message": "只可查看自己的提交信息。"}, HTTP_Forbidden
         else:
-            return {}, HTTP_NotFound
+            return {"message": "该提交记录不存在"}, HTTP_NotFound
 
+    # 删除提交信息
     @auth_role(2,False)
-    def delete(self, submit_id, student_id):
+    def delete(self, submit_id):
         ret = models.Submission.query.filter_by(id=submit_id).first()
         if ret:
             db.session.delete(ret)
             db.session.commit()
             return {}, HTTP_OK
         else:
-            return {}, HTTP_NotFound
+            return {"message": "该提交记录不存在"}, HTTP_NotFound
+    
+    # 提交 - auth all
+    @auth_role(3)
+    def post(self):
+        s = models.Submission()
+        s.student_id = request.json['student_id']
+        s.exam_id = request.json['request_id']
+        s.submit_sql = request.json['submit_sql']
+        s.submit_time = request.json['submit_time']
+        s.pass_rate = 0
+        s.status = 0
+
+        if not (s.student_id and s.exam_id and s.submit_sql):
+            return {"message": "提交信息不全"}, HTTP_Bad_Request
+        
+        db.session.add(s)
+        db.session.commit()
+        return {"message": "提交成功"}, HTTP_Created
 
 class SubmitList(Resource):
     @auth_role(3)
@@ -57,25 +79,3 @@ class SubmitList(Resource):
             ret = marshal(submit, submit_field)
             data.append(ret)
         return {'data': data}, HTTP_OK
-
-    @auth_role(0)
-    def post(self, question_id, student, student_id=None):
-        if student_id is not None and student_id != student.id:
-            return {"message": "身为学生，id和名字都记不准..."}, HTTP_Forbidden
-        submit = models.Submission()
-        submit.student_id = student.id
-        submit.question_id = question_id
-        submit.submit_sql = request.json.get('submit_sql')
-        submit.pass_rate = 1.0
-        submit.status = 0
-        if submit.question_id is None or submit.submit_sql is None:
-            return {"message": "看不到提交的代码！"}, HTTP_Bad_Request
-        db.session.add(submit)
-        db.session.commit()
-        return {
-            'id': submit.id,
-            'status': submit.status,
-            'submit_sql': submit.submit_sql,
-            'submit_time': submit.submit_time.isoformat(),
-            'pass_rate': submit.pass_rate
-        }, HTTP_Created
