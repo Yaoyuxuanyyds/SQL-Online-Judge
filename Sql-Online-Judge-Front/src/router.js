@@ -19,7 +19,7 @@ import StudentHome from '@/components/student/Index'
 import Submit from '@/components/student/Submit'
 import Question from "@/components/student/Question"
 import Contest from "@/components/student/Contest"
-import Community from "@/components/student/Community"
+import Community from "@/components/Community"
 
 Vue.use(Router)
 
@@ -91,7 +91,7 @@ export default new Router({
       component: Question
     },
     {
-      path: '/student/community',
+      path: '/community',
       name: 'community',
       component: Community
     }
