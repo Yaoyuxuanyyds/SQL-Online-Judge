@@ -14,7 +14,7 @@
 <script>
 import Navbar from './Navbar.vue';
 import SubmissionRecord from './SubmissionRecord.vue';
-
+// 
 export default {
   name: 'Submit',
   components: {
