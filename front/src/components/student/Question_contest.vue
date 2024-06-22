@@ -44,7 +44,7 @@
         const contestId = this.$route.params.contestId; // 获取比赛 ID
         axios.get(`/api/questionlist?contestId=${contestId}`, {
           headers: {
-            'session': "f834cfc29a496d93ff627f9220287e0bfffcbc9a"
+            'session': localStorage.getItem('session')
           }
         })
           .then(response => {
