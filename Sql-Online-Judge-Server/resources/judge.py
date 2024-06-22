@@ -3,7 +3,7 @@ import time, models
 from flask_restful import Resource, fields, marshal_with
 from config import *
 from flask import request
-from common.comm import auth_role
+from resources.permissions import auth_role
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError, TimeoutError, OperationalError
 from sqlalchemy.orm import sessionmaker

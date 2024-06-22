@@ -4,7 +4,7 @@ import os
 from flask_restful import Resource, reqparse, abort
 from models import User
 from exts import db
-from common.comm import auth_teacher
+from resources.permissions import auth_teacher
 
 teacher_login_parser = reqparse.RequestParser()
 teacher_login_parser.add_argument('id', location='json', required=True, help='ID不能为空')
