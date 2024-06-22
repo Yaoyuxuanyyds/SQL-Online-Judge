@@ -233,7 +233,7 @@ class Questions(Resource):
         q.description = request.json['description']
         q.difficulty = request.json['difficulty']
         q.answer_example = request.json['answer_example']
-        if q.title is None or q.description is None or q.difficulty is None or q.answer_example is None:
+        if not (q.title and q.description and q.difficulty and q.answer_example):
             return {"message": "题目信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
         db.session.add(q)
         db.session.commit()
@@ -267,23 +267,24 @@ class Register(Resource):
 
 # students
 student_fields = {
-    'id': fields.String,
-    'name': fields.String,
-    'password': fields.String
+    'id': fields.Integer,
+    'username': fields.String
 }
 
 class Students(Resource):
-    method_decorators = [auth_role(AUTH_ADMIN, False)]
-
+    @auth_role(AUTH_ALL, False)
     @marshal_with(student_fields)
-    def get(self, student_id):
+    def get(self):
+        student_id = request.json.get('student_id')
         ret = models.User.query.filter_by(id=student_id).first()
         if ret:
             return ret, HTTP_OK
         else:
             return {"message": "该学生不存在"}, HTTP_NOT_FOUND
-
-    def delete(self, student_id):
+        
+    @auth_role(AUTH_ADMIN, False)
+    def delete(self):
+        student_id = request.json.get('student_id')
         ret = models.User.query.filter_by(id=student_id).first()
         if ret:
             db.session.delete(ret)
@@ -292,77 +293,41 @@ class Students(Resource):
         else:
             return {"message": "该学生不存在"}, HTTP_NOT_FOUND
 
-    def put(self, student_id):
+    @auth_role(AUTH_ADMIN, False)
+    def add(self):
+        student_id = request.json.get('student_id')
         ret = models.User.query.filter_by(id=student_id).first()
         if ret:
-            ret.password = request.json['password']
-            ret.name = request.json['username']
-            try:
-                db.session.commit()
-            except Exception as e:
-                return {"message": f"错误：{str(e)}"}, HTTP_BAD_REQUEST
-            return {}, HTTP_OK
-        else:
-            return {"message": "该学生不存在"}, HTTP_NOT_FOUND
-
-    def patch(self, student_id):
-        ret = models.User.query.filter_by(id=student_id).first()
-        if ret:
-            ret.password = ret.password if request.json['password'] is None else request.json['password']
-            ret.name = ret.name if request.json['username'] is None else request.json['username']
-            try:
-                db.session.commit()
-            except Exception as e:
-                return {"message": f"错误：{str(e)}"}, HTTP_BAD_REQUEST
-            return {}, HTTP_OK
-        else:
-            return {"message": "该学生不存在"}, HTTP_NOT_FOUND
-
-class StudentList(Resource):
-    method_decorators = []
-
-    @auth_role(AUTH_ADMIN, False)
-    def get(self):
-        students = models.User.query.filter_by(role=AUTH_STUDENT)
-        data = [marshal(student, student_fields) for student in students]
-        return {'data': data}, HTTP_OK
-
-    @auth_role(AUTH_ADMIN, False)
-    def post(self):
+            return {"message": "该学生已存在"}, HTTP_CONFLICT
+        
         student = models.User()
         student.id = request.json.get('id')
         student.password = request.json.get('password')
-        student.name = request.json.get('username')
+        student.username = request.json.get('username')
         student.role = AUTH_STUDENT
-        if student.id is not None and student.password is not None:
+        if student.id and student.password:
             db.session.add(student)
             db.session.commit()
             return {}, HTTP_CREATED
         else:
             return {"message": "学生信息不全，补全后提交！"}, HTTP_BAD_REQUEST
 
-    @auth_role(AUTH_STUDENT)
-    def patch(self, student):
-        name = request.json['username']
-        password = request.json['password']
-        student.name = student.name if name is None else name
-        student.password = student.password if password is None else password
-        try:
-            db.session.commit()
-        except Exception as e:
-            return {"message": f"错误：{str(e)}"}, HTTP_BAD_REQUEST
-        return {}, HTTP_OK
+class StudentList(Resource):
+    @auth_role(AUTH_ADMIN, False)
+    def get(self):
+        students = models.User.query.filter_by(role=AUTH_STUDENT)
+        data = [marshal(student, student_fields) for student in students]
+        return {'data': data}, HTTP_OK
 
 # submit
-
 submit_field = {
     'id': fields.Integer,
-    'student_id': fields.String,
+    'student_id': fields.Integer,
     'question_id': fields.Integer,
+    "exam_id": fields.Integer,
     'submit_sql': fields.String,
     'submit_time': fields.DateTime,
-    'pass_rate': fields.Float,
-    'status': fields.Integer
+    'pass_rate': fields.Float
 }
 
 class Submits(Resource):
@@ -382,7 +347,8 @@ class Submits(Resource):
 
     # 删除提交信息
     @auth_role(AUTH_ADMIN,False)
-    def delete(self, submit_id):
+    def delete(self):
+        submit_id = request.json.get("submit_id")
         ret = models.Submission.query.filter_by(id=submit_id).first()
         if ret:
             db.session.delete(ret)
@@ -412,17 +378,15 @@ class Submits(Resource):
 
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
-    def get(self, admin, student, question_id=None, student_id=None):
-        if question_id is None and student_id is None and student is not None:
-            submits = models.Submission.query.filter_by(student_id=student.id)
-        elif question_id is None and student_id is None and admin is not None:
+    def get(self):
+        role = request.json.get('role')
+        student_id = request.json.get('student_id', None)
+        if role == AUTH_ADMIN or AUTH_TEACHER:
             submits = models.Submission.query.filter_by()
-        elif question_id is None and student is not None:
-            submits = models.Submission.query.filter_by(student_id=student.id)
-        elif question_id is not None and student_id is None:
-            submits = models.Submission.query.filter_by(question_id=question_id)
+        elif student_id:
+            submits = models.Submission.query.filter_by(student_id=student_id)
         else:
-            submits = models.Submission.query.filter_by(question_id=question_id, student_id=student_id)
+            return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         data = []
         for submit in submits:
             ret = marshal(submit, submit_field)
