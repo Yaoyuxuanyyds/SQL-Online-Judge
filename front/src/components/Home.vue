@@ -49,7 +49,7 @@ export default {
       username: '',
       password: '',
       typewriterText: '',
-      fullText: '立志做最酷的OJ平台。提供优质的作业与竞赛服务，让学习变得更加有趣和高效。',
+      fullText: '做最酷的OJ平台！',
       isTyping: true,
     };
   },
