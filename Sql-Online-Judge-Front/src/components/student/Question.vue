@@ -23,9 +23,13 @@ export default {
   },
   methods: {
     fetchQuestions() {
-      axios.post('api/question', {question_id:1})  // 确保这是正确的API URL
+      axios.get(`/api/questionlist`, {
+        headers: {
+          'session': "a9d975af9b4a8820d62aa2c76770bfb695481149"
+        }
+      })  // 确保这是正确的API URL
         .then(response => {
-          this.questions = response.data;
+          this.questions = response.data.data;  // 确保与后端返回的格式匹配
         })
         .catch(error => {
           console.error("There was an error fetching the questions:", error);

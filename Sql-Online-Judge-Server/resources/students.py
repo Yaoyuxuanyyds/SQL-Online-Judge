@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse, abort, fields, marshal_with, marshal
 import models
 from exts import db
-from common.comm import auth_role
+from resources.permissions import auth_role
 from config import *
 from flask import request
 

@@ -6,4 +6,4 @@ Flask
 Flask_Cors
 sqlparse
 python_Levenshtein
-pymyssql
+cryptography

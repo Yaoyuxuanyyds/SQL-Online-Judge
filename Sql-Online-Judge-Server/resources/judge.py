@@ -1,9 +1,9 @@
 from exts import db
 import time, models
 from flask_restful import Resource, fields, marshal_with
-from common.comm import auth_role, auth_all
 from config import *
 from flask import request
+from resources.permissions import auth_role
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError, TimeoutError, OperationalError
 from sqlalchemy.orm import sessionmaker
@@ -15,7 +15,7 @@ submit_judge = {
 }
 
 class SQLJudge(Resource):
-    @auth_all()
+    @auth_role(3)
     @marshal_with(submit_judge)
     def execute_sql(self, code):
         """

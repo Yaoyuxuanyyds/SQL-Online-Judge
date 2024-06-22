@@ -1,7 +1,7 @@
 from flask_restful import Resource, fields, marshal_with, marshal
 import models
 from exts import db
-from common.comm import auth_role, auth_all
+from resources.permissions import auth_role
 from config import *
 from flask import request
 
@@ -16,8 +16,7 @@ question_field = {
 
 # 处理单个题目的相关功能
 class Questions(Resource):
-
-    @auth_all(False)
+    @auth_role(3,False)
     @marshal_with(question_field)
     def get(self, question_id):
         # 查询单个题目 -> 用于题目查询和显示
@@ -27,7 +26,7 @@ class Questions(Resource):
         else:
             return {}, HTTP_NotFound
 
-    @auth_role(2, False)
+    @auth_role(2,False)
     def delete(self, question_id):
         # 删除单个题目 -> 可能管理员用得到，但一般用户用不到
         ret = models.Question.query.filter_by(id=question_id).first()
@@ -72,10 +71,10 @@ class Questions(Resource):
 
 # 处理题目列表的相关功能
 class QuestionList(Resource):
-    @auth_all(inject=True)
+    @auth_role(3, inject=False)
     def get(self):
         # 查询所有题目 -> 用于题目列表的查询和显示
-        questions = models.Question.filter_by()
+        questions = models.Question.query.all()
         data = [marshal(q, question_field) for q in questions]
         return {'data': data}, HTTP_OK
 

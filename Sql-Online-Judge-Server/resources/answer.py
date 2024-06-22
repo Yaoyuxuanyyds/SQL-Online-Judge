@@ -1,7 +1,7 @@
 from flask_restful import Resource, fields, marshal_with, marshal
 import models
 from exts import db
-from common.comm import auth_role, auth_all
+from resources.permissions import auth_role
 from config import *
 from flask import request
 
@@ -14,7 +14,7 @@ answer_field = {
 
 class Answers(Resource):
 
-    @auth_all(False)
+    @auth_role(3,False)
     @marshal_with(answer_field)
     def get(self, idQuestion, answer_id):
         ret = models.Answer.query.filter_by(id=answer_id).first()
@@ -23,7 +23,7 @@ class Answers(Resource):
         else:
             return {}, HTTP_NotFound
 
-    @auth_role(2, False)
+    @auth_role(2,False)
     def delete(self, idQuestion, answer_id):
         ret = models.Answer.query.filter_by(id=answer_id).first()
         if ret:
@@ -47,14 +47,13 @@ class Answers(Resource):
             return {}, HTTP_NotFound
 
 class AnswerList(Resource):
-
-    @auth_all(inject=False)
+    @auth_role(3,False)
     def get(self, idQuestion):
         answers = models.Answer.query.filter_by(idQuestion=idQuestion)
         data = [marshal(answer, answer_field) for answer in answers]
         return {'data': data}, HTTP_OK
 
-    @auth_role(2,inject=False)
+    @auth_role(2,False)
     def post(self, idQuestion):
         answer = models.Answer()
         answer.idQuestion = idQuestion
