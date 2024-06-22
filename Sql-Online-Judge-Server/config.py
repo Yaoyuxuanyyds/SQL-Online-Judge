@@ -11,7 +11,7 @@ HTTP_Bad_Request = 400  # 客户端请求的语法错误，服务器无法理解
 HTTP_Unauthorized = 401  # 请求要求用户的身份认证
 HTTP_Forbidden = 403  # 服务器理解请求客户端的请求，但是拒绝执行此请求
 HTTP_NotFound = 404  # 没找到
-# 
+
 # 500
 HTTP_Server_Error = 500  # 服务器内部错误，无法完成请求
 save_db_path = 'db'
