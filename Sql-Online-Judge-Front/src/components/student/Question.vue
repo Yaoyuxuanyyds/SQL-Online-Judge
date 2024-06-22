@@ -23,7 +23,12 @@ export default {
   },
   methods: {
     fetchQuestions() {
-      axios.get('/api/questionlist')  // 确保这是正确的API URL
+      const session = localStorage.getItem('session') || this.$store.state.session;  
+      axios.get('/api/questionlist', {
+        headers: {
+          'session': session
+        }
+      })  // 确保这是正确的API URL
         .then(response => {
           this.questions = response.data.data;  // 确保与后端返回的格式匹配
         })
