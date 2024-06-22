@@ -3,12 +3,6 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 
 // Admin
-import QuestionManage from "@/components/admin/QuestionManage"
-import TableManage from "@/components/admin/TableManage"
-import AnswerManage from "@/components/admin/AnswerManage"
-import StudentManage from '@/components/admin/StudentManage'
-import AdminHome from '@/components/admin/Index'
-
 
 // Teacher
 import TeacherHome from '@/components/teacher/Index'
@@ -42,31 +36,9 @@ export default new Router({
       name: 'home',
       component: Home
     },
-    {
-      path: '/admin',
-      name: 'admin/index',
-      component: AdminHome,
-      children: [
-        {
-          path: 'StudentManage',
-          component: StudentManage
-        },
-        {
-          path: 'QuestionManage',
-          component: QuestionManage
-        },
-        {
-          path: 'TableManage',
-          component: TableManage,
-          name: 'TableManage'
-        },
-        {
-          path: 'AnswerManage',
-          component: AnswerManage,
-          name: 'AnswerManage'
-        }
-      ]
-    },
+
+    
+
     {
       path: '/teacher',
       name: 'teacher',

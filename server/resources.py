@@ -113,6 +113,8 @@ class CommunityList(Resource):
         articles = models.Article.query.all()
         data = [marshal(article, community_field) for article in articles]
         return {'data': data}, HTTP_OK
+    
+    
 # TODO: Contest后端
 
 # judge

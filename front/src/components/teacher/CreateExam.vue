@@ -5,7 +5,7 @@
       <h1>Create Exam</h1>
       <p>创建竞赛</p>
       
-      <!-- 输入考试信息 -->
+      <!-- 输入考试信息
       <div class="form-group">
         <label>Exam Name:</label>
         <input v-model="examName" placeholder="Exam Name" @input="updateExamName">
@@ -17,7 +17,7 @@
       <div class="form-group">
         <label>End Time:</label>
         <input type="datetime-local" v-model="endTime" @input="updateExamTime('end')">
-      </div>
+      </div> -->
       
       <!-- 学生添加 -->
       <div class="form-group">
@@ -27,16 +27,16 @@
       </div>
       
       <!-- 题目添加 -->
-      <div v-for="(question, index) in questions" :key="index" class="form-group">
+      <!-- <div v-for="(question, index) in questions" :key="index" class="form-group">
         <label>Question {{ index + 1 }}:</label>
         <input v-model="question.number" placeholder="Question Number">
         <input v-model.number="question.score" type="number" placeholder="Score">
         <button @click="removeQuestion(index)">Remove</button>
       </div>
       <button @click="addQuestion">Add Question</button>
-      
+       -->
       <!-- 表格展示题目 -->
-      <table v-if="questions.length > 0" class="exam-table">
+      <!-- <table v-if="questions.length > 0" class="exam-table">
         <thead>
           <tr>
             <th>Question Number</th>
@@ -49,13 +49,13 @@
             <td>{{ question.score }}</td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
       
       <!-- 右侧显示总题目数量和总分值 -->
-      <div class="totals">
+      <!-- <div class="totals">
         Total Questions: {{ totalQuestions }}
         Total Score: {{ totalScore }}
-      </div>
+      </div> -->
       
       <!-- 完成创建按钮 -->
       <button @click="submitExam">Finish Creating</button>
