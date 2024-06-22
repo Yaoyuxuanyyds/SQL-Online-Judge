@@ -85,7 +85,7 @@
             },
             addAnswer(){
                 this.newAnswerForm['session']=this.$store.getters.Token
-                this.$axios.post('/question/'+this.idQuestion+'/answer',this.newAnswerForm).then(res=>{
+                this.$axios.post('/question/'+this.idQuestion+'/answer',this.newAnswerForm).then(()=>{
                     this.$message.success('成功')
                     this.getAnswerList()
                     this.newAnswerForm['session']=''
@@ -125,14 +125,14 @@
                 })
             },
             handleEditSegment(index, row){
-                console.log(row)
+                // console.log(row)
                 if(row.edit){
                     this.$axios.patch('/answer/'+row.id+'/segment/'+row.id,{
                         'session':this.$store.getters.Token,
                         'data': row.data,
                         'extra': row.extra,
                         'score': row.score
-                    }).then((res)=>{
+                    }).then(()=>{
                         row.edit = false
                         this.$message.success('done')
                         this.$set(this.segments,index,row)
@@ -141,7 +141,7 @@
                     })
                 }else {
                     row.edit=true
-                    console.log(index)
+                    //console.log(index)
                     this.$set(this.segments,index,row)
                 }
             }
