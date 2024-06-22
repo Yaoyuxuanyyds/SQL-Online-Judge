@@ -53,6 +53,7 @@ class ExamQuestion(db.Model):
 # 考试-学生表
 class ExamStudent(db.Model):
     __tablename__ = 'Exam_Student'
+    # exam_id = -1:公共题目
     exam_id = Column(INTEGER, ForeignKey('Exam.id'), primary_key=True)
     student_id = Column(INTEGER, ForeignKey('User.id'), primary_key=True)
     score = Column(INTEGER, nullable=False, default=0)
@@ -82,6 +83,15 @@ class Submission(db.Model):
     submit_sql = Column(TEXT, nullable=False)
     submit_time = Column(TIMESTAMP, nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     pass_rate = Column(FLOAT, nullable=False)
+    # status 定义：
+    '''
+    -1: 等待判断题目
+    0: Accepted
+    1: RunError
+    2. Wrong Answer
+    3: TLE
+    4: MLE
+    '''
     status = Column(INTEGER, nullable=False)
     student = db.relationship('User', backref='submissions')
     exam = db.relationship('Exam', backref='submissions')

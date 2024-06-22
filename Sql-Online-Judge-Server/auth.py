@@ -4,7 +4,6 @@ from exts import db
 import hashlib
 import os
 from config import *
-
 auth = Blueprint('auth', __name__)
 
 @auth.route('/api/login', methods=['POST'])
