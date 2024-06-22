@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Navbar />
     <meta charset="UTF-8">
     <title>Community</title>
     <!-- Bootstrap for styling -->
@@ -44,7 +45,13 @@
 </template>
 
 <script>
+import Navbar from '@/components/student/Navbar.vue';
+
 export default {
+  name: 'Community',
+  components: {
+    Navbar
+  },
   data() {
     return {
       articles: []  // 这个应根据实际数据结构初始化
