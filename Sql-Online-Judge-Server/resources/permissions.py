@@ -6,8 +6,19 @@ from flask_restful import abort
 def get_session():
     if request.method == 'GET':
         return request.headers.get('session')
-    elif request.json is not None:
-        return request.json.get('session')
+    
+    # 检查是否为 JSON 请求并处理异常
+    if request.is_json:
+        return request.json.get('session', None)
+    
+    # 检查是否为表单数据请求
+    if request.form:
+        return request.form.get('session', None)
+    
+    # 检查是否为其他类型的请求数据，例如 URL 参数
+    if request.args:
+        return request.args.get('session', None)
+    
     return None
 
 def auth_role(role, inject=True):
@@ -15,8 +26,8 @@ def auth_role(role, inject=True):
         @wraps(func)
         def wrapper(*args, **kwargs):
             session = get_session()
-            # if session is None:
-            #     abort(400)
+            if session is None:
+                abort(400)
             if role == 3:       # role = 3 即为all
                 user = User.query.filter_by(session=session).first()
             else:
