@@ -51,7 +51,7 @@
             this.questions = response.data.data;
           })
           .catch(error => {
-            console.error("There was an error fetching the questions:", error);
+            alert(`失败: ${error.response.data.message}`);
           });
       },
       enterQuestion(question) {

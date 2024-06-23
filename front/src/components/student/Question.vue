@@ -49,7 +49,7 @@ export default {
           this.questions = response.data.data;
         })
         .catch(error => {
-          this.$emit('error', error);
+          alert(`失败: ${error.response.data.message}`);
         });
     },
     enterQuestion(id) {

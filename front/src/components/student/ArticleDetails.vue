@@ -51,8 +51,8 @@ export default {
         this.article = response.data;
       })
       .catch(error => {
-        this.$emit('error', error);
-      });
+          alert(`失败: ${error.response.data.message}`);
+        });
     },
     formatDate(date) {
       return new Date(date).toLocaleString();

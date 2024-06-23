@@ -56,8 +56,7 @@ export default {
           this.articles = response.data.data;
         })
         .catch(error => {
-          console.error('Error fetching articles:', error);
-          this.$emit('error', error);
+          alert(`失败: ${error.response.data.message}`);
         });
     },
     formatDate(date) {

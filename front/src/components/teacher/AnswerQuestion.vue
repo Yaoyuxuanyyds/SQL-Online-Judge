@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <Navbar />
-
     <div class="question-container">
       <div class="card">
         <h1>{{ question.title }}</h1>
@@ -28,7 +27,7 @@
 
 <script>
 import axios from 'axios';
-import Navbar from '@/components/teacher/Navbar.vue';
+import Navbar from '@/components/student/Navbar.vue';
 
 export default {
   components: {
@@ -38,7 +37,7 @@ export default {
     return {
       question: {},
       userAnswer: '',
-      student_id: 1,    // 获取student_id?
+      student_id: localStorage.getItem('id')
     };
   },
   mounted() {
@@ -46,11 +45,13 @@ export default {
   },
   methods: {
     fetchQuestion() {
-      const questionId = this.$route.params.id;
+      const QuestionId = this.$route.params.id;
       axios.get(`/api/questions`, {
         headers: {
           'session': localStorage.getItem('session'),
-          'Content-Type': 'application/json'
+        },
+        data: {
+          question_id: parseInt(QuestionId)
         }
       })
       .then(response => {
@@ -62,14 +63,18 @@ export default {
     },
     submitAnswer() {
       // Submit第一步：在submit表中添加一条记录
-      const questionId = this.$route.params.id;
-      axios.post(`/api/submit/${questionId}`, { 
+      axios.post(`/api/submit`, { 
         student_id: this.student_id,
         exam_id: -1,
         submit_sql: this.userAnswer,
         submit_time: new Date().toISOString(),  // currenttime
         question_id: this.question.question_id,
-       })
+      }, {
+        headers: {
+          'session': localStorage.getItem('session'),
+          'Content-Type': 'application/json'
+        }
+      })
         .then(response => {
           alert(`成功: ${response.data.message}`);
         })

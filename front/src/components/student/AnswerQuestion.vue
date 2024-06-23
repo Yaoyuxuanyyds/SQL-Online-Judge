@@ -45,9 +45,10 @@ export default {
   },
   methods: {
     fetchQuestion() {
-      axios.get(`/api/questions`, {
+      const QuestionId = this.$route.params.id;
+      axios.get(`/api/questions`, {}, {
         headers: {
-          'session': localStorage.getItem('session')
+          'session': localStorage.getItem('session'),
         }
       })
       .then(response => {
