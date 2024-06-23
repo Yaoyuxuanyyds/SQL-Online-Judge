@@ -191,7 +191,7 @@ class Judge(Resource):
 
             if result.returns_rows:  # 如果返回结果
                 output = result.fetchall()  # 获取所有结果
-                output_str = str([dict(row) for row in output])  # 转换为字符串
+                output_str = str([dict(row) if isinstance(row, dict) else row for row in output])
             else:
                 output_str = "No rows returned"
 
@@ -266,15 +266,15 @@ class Judge(Resource):
             error, user_output = self.execute_sql(submit_sql)
             if error:
                 if user_output == "TLE":
-                    results[test_id] = (True, JUDGE_TIMELIMIT_EXCEED)
+                    results[test_id] = (False, JUDGE_TIMELIMIT_EXCEED)
                 elif "MemoryError" in user_output:
-                    results[test_id] = (True, JUDGE_MEMLIMIT_EXCEED)
+                    results[test_id] = (False, JUDGE_MEMLIMIT_EXCEED)
                 else:
-                    results[test_id] = (True, JUDGE_RUNERROR)
+                    results[test_id] = (False, JUDGE_RUNERROR)
             elif user_output != expected_output:
-                results[test_id] = (True, JUDGE_WRONGANSWER)
+                results[test_id] = (False, JUDGE_WRONGANSWER)
             else:
-                results[test_id] = (False, JUDGE_ACCEPTED)
+                results[test_id] = (True, JUDGE_ACCEPTED)
         return {"results": results}, HTTP_OK
 # login
 class Login(Resource):
