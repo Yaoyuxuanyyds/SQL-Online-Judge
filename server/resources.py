@@ -264,6 +264,7 @@ class Judge(Resource):
             #     continue
 
             error, user_output = self.execute_sql(submit_sql)
+            print(user_output)
             if error:
                 if user_output == "TLE":
                     results[test_id] = (False, JUDGE_TIMELIMIT_EXCEED)
@@ -565,8 +566,14 @@ class Submit(Resource):
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
-        fetchall = bool(request.args.get('fetchall', False))
-        userid = int(request.args.get('userid')) if request.args.get('userid') else None
+        fetchall = request.args.get('fetchall')
+        if fetchall == 'true':
+            fetchall = True
+        elif fetchall == 'false':
+            fetchall = False
+        else:
+            fetchall = None  
+        userid = int(request.args.get('user_id')) if request.args.get('user_id') else None
         if fetchall:
             submits = models.Submission.query.filter_by()
         elif userid:
