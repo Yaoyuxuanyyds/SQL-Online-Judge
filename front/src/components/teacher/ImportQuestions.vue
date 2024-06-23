@@ -52,7 +52,7 @@
 
 <script>
 import Navbar from '@/components/teacher/Navbar.vue';
-
+import axios from 'axios'
 export default {
   components: {
     Navbar
@@ -73,15 +73,12 @@ export default {
   },
   methods: {
     createQuestion() {
-      const questoinId = 
-      axios.post(`/api/questions/<int:question_id>`, { 
+      axios.post(`/api/questions`, { 
         ...this.newQuestion,
-        headers: {
-          'session': localStorage.getItem('session')
-        }
-       })
+        headers: {'session': localStorage.getItem('session'), 'Content-Type': 'application/json'}
+    })
         .then(response => {
-          
+
           // 清空输入框
           this.newQuestion = {
             title: '',

@@ -27,7 +27,7 @@ class Answers(Resource):
         else:
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
 
-    @auth_role(AUTH_ADMIN)
+    @auth_role(AUTH_TEACHER)
     def delete(self):
         question_id = int(request.json.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
@@ -302,7 +302,7 @@ class Questions(Resource):
         else:
             return {"message": "该题目不存在"}, HTTP_NOT_FOUND
 
-    @auth_role(AUTH_ADMIN)
+    @auth_role(AUTH_TEACHER)
     def delete(self):
         question_id = int(request.json.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
