@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 
 // Admin
+import ManageUsers from '@/components/admin/ManageUsers'
 
 // Teacher
 import TeacherHome from '@/components/teacher/Index'
@@ -24,6 +25,7 @@ import Contest from "@/components/student/Contest"
 import Question_contest from "@/components/student/Question_contest"
 import AnswerQuestion_contest from '@/components/student/AnswerQuestion_contest.vue'
 import Community from "@/components/student/Community"
+import ArticleEditor from "@/components/student/ArticleEditor"
 
 
 Vue.use(Router)
@@ -37,8 +39,27 @@ export default new Router({
       component: Home
     },
 
-    
+    {
+      path: '/admin',
+      name: 'admin',
+      component: ManageUsers
+    },
+    {
+      path: '/admin/user/:id',
+      name: 'user',
+      component: ManageUsers
+    },
+    {
+      path: '/admin/user/:id/edit',
+      name: 'edit-user',
+      component: ManageUsers
+    },
 
+    {
+      path: '/admin/user/:id/delete',
+      name: 'delete-user',
+      component: ManageUsers
+    },
     {
       path: '/teacher',
       name: 'teacher',
@@ -120,6 +141,10 @@ export default new Router({
       name: 'community',
       component: Community
     },
-
+    {
+      path: '/student/community/edit',
+      name: 'article-editor',
+      component: ArticleEditor
+    }
   ]
 })

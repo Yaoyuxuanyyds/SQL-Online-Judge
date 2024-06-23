@@ -101,6 +101,8 @@ class Community(Resource):
 # 文章列表类
 community_field = {
     'id': fields.Integer,
+    'title': fields.String,
+    'content': fields.String,
     'user_id': fields.Integer,
     'question_id': fields.Integer,
     'publish_time': fields.DateTime,
@@ -114,6 +116,8 @@ class CommunityList(Resource):
         data = [marshal(article, community_field) for article in articles]
         return {'data': data}, HTTP_OK
     
+
+
 # TODO: Contest后端
 
 # judge
