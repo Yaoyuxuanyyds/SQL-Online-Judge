@@ -85,9 +85,20 @@ export default {
             id: parseInt(this.id),
             password: this.password,
           });
+          const useID = this.id;
+          const userName = response.data.username;
           const userRole = response.data.role;
           const sessionToken = response.data.session; // 获取session token
-          localStorage.setItem('session', sessionToken); // 存储到LocalStorage
+
+          // 将session token存储在本地存储中
+          localStorage.setItem('session', sessionToken); 
+          // 设置用户角色
+          localStorage.setItem('userRole', userRole);
+          // 设置用户ID
+          localStorage.setItem('userID', useID);
+          // 设置用户名
+          localStorage.setItem('userName', userName);
+
           if (userRole === 0) {
             alert(`登录成功！id: ${this.id}\n欢迎来做作业或打比赛！`)
             this.$router.push('/student');

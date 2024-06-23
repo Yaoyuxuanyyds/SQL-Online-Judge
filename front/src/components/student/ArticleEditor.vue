@@ -47,13 +47,16 @@
     },
     methods: {
       publishArticle() {
+        // Construct the payload to include user_id and times
         const payload = {
           ...this.article,
-          user_id: 1, // Assume logged-in user's ID is 1; replace with actual user ID from your auth system
+          user_id: localStorage.getItem('userID'), // Fetch the user ID from local storage
           publish_time: new Date().toISOString(), // Set publish time to current time
           last_modify_time: new Date().toISOString() // Set last modify time to current time
         };
-        axios.post('/api/community/add', payload)
+  
+        // Correct the axios method to post
+        axios.post('/api/community/operate', payload) // Assuming '/api/community/operate' is your correct endpoint
           .then(() => {
             alert('文章已发布');
             this.$router.push('/community'); // Redirect to community page or wherever appropriate
@@ -66,6 +69,7 @@
     }
   }
   </script>
+  
   <style scoped>
   .publish-article-page {
     display: flex;

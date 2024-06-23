@@ -48,7 +48,7 @@ class Community(Resource):
             return {"message": "文章不存在"}, HTTP_NOT_FOUND
     
     @auth_role(AUTH_ALL)
-    def add(self):
+    def post(self):
         article = models.Article()
         article.title = request.json.get('title')
         article.user_id = request.json.get('user_id', None)

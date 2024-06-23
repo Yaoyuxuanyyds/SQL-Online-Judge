@@ -27,6 +27,8 @@ def create_app():
     api.add_resource(Login, '/api/login')
     api.add_resource(SubmitList, '/api/submit')
     api.add_resource(CommunityList, '/api/communitylist')
+    api.add_resource(Community, '/api/community/operate')
+  
     with app.app_context():
         db.create_all()
     return app
