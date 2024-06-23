@@ -570,3 +570,54 @@ class SubmitList(Resource):
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         data = [marshal(submit, submit_field) for submit in submits]
         return {'data': data}, HTTP_OK
+
+# createexam
+# Define the fields for Exam resource serialization
+exam_field = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'category': fields.String,
+    'start_time': fields.String,
+    'end_time': fields.String,
+    'problems': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'title': fields.String,
+        'difficulty': fields.Integer
+    }))
+}
+
+class CreateExam(Resource):
+    @marshal_with(exam_field)
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str, required=True, help="Exam name is required")
+        parser.add_argument('category', type=str, required=True, help="Exam category is required")
+        parser.add_argument('start_time', type=str, required=True, help="Exam start time is required")
+        parser.add_argument('end_time', type=str, required=True, help="Exam end time is required")
+        parser.add_argument('problems', type=list, required=True, help="List of problem IDs is required")
+
+        args = parser.parse_args()
+        exam_name = args['name']
+        exam_category = args['category']
+        start_time = args['start_time']
+        end_time = args['end_time']
+        problem_ids = args['problems']
+
+        # Retrieve questions from database based on problem_ids
+        problems = Question.query.filter(Question.id.in_(problem_ids)).all()
+
+        if not problems:
+            return {"message": "No valid problems found"}, 400
+
+        new_exam = Exam(
+            name=exam_name,
+            category=exam_category,
+            start_time=start_time,
+            end_time=end_time,
+            problems=problems
+        )
+
+        db.session.add(new_exam)
+        db.session.commit()
+
+        return new_exam, 201
