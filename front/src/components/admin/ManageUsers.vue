@@ -77,9 +77,9 @@ export default {
       // TODO
     },
     toggleUserRole(user_id, currentRole, password) {
-      const userId = ParseInt(user_id);
+      const userId = parseInt(user_id);
       const newPassword = password
-      const newRole = ParseInt(currentRole) === 0 ? 1 : 0;
+      const newRole = parseInt(currentRole) === 0 ? 1 : 0;
       axios.put(`/api/manageusers`,{id: userId, password: newPassword, role: newRole })
         .then(response => {
           alert(response.data.message);
