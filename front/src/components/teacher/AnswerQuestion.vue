@@ -47,7 +47,7 @@ export default {
   methods: {
     fetchQuestion() {
       const questionId = this.$route.params.id;
-      axios.get(`/api/questions/${questionId}`, {
+      axios.get(`/api/questions`, {
         headers: {
           'session': localStorage.getItem('session')
         }
@@ -70,10 +70,10 @@ export default {
         question_id: this.question.question_id,
        })
         .then(response => {
-          alert(`提交成功: ${response.data.message}`);
+          alert(`成功: ${response.data.message}`);
         })
         .catch(error => {
-          alert(`提交失败: ${error.response.data.message}`);
+          alert(`失败: ${error.response.data.message}`);
         }); 
     }
   }

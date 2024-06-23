@@ -89,10 +89,10 @@ export default {
             answer_example: '',
             is_public: true
           };
-          alert(`提交成功: ${response.data.message}`);
+          alert(`成功: ${response.data.message}`);
         })
         .catch(error => {
-          alert(`提交失败: ${error.response.data.message}`);
+          alert(`失败: ${error.response.data.message}`);
         }); 
     }
   }

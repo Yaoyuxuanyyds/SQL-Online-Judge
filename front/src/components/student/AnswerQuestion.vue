@@ -45,8 +45,10 @@ export default {
   },
   methods: {
     fetchQuestion() {
-      const questionId = this.$route.params.id;
-      axios.get(`/api/questions/${questionId}`, {
+      axios.get(`/api/questions`, {
+        'question_id': this.$route.params.id
+      },
+      {
         headers: {
           'session': localStorage.getItem('session')
         }
@@ -55,13 +57,12 @@ export default {
         this.question = response.data;
       })
       .catch(() => {
-        //console.error("Error fetching the question:", error);
+        
       });
     },
     submitAnswer() {
       // Submit第一步：在submit表中添加一条记录
-      const questionId = this.$route.params.id;
-      axios.post(`/api/submit/${questionId}`, { 
+      axios.post(`/api/submit`, { 
         student_id: this.student_id,
         exam_id: -1,
         submit_sql: this.userAnswer,
@@ -69,10 +70,10 @@ export default {
         question_id: this.question.question_id,
        })
         .then(response => {
-          alert(`提交成功: ${response.data.message}`);
+          alert(`成功: ${response.data.message}`);
         })
         .catch(error => {
-          alert(`提交失败: ${error.response.data.message}`);
+          alert(`失败: ${error.response.data.message}`);
         }); 
     }
   }
