@@ -65,7 +65,7 @@ export default {
       // Submit第一步：在submit表中添加一条记录
       axios.post(`/api/submit`, { 
         student_id: localStorage.getItem('userID'),
-        exam_id: -1,
+        exam_id: null,
         submit_sql: this.userAnswer,
         submit_time: new Date().toISOString(),
         question_id: this.$route.params.id,

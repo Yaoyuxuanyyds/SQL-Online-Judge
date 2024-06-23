@@ -10,6 +10,9 @@ from sqlalchemy.orm import sessionmaker
 from models import db, User
 from sqlalchemy import func
 from datetime import datetime
+def parse_iso_datetime(iso_str):
+    dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
+    return dt.strftime('%Y-%m-%d %H:%M:%S')
 
 # answer
 answer_field = {
@@ -74,10 +77,6 @@ class Community(Resource):
         
         max_id = db.session.query(func.max(models.Article.id)).scalar()
         max_id = max_id + 1 if max_id else 1
-
-        def parse_iso_datetime(iso_str):
-            dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
-            return dt.strftime('%Y-%m-%d %H:%M:%S')
         
         article = models.Article(
             id=max_id,
@@ -433,7 +432,7 @@ class QuestionList(Resource):
 # register
 class Register(Resource):
     def post(self):
-        id = int(request.json.get('id', 0))
+        id = int(request.json.get('id')) if request.json.get('id') else None
         username = request.json.get('username', None)
         password = hashlib.sha256(request.json.get('password', 0).encode('utf8')).hexdigest() 
         
@@ -546,13 +545,12 @@ class Submit(Resource):
         s = models.Submission()
         s.student_id = int(request.json.get('student_id'))
         s.question_id = int(request.json.get('question_id'))
-        s.exam_id = int(request.json.get('exam_id'))
+        s.exam_id = int(request.json.get('exam_id')) if request.json.get('exam_id') else None
         s.submit_sql = request.json.get('submit_sql')
-        s.submit_time = request.json.get('submit_time')
+        s.submit_time = parse_iso_datetime(request.json.get('submit_time'))
         s.pass_rate = 0
         s.status = JUDGE_PENDING
-
-        if not (s.student_id and s.question_id and s.exam_id and s.submit_sql):
+        if not (s.student_id and s.question_id and s.submit_sql):
             return {"message": "提交信息不全"}, HTTP_BAD_REQUEST
         
         db.session.add(s)
@@ -562,8 +560,8 @@ class Submit(Resource):
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
-        fetchall = bool(request.args.get('fetchall', 0))
-        userid = int(request.args.get('userid', 0))
+        fetchall = bool(request.args.get('fetchall', False))
+        userid = int(request.args.get('userid')) if request.args.get('userid') else None
         if fetchall:
             submits = models.Submission.query.filter_by()
         elif userid:
