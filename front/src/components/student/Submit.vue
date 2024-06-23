@@ -1,5 +1,4 @@
 <template>
-
   <div>
     <Navbar />
     <h1>Submissions</h1>
@@ -14,7 +13,7 @@
 <script>
 import Navbar from '@/components/student/Navbar.vue';
 import SubmissionRecord from './SubmissionRecord.vue';
-// 
+import axios from 'axios';
 export default {
   name: 'Submit',
   components: {
@@ -28,17 +27,37 @@ export default {
   },
   methods: {
     fetchAll() {
-      // 模拟API调用
-      this.submissions = [
-        { id: 1, submissionTime: '2024-06-22T12:00:00.000Z', problemId: 101, submissionContent: 'SELECT * FROM users;', result: 'Accepted' },
-        { id: 2, submissionTime: '2024-06-21T14:20:00.000Z', problemId: 102, submissionContent: 'SELECT name FROM users WHERE id = 1;', result: 'Wrong Answer' }
-      ].sort((a, b) => new Date(b.submissionTime) - new Date(a.submissionTime));
+      axios.get('/api/submitlist', {
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+        params: {
+          fetchall: true
+        }
+      })
+        .then(response => {
+          this.submissions = response.data.data.sort((a, b) => new Date(b.submit_time) - new Date(a.submit_time));
+        })
+        .catch(error => {
+          alert(`失败: ${error.response.data.message}`);
+        });
     },
     fetchMine() {
-      // 模拟
-      this.submissions = [
-        { id: 3, submissionTime: '2024-06-20T09:34:00.000Z', problemId: 103, submissionContent: 'SELECT * FROM orders WHERE order_id = 10;', result: 'Accepted' }
-      ].sort((a, b) => new Date(b.submissionotionTime) - new Date(a.submissionTime));
+      axios.get('/api/submitlist', {
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+        params: {
+          fetchall: false,
+          student_id: localStorage.getItem('userID')
+        }
+      })
+        .then(response => {
+          this.submissions = response.data.data.sort((a, b) => new Date(b.submit_time) - new Date(a.submit_time));
+        })
+        .catch(error => {
+          alert(`失败: ${error.response.data.message}`);
+        });
     }
   }
 };

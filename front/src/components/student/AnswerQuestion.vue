@@ -37,7 +37,7 @@ export default {
     return {
       question: {},
       userAnswer: '',
-      student_id: localStorage.getItem('id')
+      userid: localStorage.getItem('userID')
     };
   },
   mounted() {
@@ -64,11 +64,11 @@ export default {
     submitAnswer() {
       // Submit第一步：在submit表中添加一条记录
       axios.post(`/api/submit`, { 
-        student_id: this.student_id,
+        student_id: localStorage.getItem('userID'),
         exam_id: -1,
         submit_sql: this.userAnswer,
-        submit_time: new Date().toISOString(),  // currenttime
-        question_id: this.question.question_id,
+        submit_time: new Date().toISOString(),
+        question_id: this.$route.params.id,
       }, {
         headers: {
           'session': localStorage.getItem('session'),

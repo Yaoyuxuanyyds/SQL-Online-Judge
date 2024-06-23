@@ -546,7 +546,7 @@ class Submit(Resource):
         s = models.Submission()
         s.student_id = int(request.json.get('student_id'))
         s.question_id = int(request.json.get('question_id'))
-        s.exam_id = int(request.json.get('request_id'))
+        s.exam_id = int(request.json.get('exam_id'))
         s.submit_sql = request.json.get('submit_sql')
         s.submit_time = request.json.get('submit_time')
         s.pass_rate = 0
@@ -562,12 +562,12 @@ class Submit(Resource):
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
-        role = request.args.get('role', AUTH_STUDENT)
-        student_id = int(request.args.get('student_id', 0))
-        if role > AUTH_STUDENT:
+        fetchall = bool(request.args.get('fetchall', 0))
+        userid = int(request.args.get('userid', 0))
+        if fetchall:
             submits = models.Submission.query.filter_by()
-        elif student_id:
-            submits = models.Submission.query.filter_by(student_id=student_id)
+        elif userid:
+            submits = models.Submission.query.filter_by(id=userid)
         else:
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         data = [marshal(submit, submit_field) for submit in submits]

@@ -37,7 +37,7 @@ export default {
     return {
       question: {},
       userAnswer: '',
-      student_id: localStorage.getItem('id')
+      userid: localStorage.getItem('userID')
     };
   },
   mounted() {
