@@ -8,8 +8,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Navbar from '@/components/student/Navbar.vue';
 export default {
   name: "SubmissionRecord",
   props: {

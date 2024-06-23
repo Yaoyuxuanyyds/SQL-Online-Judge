@@ -168,14 +168,9 @@ class CommunityList(Resource):
 
 # judge
 # 定义返回结果的字段
-submit_judge = {
-    'submit_sql': fields.String,
-    'question_id': fields.Integer
-}
 
 class Judge(Resource):
     @auth_role(AUTH_ALL)
-    @marshal_with(submit_judge)
     def execute_sql(self, code):
         """
         运行SQL代码，并捕获可能的错误和异常
@@ -183,7 +178,7 @@ class Judge(Resource):
         :return: 执行结果，格式为 (error: bool, msg: str)
         """
         # 创建数据库引擎，连接到testdb数据库
-        engine = create_engine('mysql+pymysql://test:4546@localhost/testdb')
+        engine = create_engine('mysql+pymysql://root:4546@localhost/test')
         Session = sessionmaker(bind=engine)
         session = Session()
 
@@ -196,15 +191,16 @@ class Judge(Resource):
 
             if result.returns_rows:  # 如果返回结果
                 output = result.fetchall()  # 获取所有结果
+                output_str = str([dict(row) if isinstance(row, dict) else row for row in output])
             else:
-                output = None  # 如果没有返回结果，设置为None
+                output_str = "No rows returned"
 
             elapsed_time = time.time() - start_time  # 计算执行时间
 
             if elapsed_time > 5:  # 判断是否超时
                 return (True, "TLE")  # 超时返回TLE
 
-            return (False, str(output))  # 返回执行结果
+            return (False, output_str)  # 返回执行结果
 
         except OperationalError as e:  # 捕获操作错误异常
             session.rollback()  # 回滚事务
@@ -224,7 +220,7 @@ class Judge(Resource):
         :param tablename: 需要删除的表名（可能有多个表名，以逗号分隔）
         """
         # 创建数据库引擎，连接到testdb数据库
-        engine = create_engine('mysql+pymysql://test:4546@localhost/testdb')
+        engine = create_engine('mysql+pymysql://root:4546@localhost/test')
         Session = sessionmaker(bind=engine)
         session = Session()
 
@@ -246,6 +242,7 @@ class Judge(Resource):
         data = request.get_json()
         submit_sql = data.get('submit_sql')
         question_id = data.get('question_id')
+        create_code = data.get('create_code')
         if not submit_sql or not question_id:
             return {"message": "提交信息不全"}, HTTP_BAD_REQUEST
 
@@ -255,33 +252,30 @@ class Judge(Resource):
         
         for test_case in test_cases:
             test_id = test_case.id
-            input_sql = test_case.input_sql
+            input_sql = str(test_case.input_sql)
             expected_output = test_case.output
             tablename = test_case.tablename
-
             self.drop_tables(tablename)
 
-            error, setup_msg = self.execute_sql(input_sql)
-            if error:
-                results[test_id] = (True, JUDGE_RUNERROR)
-                continue
+            error, _ = self.execute_sql(create_code)
+            error, _ = self.execute_sql(input_sql)
+            # if error:
+            #     results[test_id] = (True, JUDGE_RUNERROR)
+            #     continue
 
             error, user_output = self.execute_sql(submit_sql)
             if error:
                 if user_output == "TLE":
-                    results[test_id] = (True, JUDGE_TIMELIMIT_EXCEED)
+                    results[test_id] = (False, JUDGE_TIMELIMIT_EXCEED)
                 elif "MemoryError" in user_output:
-                    results[test_id] = (True, JUDGE_MEMLIMIT_EXCEED)
+                    results[test_id] = (False, JUDGE_MEMLIMIT_EXCEED)
                 else:
-                    results[test_id] = (True, JUDGE_RUNERROR)
+                    results[test_id] = (False, JUDGE_RUNERROR)
             elif user_output != expected_output:
-                results[test_id] = (True, JUDGE_WRONGANSWER)
+                results[test_id] = (False, JUDGE_WRONGANSWER)
             else:
-                results[test_id] = (False, JUDGE_ACCEPTED)
-
-        return results, HTTP_OK
-
-
+                results[test_id] = (True, JUDGE_ACCEPTED)
+        return {"results": results}, HTTP_OK
 # login
 class Login(Resource):
     def post(self):
@@ -581,3 +575,56 @@ class SubmitList(Resource):
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         data = [marshal(submit, submit_field) for submit in submits]
         return {'data': data}, HTTP_OK
+
+
+
+# createexam
+# Define the fields for Exam resource serialization
+exam_field = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'category': fields.String,
+    'start_time': fields.String,
+    'end_time': fields.String,
+    'problems': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'title': fields.String,
+        'difficulty': fields.Integer
+    }))
+}
+
+class CreateExam(Resource):
+    @marshal_with(exam_field)
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str, required=True, help="Exam name is required")
+        parser.add_argument('category', type=str, required=True, help="Exam category is required")
+        parser.add_argument('start_time', type=str, required=True, help="Exam start time is required")
+        parser.add_argument('end_time', type=str, required=True, help="Exam end time is required")
+        parser.add_argument('problems', type=list, required=True, help="List of problem IDs is required")
+
+        args = parser.parse_args()
+        exam_name = args['name']
+        exam_category = args['category']
+        start_time = args['start_time']
+        end_time = args['end_time']
+        problem_ids = args['problems']
+
+        # Retrieve questions from database based on problem_ids
+        problems = Question.query.filter(Question.id.in_(problem_ids)).all()
+
+        if not problems:
+            return {"message": "No valid problems found"}, 400
+
+        new_exam = Exam(
+            name=exam_name,
+            category=exam_category,
+            start_time=start_time,
+            end_time=end_time,
+            problems=problems
+        )
+
+        db.session.add(new_exam)
+        db.session.commit()
+
+        return new_exam, 201

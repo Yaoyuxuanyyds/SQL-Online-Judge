@@ -32,7 +32,10 @@ def create_app():
     api.add_resource(Student, '/api/student')
     api.add_resource(StudentList, '/api/studentlist')
     api.add_resource(Submit, '/api/submit')
+    api.add_resource(CreateExam, '/api/create_exam')
     api.add_resource(SubmitList, '/api/submitlist')
+
+
     with app.app_context():
         db.create_all()
     return app

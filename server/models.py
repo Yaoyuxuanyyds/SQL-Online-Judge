@@ -66,13 +66,13 @@ class ExamStudent(db.Model):
 
 # 测试用例表
 class TestCase(db.Model):
-    __tablename__ = 'Test_Case'
+    __tablename__ = 'TestCase'
     id = Column(INTEGER, primary_key=True, autoincrement=True)
     tablename = Column(VARCHAR(1000), nullable=False)
     question_id = Column(INTEGER, ForeignKey('Question.id'))
     input_sql = Column(VARCHAR(255), nullable=False)
     output = Column(VARCHAR(255), nullable=False)
-    question = db.relationship('Question', backref='test_cases')    # ?
+    question = db.relationship('Question', backref='test_cases')
 
 # 提交表
 class Submission(db.Model):

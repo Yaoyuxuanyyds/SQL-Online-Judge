@@ -159,7 +159,13 @@ export default new Router({
       path: '/student/community/:id',
       name: 'article-details',
       component: ArticleDetails
+    },
+    {
+      path: '/teacher/create',
+      name: 'create',
+      component: CreateExam
     }
+    
     
   ]
 })
