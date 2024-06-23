@@ -343,7 +343,7 @@ class ManageUsers(Resource):
 
     def delete(self):
         # Delete a user
-        user_id = int(request.json.get('user_id'))
+        user_id = int(request.args.get('user_id'))
         user = User.query.filter_by(id=user_id).first()
 
         if not user:
