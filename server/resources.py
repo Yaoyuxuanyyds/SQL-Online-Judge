@@ -7,7 +7,6 @@ from permissions import auth_role
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError, TimeoutError, OperationalError
 from sqlalchemy.orm import sessionmaker
-from flask_restful import Resource, fields, marshal_with, request
 from models import db, User
 from sqlalchemy import func
 from datetime import datetime
@@ -22,7 +21,7 @@ class Answers(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(answer_field)
     def get(self):
-        question_id = int(request.json.get('question_id'))
+        question_id = int(request.args.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             return ret, HTTP_OK
@@ -31,7 +30,7 @@ class Answers(Resource):
 
     @auth_role(AUTH_TEACHER)
     def delete(self):
-        question_id = int(request.json.get('question_id'))
+        question_id = int(request.args.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             db.session.delete(ret)
@@ -44,7 +43,7 @@ class Answers(Resource):
 class Community(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
-        article_id = int(request.json.get("article_id"))
+        article_id = int(request.args.get("article_id"))
         article = models.Article.query.filter_by(id=article_id)
         if article:
             return article, HTTP_OK
@@ -94,7 +93,7 @@ class Community(Resource):
 
     # TODO: 添加修改文章的类方法
     @auth_role(AUTH_ALL)
-    def update(self):
+    def put(self):
         # 权限组
         role = request.json.get('role', AUTH_STUDENT)
         article_id = int(request.json.get('article_id'))
@@ -116,7 +115,7 @@ class Community(Resource):
             
     @auth_role(AUTH_ADMIN)
     def delete(self):
-        article_id = int(request.json.get('article_id'))
+        article_id = int(request.args.get('article_id'))
         article = models.Article.query.filter_by(id=article_id)
         if not article:
             return {"message": "未找到文章！"}, HTTP_NOT_FOUND
@@ -283,8 +282,8 @@ class Login(Resource):
         else:
             return {"message": '用户名或密码无效'}, HTTP_UNAUTHORIZED
         
-    def logout(self):
-        session = request.json.get('session')
+    def delete(self):
+        session = request.args.get('session')
         user = models.User.query.filter_by(session=session).first()
         if user:
             user.session = None
@@ -321,7 +320,7 @@ class Questions(Resource):
     @marshal_with(question_field)
     def get(self):
         # 查询单个题目 -> 用于题目查询和显示
-        question_id = int(request.json.get('question_id'))
+        question_id = int(request.args.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             return ret, HTTP_OK
@@ -330,7 +329,7 @@ class Questions(Resource):
 
     @auth_role(AUTH_TEACHER)
     def delete(self):
-        question_id = int(request.json.get('question_id'))
+        question_id = int(request.args.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             db.session.delete(ret)
@@ -393,7 +392,7 @@ class Students(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(student_fields)
     def get(self):
-        student_id = int(request.json.get('student_id'))
+        student_id = int(request.args.get('student_id'))
         ret = models.User.query.filter_by(id=student_id).first()
         if ret:
             return ret, HTTP_OK
@@ -402,7 +401,7 @@ class Students(Resource):
         
     @auth_role(AUTH_ADMIN)
     def delete(self):
-        student_id = int(request.json.get('student_id'))
+        student_id = int(request.args.get('student_id'))
         ret = models.User.query.filter_by(id=student_id).first()
         if ret:
             db.session.delete(ret)
@@ -453,8 +452,8 @@ class Submits(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(submit_field)
     def get(self):
-        submit_id = int(request.json.get('submit_id'))
-        student = request.json.get('student')
+        submit_id = int(request.args.get('submit_id'))
+        student = request.args.get('student')
         ret = models.Submission.query.filter_by(id=submit_id).first()
         if ret:
             if student and ret['student_id'] == student.id:
@@ -467,7 +466,7 @@ class Submits(Resource):
     # 删除提交信息
     @auth_role(AUTH_ADMIN)
     def delete(self):
-        submit_id = int(request.json.get("submit_id"))
+        submit_id = int(request.args.get("submit_id"))
         ret = models.Submission.query.filter_by(id=submit_id).first()
         if ret:
             db.session.delete(ret)
@@ -498,8 +497,8 @@ class Submits(Resource):
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
-        role = request.json.get('role', AUTH_STUDENT)
-        student_id = int(request.json.get('student_id', 0))
+        role = request.args.get('role', AUTH_STUDENT)
+        student_id = int(request.args.get('student_id', 0))
         if role > AUTH_STUDENT:
             submits = models.Submission.query.filter_by()
         elif student_id:
@@ -542,7 +541,7 @@ class ManageUsers(Resource):
 
     def delete(self):
         # Delete a user
-        user_id = int(request.json.get('user_id'))
+        user_id = int(request.args.get('user_id'))
         user = User.query.filter_by(id=user_id).first()
 
         if not user:
