@@ -37,7 +37,7 @@
     },
     data() {
       return {
-        article: {
+        article: {  // Define article as an object containing all fields
           title: '',
           content: '',
           question_id: null,
@@ -55,8 +55,12 @@
           last_modify_time: new Date().toISOString() // Set last modify time to current time
         };
   
-        // Correct the axios method to post
-        axios.post('/api/community/operate', payload) // Assuming '/api/community/operate' is your correct endpoint
+        // Make the axios post request
+        axios.post('/api/community/operate', payload, {
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
           .then(() => {
             alert('文章已发布');
             this.$router.push('/community'); // Redirect to community page or wherever appropriate
@@ -69,6 +73,7 @@
     }
   }
   </script>
+  
   
   <style scoped>
   .publish-article-page {

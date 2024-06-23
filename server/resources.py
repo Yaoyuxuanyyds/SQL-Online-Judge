@@ -52,7 +52,7 @@ class Community(Resource):
         article = models.Article()
         article.title = request.json.get('title')
         article.user_id = request.json.get('user_id', None)
-        article.question_id = request.json.get('user_id', None)
+        article.question_id = request.json.get('question_id', None)
         article.is_notice = request.json.get('is_notice', False)
         article.content = request.json.get('content', None)
         article.publish_time = request.json.get('publish_time')
