@@ -1,23 +1,23 @@
 <template>
   <div>
-  
     <Navbar />
     <h2>社群分享</h2>
-      <div class="mb-3">
-        <button type="button" @click="goToEditor" class="btn btn-primary mb-3">
-          写新文章
-        </button>
-        <input type="text" class="form-control mb-2" id="search-field" placeholder="搜索文章...">
-      </div>
+    <div class="mb-3">
+      <button type="button" @click="goToEditor" class="btn btn-primary mb-3">
+        写新文章
+      </button>
+      <input type="text" class="form-control mb-2" id="search-field" placeholder="搜索文章...">
+    </div>
 
-    <ul v-if="articles.length > 0">
-      <li v-for="article in articles" :key="article.id">
-        文章ID: {{ article.id }} - 用户ID: {{ article.user_id }} - 问题ID: {{ article.question_id }}
-        <br>
-        发布时间: {{ article.publish_time }} - 是否通知: {{ article.is_notice ? '是' : '否' }}
+    <ul class="article-list">
+      <li v-for="article in articles" :key="article.id" class="article-item">
+        <span class="article-id">{{ article.id }}</span>
+        <span class="article-title">{{ article.user_id }}</span>
+        <span class="article-content">{{ article.question_id }}</span>
+        <span class="article-time">{{ formatDate(article.publish_time) }}</span>
+        <span class="article-notice">{{ article.is_notice ? '是' : '否' }}</span>
       </li>
     </ul>
-    <p v-else>当前没有文章。</p>
   </div>
 </template>
 
@@ -33,24 +33,30 @@ export default {
   data() {
     return {
       articles: []
-    }
+    };
   },
   created() {
     this.fetchArticles();
   },
   methods: {
     fetchArticles() {
-      axios.get('/api/community', {
+      axios.get('/api/communitylist', {
         headers: {
           'session': localStorage.getItem('session')
         }
-      })  
+      })
         .then(response => {
           this.articles = response.data.data;
+          // console.log(response.data.data);
         })
         .catch(error => {
-          console.error('获取文章列表失败:', error);
+          // console.error('Error fetching articles:', error);
+          this.$emit('error', error);
         });
+    },
+    formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
     }
   }
 }
@@ -58,20 +64,23 @@ export default {
 
 <style scoped>
 .container {
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
-.list-group-item {
+.article-list {
+  list-style: none;
+  padding: 0;
+}
+.article-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   border: 1px solid #e1e1e1;
   background-color: #f9f9f9;
   margin-bottom: 10px;
+  padding: 10px;
 }
-.list-group-item a {
-  color: #007bff; /* Bootstrap primary color */
-}
-.list-group-item:hover {
+.article-item:hover {
   background-color: #eef9f9;
 }
 .btn-primary {

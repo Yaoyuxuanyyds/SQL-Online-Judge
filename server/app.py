@@ -26,7 +26,7 @@ def create_app():
     api.add_resource(Questions, '/api/questions/<int:question_id>')
     api.add_resource(Login, '/api/login')
     api.add_resource(SubmitList, '/api/submit')
-    api.add_resource(Community, '/api/community')
+    api.add_resource(CommunityList, '/api/communitylist')
     with app.app_context():
         db.create_all()
     return app

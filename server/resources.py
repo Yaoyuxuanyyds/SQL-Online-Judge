@@ -108,11 +108,12 @@ community_field = {
 }
 class CommunityList(Resource):
     @auth_role(AUTH_ALL)
-    @marshal_with(community_field)
+    # @marshal_with(community_field)
     def get(self):
         articles = models.Article.query.all()
         data = [marshal(article, community_field) for article in articles]
         return {'data': data}, HTTP_OK
+    
 # TODO: Contest后端
 
 # judge
@@ -329,6 +330,7 @@ class QuestionList(Resource):
         # 查询所有题目 -> 用于题目列表的查询和显示
         questions = models.Question.query.all()
         data = [marshal(question, question_field) for question in questions]
+        
         return {'data': data}, HTTP_OK
 
 # register
