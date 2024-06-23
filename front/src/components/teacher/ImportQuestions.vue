@@ -5,45 +5,44 @@
       <h1>Import Questions</h1>
       <p>导入题目</p>
 
-      <!-- 输入新题目信息 -->
-      <div class="form-group">
-        <label>题目ID:</label>
-        <input v-model="newQuestion.id" class="large-input" placeholder="题目ID">
-      </div>
-      <div class="form-group">
-        <label>题目标题:</label>
-        <input v-model="newQuestion.title" class="large-input" placeholder="题目标题">
-      </div>
-      <div class="form-group">
-        <label>创建者代码:</label>
-        <input v-model="newQuestion.creator_code" class="large-input" placeholder="创建者代码">
-      </div>
-      <div class="form-group">
-        <label>题目描述:</label>
-        <textarea v-model="newQuestion.description" class="large-textarea" placeholder="题目描述"></textarea>
-      </div>
-      <div class="form-group">
-        <label>输出:</label>
-        <input v-model="newQuestion.output" class="large-input" placeholder="输出">
-      </div>
-      <div class="form-group">
-        <label>难度:</label>
-        <select v-model="newQuestion.difficulty" class="large-input">
-          <option value="1">1 - 最简单</option>
-          <option value="2">2 - 简单</option>
-          <option value="3">3 - 一般</option>
-          <option value="4">4 - 中等</option>
-          <option value="5">5 - 困难</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>答案示例:</label>
-        <textarea v-model="newQuestion.answer_example" class="large-textarea" placeholder="答案示例"></textarea>
-      </div>
-      <div class="form-group">
-        <label>是否公开:</label>
-        <input type="checkbox" v-model="newQuestion.is_public">
-      </div>
+      <!-- 输入新题目信息 --><div class="form-group">
+      <label>题目标题:</label>
+      <input v-model="newQuestion.title" class="large-input" placeholder="题目标题">
+    </div>
+    <div class="form-group">
+      <label>建表语句:</label>
+      <input v-model="newQuestion.create_code" class="large-input code-input" placeholder="建表语句">
+    </div>
+    <div class="form-group">
+      <label>题目描述:</label>
+      <textarea v-model="newQuestion.description" class="large-textarea code-input" placeholder="题目描述"></textarea>
+    </div>
+    <div class="form-group">
+      <label>示例输入:</label>
+      <textarea v-model="newQuestion.input_example" class="large-textarea code-input" placeholder="输入"></textarea>
+    </div>
+    <div class="form-group">
+      <label>示例输出:</label>
+      <textarea v-model="newQuestion.output_example" class="large-textarea code-input" placeholder="输出"></textarea>
+    </div>
+    <div class="form-group">
+      <label>难度:</label>
+      <select v-model="newQuestion.difficulty" class="large-input">
+        <option value="1">1 - 简单</option>
+        <option value="2">2 - 中等</option>
+        <option value="3">3 - 困难</option>
+        <option value="4">4 - 挑战</option>
+        <option value="5">5 - 地狱</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>答案示例:</label>
+      <textarea v-model="newQuestion.answer_example" class="large-textarea code-input" placeholder="答案示例"></textarea>
+    </div>
+    <div class="form-group">
+      <label>是否公开:</label>
+      <input type="checkbox" v-model="newQuestion.is_public">
+    </div>
 
       <!-- 完成创建按钮 -->
       <button @click="createQuestion">完成创建</button>
@@ -61,37 +60,45 @@ export default {
   data() {
     return {
       newQuestion: {
-        id: '',
         title: '',
-        creator_code: '',
+        create_code: '',
         description: '',
-        output: '',
-        difficulty: '1', // 默认难度为最简单
+        input_example: '',
+        output_example: '',
+        difficulty: '1',
         answer_example: '',
-        is_public: false
+        is_public: true
       }
     };
   },
   methods: {
     createQuestion() {
-      // 假设这里需要将新题目数据传递到 Questions 页面
-      this.$emit('new-question', this.newQuestion);
-      // 或者通过 Vuex 的 actions 将数据提交到 store，然后在 Questions 页面获取
-      // this.$store.dispatch('addQuestion', this.newQuestion);
-
-      // 清空输入框
-      this.newQuestion = {
-        id: '',
-        title: '',
-        creator_code: '',
-        description: '',
-        output: '',
-        difficulty: '1', // 重置难度为最简单
-        answer_example: '',
-        is_public: false
-      };
-
-      alert('题目已创建并加入到 Questions 页面中！');
+      const questoinId = 
+      axios.post(`/api/questions/<int:question_id>`, { 
+        ...this.newQuestion,
+        headers: {
+          'session': localStorage.getItem('session')
+        }
+       })
+        .then(response => {
+          
+          // 清空输入框
+          this.newQuestion = {
+            title: '',
+            create_code: '',
+            description: '',
+            input_example: '',
+            output_example: '',
+            difficulty: '1', // 重置难度为最简单
+            answer_example: '',
+            is_public: true
+          };
+          alert(`提交成功: ${response.data.message}`);
+        })
+        .catch(error => {
+          alert(`提交失败: ${error.response.data.message}`);
+        }); 
+      
     }
   }
 };
@@ -134,6 +141,22 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+
+/* 等宽字体和代码框样式 */
+.code-input {
+  font-family: 'Source Code Pro', 'Unifont', 'Courier New', Courier, monospace;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 使大文本区域具有相同样式 */
+textarea.code-input {
+  min-height: 100px;
+  resize: vertical; /* 允许用户垂直调整大小 */
 }
 
 </style>

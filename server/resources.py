@@ -20,7 +20,7 @@ class Answers(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(answer_field)
     def get(self):
-        question_id = request.json.get('question_id')
+        question_id = int(request.json.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             return ret, HTTP_OK
@@ -29,7 +29,7 @@ class Answers(Resource):
 
     @auth_role(AUTH_ADMIN)
     def delete(self):
-        question_id = request.json.get('question_id')
+        question_id = int(request.json.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             db.session.delete(ret)
@@ -42,7 +42,7 @@ class Answers(Resource):
 class Community(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
-        article_id = request.json.get("article_id")
+        article_id = int(request.json.get("article_id"))
         article = models.Article.query.filter_by(id=article_id)
         if article:
             return article, HTTP_OK
@@ -53,8 +53,8 @@ class Community(Resource):
     def post(self):
         article = models.Article()
         article.title = request.json.get('title')
-        article.user_id = request.json.get('user_id', None)
-        article.question_id = request.json.get('question_id', None)
+        article.user_id = int(request.json.get('user_id', 0))
+        article.question_id = int(request.json.get('question_id', 0))
         article.is_notice = request.json.get('is_notice', False)
         article.content = request.json.get('content', None)
         article.publish_time = request.json.get('publish_time')
@@ -71,8 +71,8 @@ class Community(Resource):
     def update(self):
         # 权限组
         role = request.json.get('role', AUTH_STUDENT)
-        article_id = request.json.get('article_id')
-        user_id = request.json.get('user_id')
+        article_id = int(request.json.get('article_id'))
+        user_id = int(request.json.get('user_id'))
         article = models.Article.query.filter_by(id=article_id)
         if not article:
             return {"message": "未找到文章！"}, HTTP_NOT_FOUND
@@ -90,7 +90,7 @@ class Community(Resource):
             
     @auth_role(AUTH_ADMIN)
     def delete(self):
-        article_id = request.json.get('article_id')
+        article_id = int(request.json.get('article_id'))
         article = models.Article.query.filter_by(id=article_id)
         if not article:
             return {"message": "未找到文章！"}, HTTP_NOT_FOUND
@@ -195,7 +195,7 @@ class SQLJudge(Resource):
         finally:
             session.close()  # 关闭会话
 
-    def judge(self):
+    def post(self):
         """
         根据question_id从测试用例表读取对应的input_sql和output_sql，执行用户提交的SQL语句并判断结果
         :param submit_sql: 用户提交的SQL语句
@@ -203,7 +203,7 @@ class SQLJudge(Resource):
         :return: 测试结果字典，格式为 {测试用例ID: (error: bool, output: int)}
         """
         submit_sql = request.json.get('submit_sql')
-        question_id = request.json.get('question_id')
+        question_id = int(request.json.get('question_id'))
         # 从TestCase表中获取对应question_id的所有测试用例
         test_cases = models.TestCase.query.filter_by(question_id=question_id).all()
         results = {}  # 存储测试结果的字典
@@ -243,7 +243,7 @@ class SQLJudge(Resource):
 # login
 class Login(Resource):
     def post(self):
-        user_id = request.json.get('id')
+        user_id = int(request.json.get('id'))
         password = request.json.get('password')
         user = models.User.query.filter_by(id=user_id, password=hashlib.sha256(password.encode('utf8')).hexdigest()).first()
 
@@ -295,7 +295,7 @@ class Questions(Resource):
     @marshal_with(question_field)
     def get(self):
         # 查询单个题目 -> 用于题目查询和显示
-        question_id = request.json.get('question_id')
+        question_id = int(request.json.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             return ret, HTTP_OK
@@ -304,7 +304,7 @@ class Questions(Resource):
 
     @auth_role(AUTH_ADMIN)
     def delete(self):
-        question_id = request.json.get('question_id')
+        question_id = int(request.json.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             db.session.delete(ret)
@@ -313,14 +313,19 @@ class Questions(Resource):
         else:
             return {"message": "该题目不存在"}, HTTP_NOT_FOUND
     
-    @auth_role(AUTH_ADMIN)
+    @auth_role(AUTH_TEACHER)
     def post(self):
         q = models.Question()
-        q.title = request.json['title']
-        q.description = request.json['description']
-        q.difficulty = request.json['difficulty']
-        q.answer_example = request.json['answer_example']
-        if not (q.title and q.description and q.difficulty and q.answer_example):
+        q.title = request.json.get('title')
+        q.description = request.json.get('description')
+        q.create_code = request.json.get('create_code')
+        q.difficulty = int(request.json.get('difficulty', 1))
+        q.input_example = request.json.get('input_example', '')
+        q.output_example = request.json.get('output_example', '')
+        q.answer_example = request.json.get('answer_example', '')
+        q.is_public = request.json.get('is_public', False)
+
+        if not (q.title and q.description and q.create_code):
             return {"message": "题目信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
         db.session.add(q)
         db.session.commit()
@@ -338,7 +343,7 @@ class QuestionList(Resource):
 # register
 class Register(Resource):
     def post(self):
-        id = request.json.get('id', None)
+        id = int(request.json.get('id', 0))
         username = request.json.get('username', None)
         password = hashlib.sha256(request.json.get('password', 0).encode('utf8')).hexdigest() 
         
@@ -362,7 +367,7 @@ class Students(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(student_fields)
     def get(self):
-        student_id = request.json.get('student_id')
+        student_id = int(request.json.get('student_id'))
         ret = models.User.query.filter_by(id=student_id).first()
         if ret:
             return ret, HTTP_OK
@@ -371,7 +376,7 @@ class Students(Resource):
         
     @auth_role(AUTH_ADMIN)
     def delete(self):
-        student_id = request.json.get('student_id')
+        student_id = int(request.json.get('student_id'))
         ret = models.User.query.filter_by(id=student_id).first()
         if ret:
             db.session.delete(ret)
@@ -381,9 +386,9 @@ class Students(Resource):
             return {"message": "该学生不存在"}, HTTP_NOT_FOUND
 
     @auth_role(AUTH_ADMIN)
-    def add(self):
+    def post(self):
         student = models.User()
-        student.id = request.json.get('id')
+        student.id = int(request.json.get('id'))
         student.password = request.json.get('password')
         student.username = request.json.get('username')
         student.role = AUTH_STUDENT
@@ -422,7 +427,7 @@ class Submits(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(submit_field)
     def get(self):
-        submit_id = request.json.get('submit_id')
+        submit_id = int(request.json.get('submit_id'))
         student = request.json.get('student')
         ret = models.Submission.query.filter_by(id=submit_id).first()
         if ret:
@@ -436,7 +441,7 @@ class Submits(Resource):
     # 删除提交信息
     @auth_role(AUTH_ADMIN)
     def delete(self):
-        submit_id = request.json.get("submit_id")
+        submit_id = int(request.json.get("submit_id"))
         ret = models.Submission.query.filter_by(id=submit_id).first()
         if ret:
             db.session.delete(ret)
@@ -449,11 +454,11 @@ class Submits(Resource):
     @auth_role(AUTH_ALL)
     def post(self):
         s = models.Submission()
-        s.student_id = request.json['student_id']
-        s.question_id = request.json['question_id']
-        s.exam_id = request.json['request_id']
-        s.submit_sql = request.json['submit_sql']
-        s.submit_time = request.json['submit_time']
+        s.student_id = int(request.json.get('student_id'))
+        s.question_id = int(request.json.get('question_id'))
+        s.exam_id = int(request.json.get('request_id'))
+        s.submit_sql = request.json.get('submit_sql')
+        s.submit_time = request.json.get('submit_time')
         s.pass_rate = 0
         s.status = JUDGE_PENDING
 
@@ -468,7 +473,7 @@ class SubmitList(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
         role = request.json.get('role', AUTH_STUDENT)
-        student_id = request.json.get('student_id', None)
+        student_id = int(request.json.get('student_id', 0))
         if role > AUTH_STUDENT:
             submits = models.Submission.query.filter_by()
         elif student_id:
@@ -511,7 +516,7 @@ class ManageUsers(Resource):
 
     def delete(self):
         # Delete a user
-        user_id = request.json.get('user_id')
+        user_id = int(request.json.get('user_id'))
         user = User.query.filter_by(id=user_id).first()
 
         if not user:
@@ -523,7 +528,7 @@ class ManageUsers(Resource):
 
     def put(self):
         # Update user role
-        user_id = request.json.get('user_id')
+        user_id = int(request.json.get('user_id'))
         new_role = request.json.get('role')
 
         user = User.query.filter_by(id=user_id).first()

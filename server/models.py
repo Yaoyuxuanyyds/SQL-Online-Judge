@@ -21,7 +21,8 @@ class Question(db.Model):
     title = Column(VARCHAR(1000), nullable=False)
     create_code = Column(TEXT, nullable=False)
     description = Column(TEXT, nullable=False)
-    output = Column(TEXT, nullable=False)
+    input_example = Column(TEXT, nullable=False)
+    output_example = Column(TEXT, nullable=False)
     difficulty = Column(INTEGER, nullable=False)
     answer_example = Column(TEXT, nullable=False)
     is_public = Column(BOOLEAN, nullable=False, default=True)
@@ -103,7 +104,7 @@ class Submission(db.Model):
 # 文章表
 class Article(db.Model):
     __tablename__ = 'Article'
-    id = Column(INTEGER, primary_key=True)
+    id = Column(INTEGER, primary_key=True, autoincrement=True)
     title = Column(VARCHAR(1000), nullable=False)
     user_id = Column(INTEGER, ForeignKey('User.id'))
     question_id = Column(INTEGER, ForeignKey('Question.id'))
