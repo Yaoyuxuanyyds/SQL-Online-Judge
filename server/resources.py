@@ -346,9 +346,10 @@ class ManageUsers(Resource):
     #     db.session.commit()
     #     return {"message": "User created successfully."}, HTTP_CREATED
 
-    def delete(self):
+    def post(self):
         # Delete a user
-        user_id = int(request.args.get('user_id'))
+        user_id = int(request.json.get('id'))
+        print(user_id)
         user = User.query.filter_by(id=user_id).first()
 
         if not user:
@@ -360,17 +361,14 @@ class ManageUsers(Resource):
 
     def put(self):
         # Update user role
-        user_id = int(request.json.get('id'))
-        new_role = int(request.json.get('role'))
-        new_password = request.json.get('password')
-
+        user_id = request.json.get('id')
+        new_role = request.json.get('role')
         user = User.query.filter_by(id=user_id).first()
 
         if not user:
             return {"message": "User not found."}, HTTP_NOT_FOUND
 
         user.role = new_role
-        user.password = new_password
         db.session.commit()
         return {"message": "User updated successfully."}, HTTP_OK
 
