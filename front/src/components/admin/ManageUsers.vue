@@ -39,7 +39,6 @@
 
 <script>
 import axios from 'axios';
-import { config } from 'vue/types/umd';
 
 export default {
   name: 'ManageUsers',
