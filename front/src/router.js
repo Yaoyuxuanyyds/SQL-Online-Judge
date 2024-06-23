@@ -15,7 +15,6 @@ import AnswerQuestion_t from '@/components/teacher/AnswerQuestion.vue'
 import Contest_t from "@/components/teacher/Contest"
 import Community_t from "@/components/teacher/Community"
 
-//
 // Student
 import StudentHome from '@/components/student/Index'
 import Submit from '@/components/student/Submit'
