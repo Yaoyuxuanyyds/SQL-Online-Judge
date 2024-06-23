@@ -14,6 +14,10 @@ def parse_iso_datetime(iso_str):
     dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
     return dt.strftime('%Y-%m-%d %H:%M:%S')
 
+
+
+
+
 # answer
 answer_field = {
     'id': fields.Integer,
@@ -48,7 +52,11 @@ class Answer(Resource):
             return {}, HTTP_OK
         else:
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
-        
+
+
+
+
+
 # community
 class Community(Resource):
     @auth_role(AUTH_ALL)
@@ -165,6 +173,12 @@ class CommunityList(Resource):
         data = [marshal(article, community_field) for article in articles]
         return {'data': data}, HTTP_OK
 # TODO: Contest后端
+
+
+
+
+
+
 
 # judge
 # 定义返回结果的字段
@@ -316,6 +330,9 @@ class Login(Resource):
         else:
             return {"message": '身份信息无效！请重新登录。'}, HTTP_UNAUTHORIZED
 
+
+
+
 # manageUsers
 # Define the fields for User resource serialization
 user_field = {
@@ -331,20 +348,6 @@ class ManageUsers(Resource):
         # Retrieve all users
         users = User.query.all()
         return users
-
-    # def post(self):
-    #     # Create a new user
-    #     username = request.json.get('username')
-    #     password = request.json.get('password')
-    #     role = request.json.get('role')
-
-    #     if not (username and password and role):
-    #         return {"message": "Incomplete user information. Please provide username, password, and role."}, HTTP_BAD_REQUEST
-
-    #     new_user = User(username=username, password=password, role=role)
-    #     db.session.add(new_user)
-    #     db.session.commit()
-    #     return {"message": "User created successfully."}, HTTP_CREATED
 
     def post(self):
         # Delete a user
@@ -371,6 +374,9 @@ class ManageUsers(Resource):
         user.role = new_role
         db.session.commit()
         return {"message": "User updated successfully."}, HTTP_OK
+
+
+
 
 # questions
 question_field = {
