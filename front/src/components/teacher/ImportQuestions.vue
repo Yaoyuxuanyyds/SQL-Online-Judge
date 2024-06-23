@@ -8,35 +8,37 @@
       <!-- 输入新题目信息 -->
       <div class="form-group">
         <label>题目ID:</label>
-        <input v-model="newQuestion.id" placeholder="题目ID">
+        <input v-model="newQuestion.id" class="large-input" placeholder="题目ID">
       </div>
       <div class="form-group">
         <label>题目标题:</label>
-        <input v-model="newQuestion.title" placeholder="题目标题">
+        <input v-model="newQuestion.title" class="large-input" placeholder="题目标题">
       </div>
       <div class="form-group">
         <label>创建者代码:</label>
-        <input v-model="newQuestion.creator_code" placeholder="创建者代码">
+        <input v-model="newQuestion.creator_code" class="large-input" placeholder="创建者代码">
       </div>
       <div class="form-group">
         <label>题目描述:</label>
-        <textarea v-model="newQuestion.description" placeholder="题目描述"></textarea>
+        <textarea v-model="newQuestion.description" class="large-textarea" placeholder="题目描述"></textarea>
       </div>
       <div class="form-group">
         <label>输出:</label>
-        <input v-model="newQuestion.output" placeholder="输出">
+        <input v-model="newQuestion.output" class="large-input" placeholder="输出">
       </div>
       <div class="form-group">
         <label>难度:</label>
-        <select v-model="newQuestion.difficulty">
-          <option value="easy">简单</option>
-          <option value="medium">中等</option>
-          <option value="hard">困难</option>
+        <select v-model="newQuestion.difficulty" class="large-input">
+          <option value="1">1 - 最简单</option>
+          <option value="2">2 - 简单</option>
+          <option value="3">3 - 一般</option>
+          <option value="4">4 - 中等</option>
+          <option value="5">5 - 困难</option>
         </select>
       </div>
       <div class="form-group">
         <label>答案示例:</label>
-        <textarea v-model="newQuestion.answer_example" placeholder="答案示例"></textarea>
+        <textarea v-model="newQuestion.answer_example" class="large-textarea" placeholder="答案示例"></textarea>
       </div>
       <div class="form-group">
         <label>是否公开:</label>
@@ -64,7 +66,7 @@ export default {
         creator_code: '',
         description: '',
         output: '',
-        difficulty: 'easy',
+        difficulty: '1', // 默认难度为最简单
         answer_example: '',
         is_public: false
       }
@@ -84,7 +86,7 @@ export default {
         creator_code: '',
         description: '',
         output: '',
-        difficulty: 'easy',
+        difficulty: '1', // 重置难度为最简单
         answer_example: '',
         is_public: false
       };
@@ -97,7 +99,7 @@ export default {
 
 <style scoped>
 .import-questions-container {
-  max-width: 600px;
+  max-width: 800px;
   margin: auto;
   padding: 20px;
   border: 1px solid #ccc;
@@ -105,11 +107,33 @@ export default {
 }
 
 .form-group {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
-textarea {
-  height: 100px;
-  resize: vertical;
+.large-input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
 }
+
+.large-textarea {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  height: 150px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
 </style>
