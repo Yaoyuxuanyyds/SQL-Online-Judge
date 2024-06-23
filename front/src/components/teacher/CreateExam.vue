@@ -10,7 +10,7 @@
         <label>Exam Name:</label>
         <input v-model="examName" placeholder="Exam Name" @input="updateExamName">
       </div>
-      <!-- <div class="form-group">
+       <div class="form-group">
         <label>Start Time:</label>
         <input type="datetime-local" v-model="startTime" @input="updateExamTime('start')">
       </div>
