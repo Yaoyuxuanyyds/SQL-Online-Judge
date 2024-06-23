@@ -1,13 +1,15 @@
 <template>
   <tr class="submission-record">
-    <td>{{ record.submissionTime | formatDate }}</td>
-    <td>{{ record.problemId }}</td>
-    <td>{{ record.submissionContent }}</td>
-    <td>{{ record.result }}</td>
+    <td>{{ record.submit_time | formatDate }}</td>
+    <td>{{ record.student_id }}</td>
+    <td>{{ record.submit_sql }}</td>
+    <td>{{ record.status }}</td>
   </tr>
 </template>
 
 <script>
+import axios from 'axios';
+import Navbar from '@/components/student/Navbar.vue';
 export default {
   name: "SubmissionRecord",
   props: {
@@ -39,5 +41,3 @@ th {
   border: 1px solid #ccc;
 }
 </style>
-
-//要加父组件
