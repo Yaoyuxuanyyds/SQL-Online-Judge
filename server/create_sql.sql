@@ -53,8 +53,8 @@ create table Exam_Student (
     foreign key (student_id) references User(id)
 );
 
--- 测试用例表 (Test_Case)
-create table Test_Case (
+-- 测试用例表 (TestCase)
+create table TestCase (
     id int auto_increment primary key,
     tablename varchar(1000) not null,
     question_id int,
