@@ -14,6 +14,7 @@ import Question_t from "@/components/teacher/Question"
 import AnswerQuestion_t from '@/components/teacher/AnswerQuestion.vue'
 import Contest_t from "@/components/teacher/Contest"
 import Community_t from "@/components/teacher/Community"
+import ArticleEditor_t from "@/components/student/ArticleEditor"
 
 // Student
 import StudentHome from '@/components/student/Index'
@@ -25,6 +26,7 @@ import Question_contest from "@/components/student/Question_contest"
 import AnswerQuestion_contest from '@/components/student/AnswerQuestion_contest.vue'
 import Community from "@/components/student/Community"
 import ArticleEditor from "@/components/student/ArticleEditor"
+import ArticleDetails from "@/components/student/ArticleDetails"
 
 
 Vue.use(Router)
@@ -59,6 +61,9 @@ export default new Router({
       name: 'delete-user',
       component: ManageUsers
     },
+
+
+
     {
       path: '/teacher',
       name: 'teacher',
@@ -98,6 +103,11 @@ export default new Router({
       path: '/teacher/community',
       name: 'community_t',
       component: Community_t
+    },
+    {
+      path: '/teacher/community/edit',
+      name: 'article-editor_t',
+      component: ArticleEditor_t
     },
 
     {
@@ -144,6 +154,12 @@ export default new Router({
       path: '/student/community/edit',
       name: 'article-editor',
       component: ArticleEditor
+    },
+    {
+      path: '/student/community/:id',
+      name: 'article-details',
+      component: ArticleDetails
     }
+    
   ]
 })

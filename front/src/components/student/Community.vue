@@ -1,33 +1,36 @@
 <template>
-  <div class="community-page">
+  <div>
     <Navbar />
-    <div class="page-header">
-      <h1>社群分享</h1>
-    </div>
-    <div class="controls">
-      <input type="text" class="form-control search-field" placeholder="搜索文章...">
-      <button type="button" @click="goToEditor" class="btn btn-create">
-        创建新文章
-      </button>
-    </div>
-    <div class="article-list">
-      <div v-for="article in articles" :key="article.id" class="article-item shadow">
-        <div class="article-header">
-          <span class="article-id">{{ article.id }}</span>
-          <span class="article-title">{{ article.title }}</span>
-          <div class="article-info">
-            <span class="article-user-id">作者ID: {{ article.user_id }}</span>
-            <span class="article-question-id">问题ID: {{ article.question_id }}</span>
-          </div>
-        </div>
-        <div class="article-content">
-          <p>{{ articleExcerpt(article.content) }}</p>
-          <span class="article-time">{{ formatDate(article.publish_time) }}</span>
-        </div>
+    <div class="community-page">
+<div class="page-header">
+  <h1>社群分享</h1>
+</div>
+<div class="controls">
+  <input type="text" class="form-control search-field" placeholder="搜索文章...">
+  <button type="button" @click="goToEditor" class="btn btn-create">
+    创建新文章
+  </button>
+</div>
+<div class="article-list">
+  <div v-for="article in articles" :key="article.id" class="article-item shadow" @click="goToArticle(article.id)">
+    <div class="article-header">
+      <span class="article-id">{{ article.id }}</span>
+      <span class="article-title">{{ article.title }}</span>
+      <div class="article-info">
+        <span class="article-user-id">作者ID: {{ article.user_id }}</span>
+        <span class="article-question-id">问题ID: {{ article.question_id }}</span>
       </div>
     </div>
+    <div class="article-content">
+      <p>{{ articleExcerpt(article.content) }}</p>
+      <span class="article-time">{{ formatDate(article.publish_time) }}</span>
+    </div>
+  </div>
+</div>
+</div>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -69,7 +72,11 @@ export default {
     },
     goToEditor() {
       this.$router.push({ name: 'article-editor' });
-    }
+    },
+    goToArticle(articleId) {
+    this.$router.push({ name: 'article-details', params: { id: articleId } });
+  }
+    
   }
 }
 </script>

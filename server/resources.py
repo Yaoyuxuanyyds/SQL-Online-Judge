@@ -9,6 +9,8 @@ from sqlalchemy.exc import SQLAlchemyError, TimeoutError, OperationalError
 from sqlalchemy.orm import sessionmaker
 from flask_restful import Resource, fields, marshal_with, request
 from models import db, User
+from sqlalchemy import func
+from datetime import datetime
 
 # answer
 answer_field = {
@@ -43,6 +45,7 @@ class Community(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
         article_id = request.json.get("article_id")
+        print(article_id)
         article = models.Article.query.filter_by(id=article_id)
         if article:
             return article, HTTP_OK
@@ -51,21 +54,41 @@ class Community(Resource):
     
     @auth_role(AUTH_ALL)
     def post(self):
+        data = request.get_json()
+        if not data:
+            return {"message": "无效的请求数据"}, HTTP_BAD_REQUEST
+
+        try:
+            user_id = int(data.get('user_id'))  # 确保 user_id 是整数
+        except ValueError:
+            return {"message": "无效的用户ID"}, HTTP_BAD_REQUEST
+        
+        # 获取当前最大的 id
+        max_id = db.session.query(func.max(models.Article.id)).scalar()
+        max_id = max_id + 1 if max_id else 1
+
+        # 解析 ISO 8601 时间并转换为无时区的字符串格式
+        def parse_iso_datetime(iso_str):
+            dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
+            return dt.strftime('%Y-%m-%d %H:%M:%S')
+        
         article = models.Article()
-        article.title = request.json.get('title')
-        article.user_id = request.json.get('user_id', None)
-        article.question_id = request.json.get('question_id', None)
-        article.is_notice = request.json.get('is_notice', False)
-        article.content = request.json.get('content', None)
-        article.publish_time = request.json.get('publish_time')
-        article.last_modify_time = request.json.get('last_modify_time')
-        if article.title and article.content:
-            db.session.add(article)
-            db.session.commit()
-            return {}, HTTP_CREATED
-        else:
+        article.id = max_id
+        article.title = data.get('title')
+        article.content = data.get('content')
+        article.user_id = user_id
+        article.question_id = data.get('question_id', None)
+        article.is_notice = data.get('is_notice', False)
+        article.publish_time = parse_iso_datetime(data.get('publish_time'))
+        article.last_modify_time = parse_iso_datetime(data.get('last_modify_time'))
+
+        if not article.title or not article.content:
             return {"message": "文章缺少标题或内容！"}, HTTP_BAD_REQUEST
-    
+
+        db.session.add(article)
+        db.session.commit()
+        return {}, HTTP_CREATED
+
     # TODO: 添加修改文章的类方法
     @auth_role(AUTH_ALL)
     def update(self):

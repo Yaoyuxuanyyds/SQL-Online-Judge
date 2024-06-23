@@ -16,6 +16,10 @@
           <label for="question_id">问题ID (可选):</label>
           <input type="number" id="question_id" v-model="article.question_id" class="form-control">
         </div>
+        <div class="form-group">
+          <label for="is_notice">公告:</label>
+          <input type="checkbox" id="is_notice" v-model="article.is_notice">
+        </div>
         <button type="submit" class="btn btn-primary">发布文章</button>
       </form>
         </div>
