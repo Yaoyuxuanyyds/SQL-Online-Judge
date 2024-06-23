@@ -49,7 +49,6 @@ export default {
           this.questions = response.data.data;
         })
         .catch(error => {
-          // 替代 console
           this.$emit('error', error);
         });
     },

@@ -62,7 +62,6 @@
             this.$router.push('/student/community'); // Redirect to community page or wherever appropriate
           })
           .catch(error => {
-            console.error('Error publishing article:', error.response.data.message);
             alert('发布失败: ' + error.response.data.message);
           });
       }

@@ -13,7 +13,7 @@ def auth_role(role):
         def wrapper(*args, **kwargs):
             session = get_session()
             if session is None:
-                abort(HTTP_FORBIDDEN)
+                abort(HTTP_BAD_REQUEST)
             if role == AUTH_ALL:
                 user = models.User.query.filter_by(session=session).first()
             else:

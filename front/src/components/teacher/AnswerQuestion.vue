@@ -49,15 +49,16 @@ export default {
       const questionId = this.$route.params.id;
       axios.get(`/api/questions`, {
         headers: {
-          'session': localStorage.getItem('session')
+          'session': localStorage.getItem('session'),
+          'Content-Type': 'application/json'
         }
       })
       .then(response => {
         this.question = response.data;
       })
-      .catch(() => {
-        //console.error("Error fetching the question:", error);
-      });
+      .catch(error => {
+          alert(`失败: ${error.response.data.message}`);
+        }); 
     },
     submitAnswer() {
       // Submit第一步：在submit表中添加一条记录

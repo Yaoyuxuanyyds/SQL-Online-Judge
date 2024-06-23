@@ -37,7 +37,7 @@ export default {
     return {
       question: {},
       userAnswer: '',
-      student_id: 1,    // 获取student_id?
+      student_id: localStorage.getItem('id')
     };
   },
   mounted() {
@@ -46,9 +46,6 @@ export default {
   methods: {
     fetchQuestion() {
       axios.get(`/api/questions`, {
-        'question_id': this.$route.params.id
-      },
-      {
         headers: {
           'session': localStorage.getItem('session')
         }
@@ -56,9 +53,9 @@ export default {
       .then(response => {
         this.question = response.data;
       })
-      .catch(() => {
-        
-      });
+      .catch(error => {
+          alert(`失败: ${error.response.data.message}`);
+        }); 
     },
     submitAnswer() {
       // Submit第一步：在submit表中添加一条记录
@@ -68,7 +65,12 @@ export default {
         submit_sql: this.userAnswer,
         submit_time: new Date().toISOString(),  // currenttime
         question_id: this.question.question_id,
-       })
+      }, {
+        headers: {
+          'session': localStorage.getItem('session'),
+          'Content-Type': 'application/json'
+        }
+      })
         .then(response => {
           alert(`成功: ${response.data.message}`);
         })
