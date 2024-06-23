@@ -1,116 +1,119 @@
 <template>
   <div>
-    <!-- <Navbar /> -->
+    <Navbar />
     <div class="create-exam-container">
-      <h1>Create Exam</h1>
-      <p>创建竞赛</p>
-      
-      <!-- 输入考试信息
-      <div class="form-group">
-        <label>Exam Name:</label>
-        <input v-model="examName" placeholder="Exam Name" @input="updateExamName">
+      <div class="exam-time">
+        <h2>设置考试时间</h2>
+        <div class="form-group">
+          <label>开始时间:</label>
+          <input type="datetime-local" v-model="startTime">
+        </div>
+        <div class="form-group">
+          <label>截止时间:</label>
+          <input type="datetime-local" v-model="endTime">
+        </div>
       </div>
-       <div class="form-group">
-        <label>Start Time:</label>
-        <input type="datetime-local" v-model="startTime" @input="updateExamTime('start')">
+
+      <div class="add-question">
+        <h2>添加题目</h2>
+        <div class="form-group">
+          <label>题目ID:</label>
+          <input v-model="questionId" placeholder="题目ID">
+          <label>分值:</label>
+          <input v-model.number="questionScore" type="number" placeholder="分值">
+          <button @click="addQuestion">添加题目</button>
+        </div>
+        <table v-if="questions.length > 0" class="exam-table">
+          <thead>
+            <tr>
+              <th>题目ID</th>
+              <th>分值</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(question, index) in questions" :key="index">
+              <td>{{ question.id }}</td>
+              <td>{{ question.score }}</td>
+              <td><button @click="removeQuestion(index)">删除</button></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="form-group">
-        <label>End Time:</label>
-        <input type="datetime-local" v-model="endTime" @input="updateExamTime('end')">
-      </div> -->
-      
-      <!-- 学生添加 -->
-      <div class="form-group">
-        <label>Add Student by ID:</label>
-        <input v-model="studentId" placeholder="Student ID">
-        <button @click="addStudent">Add Student</button>
+
+      <div class="add-student">
+        <h2>添加学生</h2>
+        <div class="form-group">
+          <label>学生ID:</label>
+          <input v-model="studentId" placeholder="学生ID">
+          <button @click="addStudent">添加学生</button>
+        </div>
+        <table v-if="students.length > 0" class="student-table">
+          <thead>
+            <tr>
+              <th>学生ID</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(student, index) in students" :key="index">
+              <td>{{ student.id }}</td>
+              <td><button @click="removeStudent(index)">删除</button></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      
-      <!-- 题目添加 -->
-      <!-- <div v-for="(question, index) in questions" :key="index" class="form-group">
-        <label>Question {{ index + 1 }}:</label>
-        <input v-model="question.number" placeholder="Question Number">
-        <input v-model.number="question.score" type="number" placeholder="Score">
-        <button @click="removeQuestion(index)">Remove</button>
+
+      <div class="submit-section">
+        <button @click="submitExam">完成创建</button>
       </div>
-      <button @click="addQuestion">Add Question</button>
-       -->
-      <!-- 表格展示题目 -->
-      <!-- <table v-if="questions.length > 0" class="exam-table">
-        <thead>
-          <tr>
-            <th>Question Number</th>
-            <th>Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(question, index) in questions" :key="index">
-            <td>{{ question.number }}</td>
-            <td>{{ question.score }}</td>
-          </tr>
-        </tbody>
-      </table> -->
-      
-      <!-- 右侧显示总题目数量和总分值 -->
-      <!-- <div class="totals">
-        Total Questions: {{ totalQuestions }}
-        Total Score: {{ totalScore }}
-      </div> -->
-      
-      <!-- 完成创建按钮 -->
-      <button @click="submitExam">Finish Creating</button>
     </div>
   </div>
 </template>
 
 <script>
-// import Navbar from '@/components/teacher/Navbar.vue';
-import { mapState, mapActions } from 'vuex';
+import Navbar from '@/components/teacher/Navbar.vue';
 
 export default {
-  // components: {
-  //   Navbar
-  // },
+  components: {
+    Navbar
+  },
+  name: 'CreateExam',
   data() {
     return {
-      examName: '',
-      // startTime: '',
-      // endTime: '',
+      startTime: '',
+      endTime: '',
+      questionId: '',
+      questionScore: '',
       studentId: '',
-      questions: [{ number: '', score: '' }]
+      questions: [],
+      students: []
     };
   },
-  computed: {
-    ...mapState({
-      // students: state => state.newExam.students,
-      totalQuestions: state => state.newExam.questions.length,
-      totalScore: state => state.newExam.questions.reduce((acc, cur) => acc + cur.score, 0)
-    })
-  },
   methods: {
-    ...mapActions(['addStudent', 'addQuestion', 'removeQuestion', 'submitExam']),
-    updateExamName() {
-      this.$store.commit('SET_EXAM_NAME', this.examName);
+    addQuestion() {
+      if (this.questionId && this.questionScore) {
+        this.questions.push({ id: this.questionId, score: this.questionScore });
+        this.questionId = '';
+        this.questionScore = '';
+      }
     },
-    // updateExamTime(type) {
-    //   const time = type === 'start' ? this.startTime : this.endTime;
-    //   this.$store.commit('SET_EXAM_TIME', { startTime: this.startTime, endTime: this.endTime });
-    // },
+    removeQuestion(index) {
+      this.questions.splice(index, 1);
+    },
     addStudent() {
       if (this.studentId) {
-        this.$store.dispatch('addStudent', { id: this.studentId });
+        this.students.push({ id: this.studentId });
         this.studentId = '';
       }
     },
-    addQuestion() {
-      this.questions.push({ number: '', score: '' });
-    },
-    removeQuestion(index) {
-      this.$store.dispatch('removeQuestion', index);
+    removeStudent(index) {
+      this.students.splice(index, 1);
     },
     submitExam() {
-      if (this.questions.length > 0 && this.examName) {
-        this.$store.dispatch('submitExam');
+      if (this.questions.length > 0 && this.startTime && this.endTime) {
+        // Handle exam submission logic here (could be an API call or further action)
+        alert('考试创建成功！');
       } else {
         alert('请填写完整的考试信息！');
       }
@@ -128,24 +131,34 @@ export default {
   border-radius: 5px;
 }
 
+.exam-time, .add-question, .add-student, .submit-section {
+  margin-bottom: 20px;
+}
+
 .form-group {
   margin-bottom: 10px;
 }
 
-.exam-table {
+.exam-table, .student-table {
   width: 100%;
-  margin-top: 20px;
   border-collapse: collapse;
+  margin-top: 10px;
 }
 
-.exam-table th, .exam-table td {
+.exam-table th, .exam-table td, .student-table th, .student-table td {
   border: 1px solid #ccc;
   padding: 8px;
   text-align: left;
 }
 
-.totals {
-  margin-top: 20px;
-  font-weight: bold;
+.submit-section button {
+  display: block;
+  margin: auto;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 </style>
