@@ -26,7 +26,7 @@
           <td>
             <!-- 根据角色显示不同按钮 -->
             <button @click="toggleUserRole(user.id, user.role, user.password)">
-              {{ user.role === AUTH_STUDENT ? '设为教师' : '设为学生' }}
+              {{ user.role === 0 ? '设为教师' : '设为学生' }}
             </button>
             <!-- 编辑密码按钮 -->
             <button @click="editPassword(index)">编辑密码</button>
@@ -39,6 +39,7 @@
 
 <script>
 import axios from 'axios';
+import { config } from 'vue/types/umd';
 
 export default {
   name: 'ManageUsers',
@@ -68,43 +69,43 @@ export default {
           this.users = response.data;
         })
         .catch(error => {
-          console.error('获取用户列表失败:', error);
+          alert('获取用户列表失败:', error);
         });
     },
     searchUser() {
-      console.log('搜索 ID:', this.searchId);
+      alert('搜索 ID:', this.searchId);
       // 可以在这里添加向后端发送搜索请求的逻辑
       // TODO
     },
     toggleUserRole(user_id, currentRole, password) {
       const userId = ParseInt(user_id);
       const newPassword = password
-      const newRole = ParseInt(currentRole) === AUTH_STUDENT ? AUTH_TEACHER : AUTH_STUDENT;
+      const newRole = ParseInt(currentRole) === 0 ? 1 : 0;
       axios.put(`/api/manageusers`,{id: userId, password: newPassword, role: newRole })
         .then(response => {
-          console.log(response.data.message);
+          alert(response.data.message);
           const userIndex = this.users.findIndex(u => u.id === userId);
           if (userIndex !== -1) {
             this.users[userIndex].role = newRole;
           }
         })
         .catch(error => {
-          console.error('切换用户角色失败:', error);
+          alert('切换用户角色失败:', error);
         });
     },
     editPassword(index) {
       const userId = this.users[index].id;
       const role = this.users[index].role;
-      console.log('编辑密码:', userId, role);
+      // console.log('编辑密码:', userId, role);
       const newPassword = prompt('输入新密码:');
       if (newPassword !== null && newPassword !== '') {
         // 发送更新密码的请求
         axios.put(`/api/manageusers`,{id: userId}, { password: newPassword }, { role: role })
-          .then(response => {
-            alert('密码更新成功!');
-          })
+          .then(
+            alert('密码更新成功!')
+          )
           .catch(error => {
-            console.error('密码更新失败:', error);
+            alert('密码更新失败:', error);
           });
       }
     }
