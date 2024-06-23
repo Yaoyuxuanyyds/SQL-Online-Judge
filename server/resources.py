@@ -103,6 +103,8 @@ class Community(Resource):
 # 文章列表类
 community_field = {
     'id': fields.Integer,
+    'title': fields.String,
+    'content': fields.String,
     'user_id': fields.Integer,
     'question_id': fields.Integer,
     'publish_time': fields.DateTime,
@@ -110,7 +112,7 @@ community_field = {
 }
 class CommunityList(Resource):
     @auth_role(AUTH_ALL)
-    @marshal_with(community_field)
+    # @marshal_with(community_field)
     def get(self):
         articles = models.Article.query.all()
         data = [marshal(article, community_field) for article in articles]

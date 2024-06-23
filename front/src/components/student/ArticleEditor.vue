@@ -57,9 +57,9 @@
   
         // Make the axios post request
         axios.post('/api/community/operate', payload, {
-  headers: {
-    'Content-Type': 'application/json'
-  }
+          headers: {
+          'session': localStorage.getItem('session')
+        }
 })
           .then(() => {
             alert('文章已发布');
