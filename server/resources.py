@@ -1,5 +1,5 @@
 from flask import request
-from flask_restful import Resource, fields, marshal_with, marshal
+from flask_restful import Resource, fields, marshal_with, marshal, request
 import models, time, hashlib, os
 from app import db
 from config import *
@@ -7,6 +7,8 @@ from permissions import auth_role
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError, TimeoutError, OperationalError
 from sqlalchemy.orm import sessionmaker
+from flask_restful import Resource, fields, marshal_with, request
+from models import db, User
 
 # answer
 answer_field = {
@@ -101,8 +103,6 @@ class Community(Resource):
 # 文章列表类
 community_field = {
     'id': fields.Integer,
-    'title': fields.String,
-    'content': fields.String,
     'user_id': fields.Integer,
     'question_id': fields.Integer,
     'publish_time': fields.DateTime,
@@ -110,14 +110,11 @@ community_field = {
 }
 class CommunityList(Resource):
     @auth_role(AUTH_ALL)
-    # @marshal_with(community_field)
+    @marshal_with(community_field)
     def get(self):
         articles = models.Article.query.all()
         data = [marshal(article, community_field) for article in articles]
         return {'data': data}, HTTP_OK
-    
-
-
 # TODO: Contest后端
 
 # judge
@@ -334,7 +331,6 @@ class QuestionList(Resource):
         # 查询所有题目 -> 用于题目列表的查询和显示
         questions = models.Question.query.all()
         data = [marshal(question, question_field) for question in questions]
-        
         return {'data': data}, HTTP_OK
 
 # register
@@ -479,3 +475,60 @@ class SubmitList(Resource):
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         data = [marshal(submit, submit_field) for submit in submits]
         return {'data': data}, HTTP_OK
+
+# admin-ManageUsers
+
+# Define the fields for User resource serialization
+user_field = {
+    'id': fields.Integer,
+    'username': fields.String,
+    'password': fields.String,
+    'role': fields.String
+}
+
+class ManageUsers(Resource):
+    @marshal_with(user_field)
+    def get(self):
+        # Retrieve all users
+        users = User.query.all()
+        return users
+
+    def post(self):
+        # Create a new user
+        username = request.json.get('username')
+        password = request.json.get('password')
+        role = request.json.get('role')
+
+        if not (username and password and role):
+            return {"message": "Incomplete user information. Please provide username, password, and role."}, HTTP_BAD_REQUEST
+
+        new_user = User(username=username, password=password, role=role)
+        db.session.add(new_user)
+        db.session.commit()
+        return {"message": "User created successfully."}, HTTP_CREATED
+
+    def delete(self):
+        # Delete a user
+        user_id = request.json.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+
+        if not user:
+            return {"message": "User not found."}, HTTP_NOT_FOUND
+
+        db.session.delete(user)
+        db.session.commit()
+        return {}, HTTP_OK
+
+    def put(self):
+        # Update user role
+        user_id = request.json.get('user_id')
+        new_role = request.json.get('role')
+
+        user = User.query.filter_by(id=user_id).first()
+
+        if not user:
+            return {"message": "User not found."}, HTTP_NOT_FOUND
+
+        user.role = new_role
+        db.session.commit()
+        return {"message": "User role updated successfully."}, HTTP_OK
