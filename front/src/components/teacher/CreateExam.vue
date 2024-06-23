@@ -2,6 +2,14 @@
   <div>
     <Navbar />
     <div class="create-exam-container">
+      <div class="exam-name">
+        <h2>输入考试名称</h2>
+        <div class="form-group">
+          <label>考试名称:</label>
+          <input v-model="examName" placeholder="请输入考试名称" style="width: 60%;">
+        </div>
+      </div>
+
       <div class="exam-time">
         <h2>设置考试时间</h2>
         <div class="form-group">
@@ -20,7 +28,7 @@
           <label>题目ID:</label>
           <input v-model="questionId" placeholder="题目ID">
           <label>分值:</label>
-          <input v-model.number="questionScore" type="number" placeholder="分值">
+          <input v-model.number="questionScore" type="number" placeholder="分值" style="width: 30%;">
           <button @click="addQuestion">添加题目</button>
         </div>
         <table v-if="questions.length > 0" class="exam-table">
@@ -39,6 +47,10 @@
             </tr>
           </tbody>
         </table>
+        <div class="totals" v-if="questions.length > 0">
+          总题目数量: {{ questions.length }}
+          总分值: {{ totalScore }}
+        </div>
       </div>
 
       <div class="add-student">
@@ -81,6 +93,7 @@ export default {
   name: 'CreateExam',
   data() {
     return {
+      examName: '',
       startTime: '',
       endTime: '',
       questionId: '',
@@ -89,6 +102,11 @@ export default {
       questions: [],
       students: []
     };
+  },
+  computed: {
+    totalScore() {
+      return this.questions.reduce((total, question) => total + parseInt(question.score), 0);
+    }
   },
   methods: {
     addQuestion() {
@@ -111,8 +129,8 @@ export default {
       this.students.splice(index, 1);
     },
     submitExam() {
-      if (this.questions.length > 0 && this.startTime && this.endTime) {
-        // Handle exam submission logic here (could be an API call or further action)
+      if (this.examName && this.questions.length > 0 && this.startTime && this.endTime) {
+        // 处理考试提交逻辑，例如可以进行API调用或其他操作
         alert('考试创建成功！');
       } else {
         alert('请填写完整的考试信息！');
@@ -131,7 +149,7 @@ export default {
   border-radius: 5px;
 }
 
-.exam-time, .add-question, .add-student, .submit-section {
+.exam-name, .exam-time, .add-question, .add-student, .submit-section {
   margin-bottom: 20px;
 }
 
@@ -160,5 +178,10 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.totals {
+  margin-top: 10px;
+  font-weight: bold;
 }
 </style>
