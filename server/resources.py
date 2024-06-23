@@ -576,6 +576,8 @@ class SubmitList(Resource):
         data = [marshal(submit, submit_field) for submit in submits]
         return {'data': data}, HTTP_OK
 
+
+
 # createexam
 # Define the fields for Exam resource serialization
 exam_field = {
