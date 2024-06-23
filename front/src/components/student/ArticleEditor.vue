@@ -52,7 +52,7 @@
         };
   
         // Make the axios post request
-        axios.post('/api/community/operate', payload, {
+        axios.post('/api/community', payload, {
               headers: {
               'session': localStorage.getItem('session')
             }

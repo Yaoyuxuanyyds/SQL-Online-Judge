@@ -21,14 +21,18 @@ def create_app():
         return ''
 
     # 注册资源API
+    api.add_resource(Community, '/api/community')
+    api.add_resource(CommunityList, '/api/communitylist')
+    api.add_resource(Judge, '/api/judge')
+    api.add_resource(Login, '/api/login')
+    api.add_resource(ManageUsers, '/api/manageusers')
+    api.add_resource(Question, '/api/question')
     api.add_resource(QuestionList, '/api/questionlist')  
     api.add_resource(Register, '/api/register')
-    api.add_resource(Questions, '/api/questions')
-    api.add_resource(Login, '/api/login')
-    api.add_resource(SubmitList, '/api/submit')
-    api.add_resource(CommunityList, '/api/communitylist')
-    api.add_resource(Community, '/api/community/operate')
-
+    api.add_resource(Student, '/api/student')
+    api.add_resource(StudentList, '/api/studentlist')
+    api.add_resource(Submit, '/api/submit')
+    api.add_resource(SubmitList, '/api/submitlist')
     with app.app_context():
         db.create_all()
     return app

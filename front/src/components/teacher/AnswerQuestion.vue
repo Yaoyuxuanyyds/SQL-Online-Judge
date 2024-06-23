@@ -46,12 +46,12 @@ export default {
   methods: {
     fetchQuestion() {
       const QuestionId = this.$route.params.id;
-      axios.get(`/api/questions`, {
+      axios.get(`/api/question`, {
         headers: {
           'session': localStorage.getItem('session'),
         },
-        data: {
-          question_id: parseInt(QuestionId)
+        params: {
+          question_id: QuestionId
         }
       })
       .then(response => {

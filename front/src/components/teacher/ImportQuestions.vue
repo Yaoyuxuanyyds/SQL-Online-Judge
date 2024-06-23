@@ -73,7 +73,7 @@ export default {
   },
   methods: {
     createQuestion() {
-      axios.post(`/api/questions`, {...this.newQuestion},
+      axios.post(`/api/question`, {...this.newQuestion},
         {headers: {'session': localStorage.getItem('session'), 'Content-Type': 'application/json'}})
         .then(response => {
 

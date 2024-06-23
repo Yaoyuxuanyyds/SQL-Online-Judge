@@ -39,7 +39,7 @@ export default {
   methods: {
     fetchArticleDetails() {
       const articleId = this.$route.params.id;
-      axios.get('/api/community/operate', {
+      axios.get('/api/community', {
         headers: {
           'session': localStorage.getItem('session')
         },

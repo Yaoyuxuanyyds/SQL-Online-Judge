@@ -16,7 +16,7 @@ answer_field = {
     'id': fields.Integer,
     'answer_example': fields.String
 }
-class Answers(Resource):
+class Answer(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(answer_field)
     def get(self):
@@ -163,7 +163,7 @@ submit_judge = {
     'question_id': fields.Integer
 }
 
-class SQLJudge(Resource):
+class Judge(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(submit_judge)
     def execute_sql(self, code):
@@ -311,6 +311,61 @@ class Login(Resource):
         else:
             return {"message": '身份信息无效！请重新登录。'}, HTTP_UNAUTHORIZED
 
+# manageUsers
+user_field = {
+    'id': fields.Integer,
+    'username': fields.String,
+    'password': fields.String,
+    'role': fields.String
+}
+
+class ManageUsers(Resource):
+    @marshal_with(user_field)
+    def get(self):
+        # Retrieve all users
+        users = User.query.all()
+        return users
+
+    def post(self):
+        # Create a new user
+        username = request.json.get('username')
+        password = request.json.get('password')
+        role = request.json.get('role')
+
+        if not (username and password and role):
+            return {"message": "Incomplete user information. Please provide username, password, and role."}, HTTP_BAD_REQUEST
+
+        new_user = User(username=username, password=password, role=role)
+        db.session.add(new_user)
+        db.session.commit()
+        return {"message": "User created successfully."}, HTTP_CREATED
+
+    def delete(self):
+        # Delete a user
+        user_id = int(request.args.get('user_id'))
+        user = User.query.filter_by(id=user_id).first()
+
+        if not user:
+            return {"message": "User not found."}, HTTP_NOT_FOUND
+
+        db.session.delete(user)
+        db.session.commit()
+        return {}, HTTP_OK
+
+    def put(self):
+        # Update user role
+        user_id = int(request.json.get('user_id'))
+        new_role = request.json.get('role')
+
+        user = User.query.filter_by(id=user_id).first()
+
+        if not user:
+            return {"message": "User not found."}, HTTP_NOT_FOUND
+
+        user.role = new_role
+        db.session.commit()
+        return {"message": "User role updated successfully."}, HTTP_OK
+
 # questions
 question_field = {
     'id': fields.Integer,
@@ -322,7 +377,7 @@ question_field = {
 }
 
 # 处理单个题目的相关功能
-class Questions(Resource):
+class Question(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(question_field)
     def get(self):
@@ -395,7 +450,7 @@ student_fields = {
     'username': fields.String
 }
 
-class Students(Resource):
+class Student(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(student_fields)
     def get(self):
@@ -454,7 +509,7 @@ submit_field = {
     'pass_rate': fields.Float
 }
 
-class Submits(Resource):
+class Submit(Resource):
     # 获取自己的提交信息
     @auth_role(AUTH_ALL)
     @marshal_with(submit_field)
@@ -514,60 +569,3 @@ class SubmitList(Resource):
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         data = [marshal(submit, submit_field) for submit in submits]
         return {'data': data}, HTTP_OK
-
-# admin-ManageUsers
-
-# Define the fields for User resource serialization
-user_field = {
-    'id': fields.Integer,
-    'username': fields.String,
-    'password': fields.String,
-    'role': fields.String
-}
-
-class ManageUsers(Resource):
-    @marshal_with(user_field)
-    def get(self):
-        # Retrieve all users
-        users = User.query.all()
-        return users
-
-    def post(self):
-        # Create a new user
-        username = request.json.get('username')
-        password = request.json.get('password')
-        role = request.json.get('role')
-
-        if not (username and password and role):
-            return {"message": "Incomplete user information. Please provide username, password, and role."}, HTTP_BAD_REQUEST
-
-        new_user = User(username=username, password=password, role=role)
-        db.session.add(new_user)
-        db.session.commit()
-        return {"message": "User created successfully."}, HTTP_CREATED
-
-    def delete(self):
-        # Delete a user
-        user_id = int(request.args.get('user_id'))
-        user = User.query.filter_by(id=user_id).first()
-
-        if not user:
-            return {"message": "User not found."}, HTTP_NOT_FOUND
-
-        db.session.delete(user)
-        db.session.commit()
-        return {}, HTTP_OK
-
-    def put(self):
-        # Update user role
-        user_id = int(request.json.get('user_id'))
-        new_role = request.json.get('role')
-
-        user = User.query.filter_by(id=user_id).first()
-
-        if not user:
-            return {"message": "User not found."}, HTTP_NOT_FOUND
-
-        user.role = new_role
-        db.session.commit()
-        return {"message": "User role updated successfully."}, HTTP_OK
