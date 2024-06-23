@@ -85,7 +85,7 @@ export default {
             id: parseInt(this.id),
             password: this.password,
           });
-          const useID = this.id;
+          const userID = this.id;
           const userName = response.data.username;
           const userRole = response.data.role;
           const sessionToken = response.data.session; // 获取session token
@@ -95,7 +95,7 @@ export default {
           // 设置用户角色
           localStorage.setItem('userRole', userRole);
           // 设置用户ID
-          localStorage.setItem('userID', useID);
+          localStorage.setItem('userID', userID);
           // 设置用户名
           localStorage.setItem('userName', userName);
 

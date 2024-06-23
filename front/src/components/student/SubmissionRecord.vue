@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+import Navbar from '@/components/student/Navbar.vue';
 export default {
   name: "SubmissionRecord",
   props: {
@@ -39,5 +41,3 @@ th {
   border: 1px solid #ccc;
 }
 </style>
-
-//要加父组件
