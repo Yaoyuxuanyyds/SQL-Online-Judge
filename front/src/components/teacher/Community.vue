@@ -1,45 +1,37 @@
 <template>
-  <div>
+  <div class="community-page">
+    <Navbar />
+    <div class="header">
+      <h1>社群分享</h1>
+      <button type="button" @click="goToEditor" class="btn btn-success">
+        创建新文章
+      </button>
+    </div>
+    <input type="text" class="form-control search-field" placeholder="搜索文章...">
 
-    <meta charset="UTF-8">
-    <title>Community</title>
-    <!-- Bootstrap for styling -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <div class="container mt-5">
-      <Navbar />
-
-      <h2>社群分享</h2>
-      <div class="mb-3">
-        <button type="button" @click="goToEditor" class="btn btn-primary mb-3">
-          写新文章
-        </button>
-        <input type="text" class="form-control mb-2" id="search-field" placeholder="搜索文章...">
-        <div class="btn-group">
-          <button class="btn btn-outline-secondary" @click="filterArticles('all')">所有文章</button>
-          <button class="btn btn-outline-secondary" @click="filterArticles('mine')">我的文章</button>
+    <div class="article-list">
+      <div v-for="article in articles" :key="article.id" class="article-item shadow">
+        <div class="article-header">
+          <span class="article-id">{{ article.id }}</span>
+          <span class="article-title">{{ article.title }}</span>
+          <div class="article-info">
+            <span class="article-user-id">作者ID: {{ article.user_id }}</span>
+            <span class="article-question-id">问题ID: {{ article.question_id }}</span>
+          </div>
         </div>
-        <select class="form-select w-auto" @change="changeEntries($event)">
-          <option value="5">显示 5 条</option>
-          <option value="10" selected>显示 10 条</option>
-          <option value="20">显示 20 条</option>
-        </select>
+        <div class="article-content">
+          <p>{{ articleExcerpt(article.content) }}</p>
+          <span class="article-time">{{ formatDate(article.publish_time) }}</span>
+        </div>
       </div>
-      <ul class="list-group">
-        <li class="list-group-item" v-for="article in articles" :key="article.id">
-          #{{ article.id }} - <strong>{{ article.author }}</strong> 分享于 {{ article.date }}
-          <a :href="article.url" target="_blank">{{ article.title }}</a>
-          <span class="float-end">
-            <button class="btn btn-outline-primary" @click="likeArticle(article.id)">点赞 {{ article.likes }}</button>
-            浏览量：{{ article.views }}
-          </span>
-        </li>
-      </ul>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import Navbar from '@/components/teacher/Navbar.vue';
+
 export default {
   name: 'Community',
   components: {
@@ -47,49 +39,109 @@ export default {
   },
   data() {
     return {
-      articles: []  // 这个应根据实际数据结构初始化
+      articles: []
     };
   },
+  created() {
+    this.fetchArticles();
+  },
   methods: {
-    likeArticle(articleId) {
-      // 实际情况下应发送一个axios或fetch请求去后端处理点赞
+    fetchArticles() {
+      axios.get('/api/communitylist', {
+        headers: {
+          'session': localStorage.getItem('session')
+        }
+      })
+        .then(response => {
+          this.articles = response.data.data;
+        })
+        .catch(error => {
+          console.error('Error fetching articles:', error);
+          this.$emit('error', error);
+        });
     },
-    filterArticles(filter) {
-      // 实际情况下应与后端交互，过滤数据
+    formatDate(date) {
+      return new Date(date).toLocaleString();
     },
-    changeEntries(event) {
-      // Change display entries, actual implementation needed with backend support
+    articleExcerpt(content) {
+      return content.length > 100 ? content.substring(0, 100) + '...' : content;
     },
     goToEditor() {
-      window.location = 'editor.html';
+      this.$router.push({ name: 'ArticleEditor' });
     }
   }
-};
+}
 </script>
 
 <style scoped>
-.container {
+.community-page {
+  max-width: 800px;
+  margin: auto;
   padding: 20px;
 }
-.list-group-item {
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+h1 {
+  color: #333;
+  font-weight: bold;
+}
+.btn-success {
+  background-color: #28a745; /* Bootstrap green */
+}
+.search-field {
+  margin: 20px 0;
+}
+.article-list {
+  display: flex;
+  flex-direction: column;
+}
+.article-item {
+  border: 1px solid #dee2e6;
+  margin-bottom: 10px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+.article-item:hover {
+  transform: translateY(-5px);
+}
+.article-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.article-id, .article-question-id {
+  background-color: #007bff;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 50%;
+  text-align: center;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  border: 1px solid #e1e1e1;
-  background-color: #f9f9f9;
-  margin-bottom: 10px;
+  justify-content: center;
 }
-.list-group-item a {
-  color: #007bff; /* Bootstrap primary color */
+.article-title {
+  font-size: 1.2rem;
+  margin: 0 15px;
+  flex-grow: 1;
 }
-.list-group-item:hover {
-  background-color: #eef9f9;
+.article-info {
+  display: flex;
+  align-items: center;
 }
-.btn-primary {
-  background-color: #007bff; /* Ensure consistency with Bootstrap colors */
+.article-user-id, .article-question-id {
+  margin-left: 10px;
 }
-h2 {
-  text-align: center;
-  color: #333;
+.article-content p {
+  margin: 10px 0 5px;
+}
+.article-time {
+  font-size: 0.85rem;
+  color: #666;
 }
 </style>

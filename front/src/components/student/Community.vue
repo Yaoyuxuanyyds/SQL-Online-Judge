@@ -1,23 +1,31 @@
 <template>
-  <div>
-  
+  <div class="community-page">
     <Navbar />
-    <h2>社群分享</h2>
-      <div class="mb-3">
-        <button type="button" @click="goToEditor" class="btn btn-primary mb-3">
-          写新文章
-        </button>
-        <input type="text" class="form-control mb-2" id="search-field" placeholder="搜索文章...">
+    <div class="page-header">
+      <h1>社群分享</h1>
+    </div>
+    <div class="controls">
+      <input type="text" class="form-control search-field" placeholder="搜索文章...">
+      <button type="button" @click="goToEditor" class="btn btn-create">
+        创建新文章
+      </button>
+    </div>
+    <div class="article-list">
+      <div v-for="article in articles" :key="article.id" class="article-item shadow">
+        <div class="article-header">
+          <span class="article-id">{{ article.id }}</span>
+          <span class="article-title">{{ article.title }}</span>
+          <div class="article-info">
+            <span class="article-user-id">作者ID: {{ article.user_id }}</span>
+            <span class="article-question-id">问题ID: {{ article.question_id }}</span>
+          </div>
+        </div>
+        <div class="article-content">
+          <p>{{ articleExcerpt(article.content) }}</p>
+          <span class="article-time">{{ formatDate(article.publish_time) }}</span>
+        </div>
       </div>
-
-    <ul v-if="articles.length > 0">
-      <li v-for="article in articles" :key="article.id">
-        文章ID: {{ article.id }} - 用户ID: {{ article.user_id }} - 问题ID: {{ article.question_id }}
-        <br>
-        发布时间: {{ article.publish_time }} - 是否通知: {{ article.is_notice ? '是' : '否' }}
-      </li>
-    </ul>
-    <p v-else>当前没有文章。</p>
+    </div>
   </div>
 </template>
 
@@ -33,52 +41,123 @@ export default {
   data() {
     return {
       articles: []
-    }
+    };
   },
   created() {
     this.fetchArticles();
   },
   methods: {
     fetchArticles() {
-      axios.get('/api/community', {
+      axios.get('/api/communitylist', {
         headers: {
           'session': localStorage.getItem('session')
         }
-      })  
+      })
         .then(response => {
           this.articles = response.data.data;
         })
         .catch(error => {
-          console.error('获取文章列表失败:', error);
+          console.error('Error fetching articles:', error);
+          this.$emit('error', error);
         });
+    },
+    formatDate(date) {
+      return new Date(date).toLocaleString();
+    },
+    articleExcerpt(content) {
+      return content.length > 100 ? content.substring(0, 100) + '...' : content;
+    },
+    goToEditor() {
+      this.$router.push({ name: 'article-editor' });
     }
   }
 }
 </script>
 
 <style scoped>
-.container {
-  padding: 20px;
+.community-page {
+  display: flex;
+  flex-direction: column;
 }
-.list-group-item {
+.page-header {
+  margin-bottom: 20px;
+}
+h1 {
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.search-field {
+  width: 100%;
+  max-width: 600px;
+  padding: 10px;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+.btn-create {
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.btn-create:hover {
+  background-color: #218838;
+}
+.article-list {
+  display: flex;
+  flex-direction: column;
+}
+.article-item {
+  border: 1px solid #dee2e6;
+  margin-bottom: 10px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+.article-item:hover {
+  transform: translateY(-5px);
+}
+.article-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.article-id, .article-question-id {
+  background-color: #007bff;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 50%;
+  text-align: center;
+}
+.article-title {
+  font-size: 1.5rem;
+  margin: 0 15px;
+  flex-grow: 1;
+}
+.article-info {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  border: 1px solid #e1e1e1;
-  background-color: #f9f9f9;
-  margin-bottom: 10px;
 }
-.list-group-item a {
-  color: #007bff; /* Bootstrap primary color */
+.article-user-id, .article-question-id {
+  margin-left: 10px;
 }
-.list-group-item:hover {
-  background-color: #eef9f9;
+.article-content p {
+  margin: 10px 0 5px;
 }
-.btn-primary {
-  background-color: #007bff; /* Ensure consistency with Bootstrap colors */
-}
-h2 {
-  text-align: center;
-  color: #333;
+.article-time {
+  font-size: 0.85rem;
+  color: #666;
 }
 </style>

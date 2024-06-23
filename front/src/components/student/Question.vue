@@ -63,7 +63,8 @@ export default {
 
 <style scoped>
 .container {
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 .header, .question-item {
   display: flex;
