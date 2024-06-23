@@ -73,10 +73,9 @@ export default {
   },
   methods: {
     createQuestion() {
-      axios.post(`/api/questions`, { 
-        ...this.newQuestion,
-        headers: {'session': localStorage.getItem('session'), 'Content-Type': 'application/json'}
-    })
+      axios.post(`/api/questions`, {
+        ...this.newQuestion},
+        {headers: {'session': localStorage.getItem('session'), 'Content-Type': 'application/json'}})
         .then(response => {
 
           // 清空输入框

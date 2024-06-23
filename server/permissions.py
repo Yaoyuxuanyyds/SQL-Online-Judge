@@ -12,7 +12,6 @@ def auth_role(role):
         @wraps(func)
         def wrapper(*args, **kwargs):
             session = get_session()
-            print(request.headers)
             if session is None:
                 abort(HTTP_BAD_REQUEST)
             if role == AUTH_ALL:
