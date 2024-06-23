@@ -312,6 +312,7 @@ class Login(Resource):
             return {"message": '身份信息无效！请重新登录。'}, HTTP_UNAUTHORIZED
 
 # manageUsers
+# Define the fields for User resource serialization
 user_field = {
     'id': fields.Integer,
     'username': fields.String,
@@ -326,23 +327,23 @@ class ManageUsers(Resource):
         users = User.query.all()
         return users
 
-    def post(self):
-        # Create a new user
-        username = request.json.get('username')
-        password = request.json.get('password')
-        role = request.json.get('role')
+    # def post(self):
+    #     # Create a new user
+    #     username = request.json.get('username')
+    #     password = request.json.get('password')
+    #     role = request.json.get('role')
 
-        if not (username and password and role):
-            return {"message": "Incomplete user information. Please provide username, password, and role."}, HTTP_BAD_REQUEST
+    #     if not (username and password and role):
+    #         return {"message": "Incomplete user information. Please provide username, password, and role."}, HTTP_BAD_REQUEST
 
-        new_user = User(username=username, password=password, role=role)
-        db.session.add(new_user)
-        db.session.commit()
-        return {"message": "User created successfully."}, HTTP_CREATED
+    #     new_user = User(username=username, password=password, role=role)
+    #     db.session.add(new_user)
+    #     db.session.commit()
+    #     return {"message": "User created successfully."}, HTTP_CREATED
 
     def delete(self):
         # Delete a user
-        user_id = int(request.args.get('user_id'))
+        user_id = int(request.json.get('user_id'))
         user = User.query.filter_by(id=user_id).first()
 
         if not user:
@@ -354,8 +355,9 @@ class ManageUsers(Resource):
 
     def put(self):
         # Update user role
-        user_id = int(request.json.get('user_id'))
-        new_role = request.json.get('role')
+        user_id = int(request.json.get('id'))
+        new_role = int(request.json.get('role'))
+        new_password = request.json.get('password')
 
         user = User.query.filter_by(id=user_id).first()
 
@@ -363,8 +365,9 @@ class ManageUsers(Resource):
             return {"message": "User not found."}, HTTP_NOT_FOUND
 
         user.role = new_role
+        user.password = new_password
         db.session.commit()
-        return {"message": "User role updated successfully."}, HTTP_OK
+        return {"message": "User updated successfully."}, HTTP_OK
 
 # questions
 question_field = {
