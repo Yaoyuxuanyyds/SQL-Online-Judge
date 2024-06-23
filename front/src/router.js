@@ -22,8 +22,6 @@ import Submit from '@/components/student/Submit'
 import Question from "@/components/student/Question"
 import AnswerQuestion from '@/components/student/AnswerQuestion.vue'
 import Contest from "@/components/student/Contest"
-import Question_contest from "@/components/student/Question_contest"
-import AnswerQuestion_contest from '@/components/student/AnswerQuestion_contest.vue'
 import Community from "@/components/student/Community"
 import ArticleEditor from "@/components/student/ArticleEditor"
 import ArticleDetails from "@/components/student/ArticleDetails"
@@ -45,24 +43,6 @@ export default new Router({
       name: 'admin',
       component: ManageUsers
     },
-    {
-      path: '/admin/user/:id',
-      name: 'user',
-      component: ManageUsers
-    },
-    {
-      path: '/admin/user/:id/edit',
-      name: 'edit-user',
-      component: ManageUsers
-    },
-
-    {
-      path: '/admin/user/:id/delete',
-      name: 'delete-user',
-      component: ManageUsers
-    },
-
-
 
     {
       path: '/teacher',
@@ -134,16 +114,6 @@ export default new Router({
       path: '/student/contest',
       name: 'contest',
       component: Contest
-    },
-    {
-      path: '/student/contest/:id',
-      name: 'question_contest',
-      component: Question_contest
-    },
-    {
-      path: '/student/contest/:id/answer',
-      name: 'answer-question_contest',
-      component: AnswerQuestion_contest
     },
     {
       path: '/student/community',

@@ -291,6 +291,12 @@ class Judge(Resource):
             else:
                 results[test_id] = (True, JUDGE_ACCEPTED)
         return {"results": results}, HTTP_OK
+    
+
+
+
+
+
 # login
 class Login(Resource):
     def post(self):
@@ -313,7 +319,7 @@ class Login(Resource):
             return {"message": '用户名或密码无效'}, HTTP_UNAUTHORIZED
         
     def delete(self):
-        session = request.args.get('session')
+        session = request.json.get('session')
         user = models.User.query.filter_by(session=session).first()
         if user:
             user.session = None
@@ -329,6 +335,7 @@ class Login(Resource):
             return {"id": user.id, "name": user.username, "role": user.role}, HTTP_OK
         else:
             return {"message": '身份信息无效！请重新登录。'}, HTTP_UNAUTHORIZED
+
 
 
 

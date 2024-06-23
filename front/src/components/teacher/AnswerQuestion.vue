@@ -64,11 +64,11 @@ export default {
     submitAnswer() {
       // Submit第一步：在submit表中添加一条记录
       axios.post(`/api/submit`, { 
-        student_id: this.student_id,
+        student_id: localStorage.getItem('userID'),
         exam_id: null,
         submit_sql: this.userAnswer,
-        submit_time: new Date().toISOString(),  // currenttime
-        question_id: this.question.question_id,
+        submit_time: new Date().toISOString(),
+        question_id: this.$route.params.id,
       }, {
         headers: {
           'session': localStorage.getItem('session'),
@@ -79,7 +79,22 @@ export default {
           alert(`成功: ${response.data.message}`);
         })
         .catch(error => {
-          alert(`失败: ${error.response.data.message}`);
+          alert(`失败: ${error.response.data}`);
+        }); 
+      axios.post('/api/judge', {
+        submit_sql: this.userAnswer,
+        question_id: this.$route.params.id,
+        create_code: this.question.create_code
+      }, {
+        headers: {
+          'session': localStorage.getItem('session'),
+          'Content-Type': 'application/json'
+        }
+      }).then(response => {
+          alert(`判题结果: ${JSON.stringify(response.data.results)}`);
+        })
+        .catch(error => {
+          alert(`判题失败: ${error.response.data.message}`);
         }); 
     }
   }
