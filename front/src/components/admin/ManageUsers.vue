@@ -64,7 +64,7 @@
       searchUser() {
         // Implement search functionality here
         // For now, just log the search ID
-        console.log('Search ID:', this.searchId);
+        //console.log('Search ID:', this.searchId);
       },
       setAsTeacher(userId) {
         const index = this.users.findIndex(user => user.id === userId);
