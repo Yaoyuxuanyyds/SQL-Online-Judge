@@ -1,5 +1,5 @@
-create database sql_online_judge;
-use sql_online_judge;
+create database oj;
+use oj;
 
 -- 用户表 (User)
 create table User (

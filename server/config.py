@@ -13,7 +13,7 @@ HTTP_CONFLICT = 409     # 冲突
 # 500
 HTTP_SERVER_ERROR = 500  # 服务器内部错误，无法完成请求
 
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:4546@localhost/sql_online_judge'
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:4546@localhost/oj'
 DEBUG = True
 
 AUTH_STUDENT = 0

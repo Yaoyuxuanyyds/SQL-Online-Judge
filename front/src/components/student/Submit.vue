@@ -24,7 +24,6 @@ export default {
   data() {
     return {
       submissions: [],
-      // 默认或测试数据，实际中应当通过API获取
     };
   },
   methods: {
