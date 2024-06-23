@@ -49,6 +49,9 @@ export default {
       axios.get(`/api/questions`, {
         headers: {
           'session': localStorage.getItem('session'),
+        },
+        params: {
+          question_id: QuestionId
         }
       })
       .then(response => {

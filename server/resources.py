@@ -16,12 +16,15 @@ answer_field = {
     'id': fields.Integer,
     'answer_example': fields.String
 }
-
 class Answers(Resource):
     @auth_role(AUTH_ALL)
     @marshal_with(answer_field)
     def get(self):
-        question_id = int(request.args.get('question_id'))
+        question_id = request.args.get('question_id')
+        if not question_id:
+            return {"message": "缺少question_id参数"}, HTTP_BAD_REQUEST
+        
+        question_id = int(question_id)
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             return ret, HTTP_OK
@@ -30,7 +33,11 @@ class Answers(Resource):
 
     @auth_role(AUTH_TEACHER)
     def delete(self):
-        question_id = int(request.args.get('question_id'))
+        question_id = request.args.get('question_id')
+        if not question_id:
+            return {"message": "缺少question_id参数"}, HTTP_BAD_REQUEST
+
+        question_id = int(question_id)
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             db.session.delete(ret)
@@ -38,15 +45,19 @@ class Answers(Resource):
             return {}, HTTP_OK
         else:
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
-
+        
 # community
 class Community(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
-        article_id = int(request.args.get("article_id"))
-        article = models.Article.query.filter_by(id=article_id)
+        article_id = request.args.get('article_id')
+        if not article_id:
+            return {"message": "缺少article_id参数"}, HTTP_BAD_REQUEST
+
+        article_id = int(article_id)
+        article = models.Article.query.filter_by(id=article_id).first()
         if article:
-            return article, HTTP_OK
+            return marshal(article, community_field), HTTP_OK
         else:
             return {"message": "文章不存在"}, HTTP_NOT_FOUND
     
@@ -57,28 +68,27 @@ class Community(Resource):
             return {"message": "无效的请求数据"}, HTTP_BAD_REQUEST
 
         try:
-            user_id = int(data.get('user_id'))  # 确保 user_id 是整数
+            user_id = int(data.get('user_id'))
         except ValueError:
             return {"message": "无效的用户ID"}, HTTP_BAD_REQUEST
         
-        # 获取当前最大的 id
         max_id = db.session.query(func.max(models.Article.id)).scalar()
         max_id = max_id + 1 if max_id else 1
 
-        # 解析 ISO 8601 时间并转换为无时区的字符串格式
         def parse_iso_datetime(iso_str):
             dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
             return dt.strftime('%Y-%m-%d %H:%M:%S')
         
-        article = models.Article()
-        article.id = max_id
-        article.title = data.get('title')
-        article.content = data.get('content')
-        article.user_id = user_id
-        article.question_id = data.get('question_id', None)
-        article.is_notice = data.get('is_notice', False)
-        article.publish_time = parse_iso_datetime(data.get('publish_time'))
-        article.last_modify_time = parse_iso_datetime(data.get('last_modify_time'))
+        article = models.Article(
+            id=max_id,
+            title=data.get('title'),
+            content=data.get('content'),
+            user_id=user_id,
+            question_id=data.get('question_id', None),
+            is_notice=data.get('is_notice', False),
+            publish_time=parse_iso_datetime(data.get('publish_time')),
+            last_modify_time=parse_iso_datetime(data.get('last_modify_time'))
+        )
 
         if article.title and article.content:
             db.session.add(article)
@@ -86,44 +96,46 @@ class Community(Resource):
             return {}, HTTP_CREATED
         else:
             return {"message": "文章缺少标题或内容！"}, HTTP_BAD_REQUEST
-
-        db.session.add(article)
-        db.session.commit()
-        return {}, HTTP_CREATED
-
-    # TODO: 添加修改文章的类方法
+    
     @auth_role(AUTH_ALL)
     def put(self):
-        # 权限组
-        role = request.json.get('role', AUTH_STUDENT)
-        article_id = int(request.json.get('article_id'))
-        user_id = int(request.json.get('user_id'))
-        article = models.Article.query.filter_by(id=article_id)
+        data = request.get_json()
+        article_id = data.get('article_id')
+        if not article_id:
+            return {"message": "缺少article_id参数"}, HTTP_BAD_REQUEST
+
+        article_id = int(article_id)
+        article = models.Article.query.filter_by(id=article_id).first()
         if not article:
             return {"message": "未找到文章！"}, HTTP_NOT_FOUND
+
+        role = data.get('role', AUTH_STUDENT)
+        user_id = data.get('user_id')
         if role == AUTH_STUDENT and article.user_id != user_id:
             return {"message": "没有编辑权限！"}, HTTP_FORBIDDEN
         
-        # 新文章内容
-        newcontent = request.json.get('newcontent')
-        if newcontent:
-            article.content = newcontent
-            db.session.add(article) # 更改文章，不确定add方法对不对
-            db.session.commit()     # 提交更改
-        
-        return {}, HTTP_OK
-            
+        new_content = data.get('new_content')
+        if new_content:
+            article.content = new_content
+            db.session.commit()
+            return {}, HTTP_OK
+        else:
+            return {"message": "缺少新的内容"}, HTTP_BAD_REQUEST
+    
     @auth_role(AUTH_ADMIN)
     def delete(self):
-        article_id = int(request.args.get('article_id'))
-        article = models.Article.query.filter_by(id=article_id)
-        if not article:
+        article_id = request.args.get('article_id')
+        if not article_id:
+            return {"message": "缺少article_id参数"}, HTTP_BAD_REQUEST
+
+        article_id = int(article_id)
+        article = models.Article.query.filter_by(id=article_id).first()
+        if article:
+            db.session.delete(article)
+            db.session.commit()
+            return {}, HTTP_OK
+        else:
             return {"message": "未找到文章！"}, HTTP_NOT_FOUND
-        
-        # 删除文章
-        db.session.remove(article)
-        db.session.commit()
-        return {}, HTTP_OK
 
 # 文章列表类
 community_field = {
@@ -221,64 +233,63 @@ class SQLJudge(Resource):
             session.close()  # 关闭会话
 
     def post(self):
-        """
-        根据question_id从测试用例表读取对应的input_sql和output_sql，执行用户提交的SQL语句并判断结果
-        :param submit_sql: 用户提交的SQL语句
-        :param question_id: 问题ID
-        :return: 测试结果字典，格式为 {测试用例ID: (error: bool, output: int)}
-        """
-        submit_sql = request.json.get('submit_sql')
-        question_id = int(request.json.get('question_id'))
-        # 从TestCase表中获取对应question_id的所有测试用例
-        test_cases = models.TestCase.query.filter_by(question_id=question_id).all()
-        results = {}  # 存储测试结果的字典
-        
-        for test_case in test_cases:  # 遍历每个测试用例
-            test_id = test_case.id  # 获取测试用例ID
-            input_sql = test_case.input_sql  # 获取输入SQL
-            expected_output = test_case.output  # 获取预期输出
-            tablename = test_case.tablename  # 获取表名
+        data = request.get_json()
+        submit_sql = data.get('submit_sql')
+        question_id = data.get('question_id')
+        if not submit_sql or not question_id:
+            return {"message": "提交信息不全"}, HTTP_BAD_REQUEST
 
-            # 清理当前的表，避免表已存在造成干扰
+        question_id = int(question_id)
+        test_cases = models.TestCase.query.filter_by(question_id=question_id).all()
+        results = {}
+        
+        for test_case in test_cases:
+            test_id = test_case.id
+            input_sql = test_case.input_sql
+            expected_output = test_case.output
+            tablename = test_case.tablename
+
             self.drop_tables(tablename)
 
-            # 执行建表语句，初始化表结构
             error, setup_msg = self.execute_sql(input_sql)
-            if error:  # 如果建表语句执行出错
-                results[test_id] = (True, JUDGE_RUNERROR)  # 返回错误信息
+            if error:
+                results[test_id] = (True, JUDGE_RUNERROR)
                 continue
 
-            # 执行用户提交的SQL
             error, user_output = self.execute_sql(submit_sql)
-
-            if error:  # 如果用户SQL执行出错
-                if user_output == "TLE":  # 判断是否超时
+            if error:
+                if user_output == "TLE":
                     results[test_id] = (True, JUDGE_TIMELIMIT_EXCEED)
-                elif "MemoryError" in user_output:  # 判断是否内存溢出
+                elif "MemoryError" in user_output:
                     results[test_id] = (True, JUDGE_MEMLIMIT_EXCEED)
-                else:  # 其他错误
+                else:
                     results[test_id] = (True, JUDGE_RUNERROR)
-            elif user_output != expected_output:  # 判断输出是否正确
-                results[test_id] = (True, JUDGE_WRONGANSWER)  # 输出错误
+            elif user_output != expected_output:
+                results[test_id] = (True, JUDGE_WRONGANSWER)
             else:
-                results[test_id] = (False, JUDGE_ACCEPTED)  # 正确通过
+                results[test_id] = (False, JUDGE_ACCEPTED)
 
-        return results  # 返回测试结果
+        return results, HTTP_OK
+
 
 # login
 class Login(Resource):
     def post(self):
-        user_id = int(request.json.get('id'))
-        password = request.json.get('password')
+        data = request.get_json()
+        user_id = data.get('id')
+        password = data.get('password')
+        
+        if not user_id or not password:
+            return {"message": "缺少用户名或密码"}, HTTP_BAD_REQUEST
+
+        user_id = int(user_id)
         user = models.User.query.filter_by(id=user_id, password=hashlib.sha256(password.encode('utf8')).hexdigest()).first()
 
         if user:
             session_token = hashlib.sha1(os.urandom(24)).hexdigest()
             user.session = session_token
             db.session.commit()
-            return {"session": session_token, 
-                    "role": user.role, 
-                    "name": user.username}, HTTP_OK
+            return {"session": session_token, "role": user.role, "name": user.username}, HTTP_OK
         else:
             return {"message": '用户名或密码无效'}, HTTP_UNAUTHORIZED
         
@@ -296,11 +307,7 @@ class Login(Resource):
         session = request.headers.get('session')
         user = models.User.query.filter_by(session=session).first()
         if user:
-            return {
-                "id": user.id, 
-                "name": user.username, 
-                "role": user.role
-            }, HTTP_OK
+            return {"id": user.id, "name": user.username, "role": user.role}, HTTP_OK
         else:
             return {"message": '身份信息无效！请重新登录。'}, HTTP_UNAUTHORIZED
 

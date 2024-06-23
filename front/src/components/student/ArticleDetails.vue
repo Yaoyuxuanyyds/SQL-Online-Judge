@@ -43,7 +43,7 @@ export default {
         headers: {
           'session': localStorage.getItem('session')
         },
-        data: {
+        params: {
           article_id: parseInt(articleId)
         }
       })
