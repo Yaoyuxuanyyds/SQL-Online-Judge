@@ -8,6 +8,13 @@
       </el-menu>
       <div class="content">
         <h1>提交记录</h1>
+        
+        <!-- 搜索框和按钮 -->
+        <div class="search-bar">
+          <input type="text" class="form-control search-field" v-model="searchQuery" placeholder="搜索题目ID...">
+          <button type="button" class="btn btn-search" @click="searchSubmission">搜索</button>
+        </div>
+        
         <!-- 表格展示提交记录 -->
         <table>
           <thead>
@@ -21,7 +28,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="record in submissions" :key="record.submissionId">
+            <tr v-for="record in filteredSubmissions" :key="record.submissionId">
               <td>{{ record.id }}</td>
               <td>{{ record.question_id }}</td>
               <td v-if="!hideStudentID">{{ record.student_id }}</td>
@@ -50,7 +57,20 @@ export default {
       submissions: [],
       showExtraColumn: false,
       hideStudentID: false, // 控制隐藏学生ID列
+      searchQuery: '', // 搜索条件：题目ID
     };
+  },
+  computed: {
+    filteredSubmissions() {
+      if (!this.searchQuery.trim()) {
+        return this.submissions;
+      } else {
+        const query = this.searchQuery.trim().toLowerCase();
+        return this.submissions.filter(submission =>
+          submission.question_id.toString().toLowerCase().includes(query)
+        );
+      }
+    }
   },
   methods: {
     handleSelect(index) {
@@ -105,6 +125,10 @@ export default {
         '4': 'MEMLIMIT_EXCEED',
       };
       return mapping[passRate] || 'UNKNOWN';
+    },
+    searchSubmission() {
+      // Perform search logic if needed
+      // In this example, the computed property `filteredSubmissions` handles the filtering based on `searchQuery`
     }
   },
   filters: {
@@ -144,5 +168,29 @@ th, td {
 }
 th {
   background-color: #f4f4f4;
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.search-field {
+  flex: 1;
+  padding: 8px;
+  font-size: 1rem;
+  margin-right: 10px; /* 调整搜索框和按钮之间的间距 */
+  max-width: 200px; /* 设置搜索框的最大宽度 */
+}
+.btn-search {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.btn-search:hover {
+  background-color: #0056b3;
 }
 </style>

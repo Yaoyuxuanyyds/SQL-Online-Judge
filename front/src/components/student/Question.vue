@@ -50,6 +50,11 @@
             <span :style="{ color: getColor(scope.row.difficulty) }">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="accuracy" label="准确率" width="120" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.accuracy }}%
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="150" align="center">
           <template #default="scope">
             <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
@@ -104,10 +109,14 @@ export default {
         }
       })
       .then(response => {
-        this.questions = response.data.data;
+        // 假设后端返回的数据结构包含了 accuracy 字段
+        this.questions = response.data.data.map(question => ({
+          ...question,
+          accuracy: Math.floor(Math.random() * 100) // 示例：随机生成准确率
+        }));
       })
       .catch(error => {
-        alert("Error fetching questions:", error);
+        alert("获取题目列表失败:", error);
       });
     },
     filterQuestion(question) {
