@@ -88,28 +88,16 @@ class Community(Resource):
         
         max_id = db.session.query(func.max(models.Article.id)).scalar()
         max_id = max_id + 1 if max_id else 1
-        
-        if not data.get('question_id'):
-            article = models.Article(
-                id=max_id,
-                title=data.get('title'),
-                content=data.get('content'),
-                user_id=user_id,
-                question_id=data.get('question_id', None),
-                is_notice=data.get('is_notice', False),
-                publish_time=parse_iso_datetime(data.get('publish_time')),
-                last_modify_time=parse_iso_datetime(data.get('last_modify_time'))
-            )
-        else:
-            article = models.Article(
-                id=max_id,
-                title=data.get('title'),
-                content=data.get('content'),
-                user_id=user_id,
-                is_notice=data.get('is_notice', False),
-                publish_time=parse_iso_datetime(data.get('publish_time')),
-                last_modify_time=parse_iso_datetime(data.get('last_modify_time'))
-            )
+        article = models.Article(
+            id=max_id,
+            title=data.get('title'),
+            content=data.get('content'),
+            user_id=user_id,
+            question_id=int(data.get('question_id')) if data.get('question_id') else None,
+            is_notice=data.get('is_notice', False),
+            publish_time=parse_iso_datetime(data.get('publish_time')),
+            last_modify_time=parse_iso_datetime(data.get('last_modify_time'))
+        )
 
         if article.title and article.content:
             db.session.add(article)
