@@ -39,7 +39,6 @@ def create_app():
     api.add_resource(ContestStudent, '/api/contest-student')
 
 
-
     with app.app_context():
         db.create_all()
     return app

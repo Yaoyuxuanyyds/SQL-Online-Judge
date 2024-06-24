@@ -1,4 +1,6 @@
 <template>
+  <div>
+    <Navbar />
   <div class="home-container">
     <div class="left-column">
       <div class="card user-info">
@@ -22,7 +24,11 @@
         <el-table :data="submissions" style="width: 100%">
           <el-table-column prop="id" label="提交ID" width="100" align="center"></el-table-column>
           <el-table-column prop="question_id" label="题目ID" align="center"></el-table-column>
-          <el-table-column prop="status" label="提交结果" align="center"></el-table-column>
+          <el-table-column prop="status" label="提交结果" align="center">
+            <template slot-scope="scope">
+              <span :style="{ color: getStatusColor(scope.row.status) }">{{ judgeResult(scope.row.status) }}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="pass_rate" label="通过率" align="center"></el-table-column>
           <el-table-column prop="submit_time" label="时间" align="center"></el-table-column>
         </el-table>
@@ -44,6 +50,7 @@
         <PieChart :chart-data="chartData" />
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -68,8 +75,8 @@ export default {
   },
   data() {
     return {
-      name: localStorage.getItem('name'),
-      role: localStorage.getItem('role'),
+      name: localStorage.getItem('userName'),
+      role: localStorage.getItem('userRole'),
       roleMap: { '0': '学生', '1': '老师', '2': '管理员' },
       totalQuestions: 0,
       numberAnswered: 0,
@@ -104,49 +111,86 @@ export default {
   },
   methods: {
     fetchInfo() {
-      const session = localStorage.getItem('session');
-      const userId = localStorage.getItem('userID');
-      axios.get('/api/questionlist', { headers: { session }, params: { student_id: userId } })
-        .then(response => {
-          this.totalQuestions = response.data.length;
-        })
-        .catch(error => {
-          alert("获取题目列表失败: " + error);
-        });
+      axios.get('/api/questionlist', {
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+        params: {
+          student_id: localStorage.getItem('userID')
+        }
+      })
+      .then(response => {
+        this.totalQuestions = response.data.length;
+      })
+      .catch(error => {
+        alert("获取题目列表失败: " + error);
+      });
 
-      axios.get('/api/submitlist', { headers: { session }, params: { fetchall: false, user_id: userId } })
-        .then(response => {
-          this.submissions = response.data.sort((a, b) => b.id - a.id);
-          this.updateChartData(response.data);
-        })
-        .catch(error => {
-          alert("获取提交列表失败: " + error);
-        });
+      axios.get('/api/submitlist', {
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+        params: {
+          fetchall: false,
+          user_id: localStorage.getItem('userID')
+        }
+      })
+      .then(response => {
+        this.submissions = response.data.sort((a, b) => b.id - a.id);
+        this.updateChartData(response.data);
+      })
+      .catch(error => {
+        alert("获取提交列表失败: " + error);
+      });
 
-      axios.get('/api/answeredquestions', { headers: { session }, params: { student_id: userId } })
-        .then(response => {
-          this.numberAnswered = response.data.length;
-        })
-        .catch(error => {
-          alert("获取做过的题目数失败: " + error);
-        });
+      // 获取做过的题目数
+      axios.get('/api/answeredquestions', {
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+        params: {
+          student_id: localStorage.getItem('userID')
+        }
+      })
+      .then(response => {
+        this.numberAnswered = response.data.length;
+      })
+      .catch(error => {
+        alert("获取做过的题目数失败: " + error);
+      });
 
-      axios.get('/api/passcount', { headers: { session }, params: { student_id: userId } })
-        .then(response => {
-          this.passCount = response.data.passCount;
-          this.correctRate = ((this.passCount / this.totalQuestions) * 100).toFixed(2);
-        })
-        .catch(error => {
-          alert("获取通过的题目数失败: " + error);
-        });
+      // 获取通过的题目数和正确率
+      axios.get('/api/passcount', {
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+        params: {
+          student_id: localStorage.getItem('userID')
+        }
+      })
+      .then(response => {
+        this.passCount = response.data.passCount;
+        this.correctRate = (this.passCount / this.totalQuestions * 100).toFixed(2);
+      })
+      .catch(error => {
+        alert("获取通过的题目数失败: " + error);
+      });
 
-      axios.get('/api/articlescount', { headers: { session }, params: { user_id: userId } })
-        .then(response => {
-          this.articlesCount = response.data.length;
-        })
-        .catch(error => {
-          alert("获取发表文章数失败: " + error);
-        });
+      // 获取发表文章数
+      axios.get('/api/communitylist', {
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+        params: {
+          user_id: localStorage.getItem('userID')
+        }
+      })
+      .then(response => {
+        this.articlesCount = response.data.length;
+      })
+      .catch(error => {
+        alert("获取发表文章数失败: " + error);
+      });
     },
     updateTime() {
       this.currentTime = new Date().toLocaleString();
@@ -189,6 +233,26 @@ export default {
         resultCounts['Time Limit Exceeded'],
         resultCounts['Memory Limit Exceeded']
       ];
+    },
+    getStatusColor(status) {
+      const colorMapping = {
+        0: 'green',
+        1: 'red',
+        2: 'orange',
+        3: 'purple',
+        4: 'blue'
+      };
+      return colorMapping[status] || 'black';
+    },
+    judgeResult(status) {
+      const mapping = {
+        0: 'Accepted',
+        1: 'Runtime Error',
+        2: 'Wrong Answer',
+        3: 'Time Limit Exceeded',
+        4: 'Memory Limit Exceeded'
+      };
+      return mapping[status] || 'Unknown';
     }
   }
 };
@@ -198,34 +262,42 @@ export default {
 .home-container {
   display: flex;
   justify-content: space-between;
-  padding: 20px;
 }
-.left-column, .right-column {
-  width: 48%;
+.left-column {
+  width: 70%;
+}
+.right-column {
+  width: 25%;
 }
 .card {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
   padding: 20px;
-}
-.user-info {
-  text-align: center;
+  margin-bottom: 20px;
 }
 .highlight {
   color: #4A90E2;
-  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-shadow: 1px 1px 1px #aaa;
+}
+.daily-quote {
+  font-size: 1.2em;
+  margin-top: 10px;
+}
+.current-time {
+  margin-top: 10px;
+}
+.stat {
+  display: flex;
+  flex-wrap: wrap;
 }
 .tag {
-  display: inline-block;
   background-color: #e8eaf6;
+  color: #4A90E2;
   padding: 5px 10px;
   margin: 5px;
   border-radius: 5px;
-}
-.daily-quote, .current-time {
-  margin-top: 10px;
-  font-size: 1.1em;
+  font-size: 0.9em;
 }
 </style>
