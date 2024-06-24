@@ -705,7 +705,7 @@ class SubmitList(Resource):
 class SubmitAccuracy(Resource):
     @auth_role(AUTH_ALL)
     def get(self, question_id):
-        submissions = Submission.query.filter_by(question_id=question_id).all()
+        submissions = models.Submission.query.filter_by(question_id=question_id).all()
         total_submissions = len(submissions)
         accepted_submissions = len([submit for submit in submissions if submit.status == 'accepted'])
         accuracy = 0 if total_submissions == 0 else round((accepted_submissions / total_submissions) * 100, 2)
