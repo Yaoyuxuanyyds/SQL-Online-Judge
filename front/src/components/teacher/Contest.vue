@@ -59,7 +59,7 @@ export default {
         }
         })
         .then(response => {
-          this.contests = response.data.data;
+          this.contests = response.data;
         })
         .catch(error => {
           alert("There was an error fetching the contests!", error);

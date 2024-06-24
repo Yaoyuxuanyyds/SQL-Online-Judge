@@ -78,7 +78,7 @@
         })
         .then(response => {
           // 假设后端返回的数据结构包含了题目的基本信息
-          this.questions = response.data.data.map(question => ({
+          this.questions = response.data.map(question => ({
             ...question,
             accuracy: 0 // 假设不需要显示准确率，设置为默认值
           }));

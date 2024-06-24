@@ -94,7 +94,7 @@ export default {
         }
       })
         .then(response => {
-          this.submissions = response.data.data.sort((a, b) => b.id - a.id);
+          this.submissions = response.data.sort((a, b) => b.id - a.id);
         })
         .catch(error => {
           alert(`失败: ${error.response.data.message}`);
@@ -111,7 +111,7 @@ export default {
         }
       })
         .then(response => {
-          this.submissions = response.data.data.sort((a, b) => b.id - a.id);
+          this.submissions = response.data.sort((a, b) => b.id - a.id);
         })
         .catch(error => {
           alert(`失败: ${error.response.data.message}`);

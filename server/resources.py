@@ -22,15 +22,9 @@ def model_to_dict(obj):
 
 
 
-
 # answer
-answer_field = {
-    'id': fields.Integer,
-    'answer_example': fields.String
-}
 class Answer(Resource):
     @auth_role(AUTH_ALL)
-    @marshal_with(answer_field)
     def get(self):
         question_id = request.args.get('question_id')
         if not question_id:
@@ -39,7 +33,7 @@ class Answer(Resource):
         question_id = int(question_id)
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
-            return ret, HTTP_OK
+            return model_to_dict(ret), HTTP_OK
         else:
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
 
@@ -73,7 +67,7 @@ class Community(Resource):
         article_id = int(article_id)
         article = models.Article.query.filter_by(id=article_id).first()
         if article:
-            return marshal(article, community_field), HTTP_OK
+            return model_to_dict(article), HTTP_OK
         else:
             return {"message": "文章不存在"}, HTTP_NOT_FOUND
     
@@ -161,46 +155,25 @@ class Community(Resource):
             return {"message": "未找到文章！"}, HTTP_NOT_FOUND
 
 # 文章列表类
-community_field = {
-    'id': fields.Integer,
-    'title': fields.String,
-    'content': fields.String,
-    'user_id': fields.Integer,
-    'question_id': fields.Integer,
-    'publish_time': fields.DateTime,
-    'is_notice': fields.Boolean
-}
 class CommunityList(Resource):
     @auth_role(AUTH_ALL)
     # @marshal_with(community_field)
     def get(self):
         articles = models.Article.query.all()
-        data = [marshal(article, community_field) for article in articles]
-        return {'data': data}, HTTP_OK
-# TODO: Contest后端
+        data = [model_to_dict(article) for article in articles]
+        return jsonify(data)
 
 
-
-
-
-# Contest (Exam) 的字段定义
-contest_field = {
-    'id': fields.Integer,
-    'teacher_id': fields.Integer,
-    'start_time': fields.DateTime,
-    'end_time': fields.DateTime
-}
-
+# contest
 # 处理单个考试的相关功能
 class Contest(Resource):
     @auth_role(AUTH_ALL)
-    @marshal_with(contest_field)
     def get(self):
         # 查询单个考试 -> 用于考试查询和显示
         contest_id = int(request.args.get('contest_id'))
         ret = models.Exam.query.filter_by(id=contest_id).first()
         if ret:
-            return ret, HTTP_OK
+            return model_to_dict(ret), HTTP_OK
         else:
             return {"message": "该考试不存在"}, HTTP_NOT_FOUND
 
@@ -241,13 +214,11 @@ class ContestList(Resource):
 
             # 查询相关考试信息
             contests = models.Exam.query.filter(models.Exam.id.in_(exam_ids)).all()
-            data = [marshal(contest, contest_field) for contest in contests]
         else:
             # 查询所有考试信息
             contests = models.Exam.query.all()
-            data = [marshal(contest, contest_field) for contest in contests]
-
-        return {'data': data}, HTTP_OK
+        data = [model_to_dict(contest) for contest in contests]
+        return jsonify(data)
 
 
 
@@ -440,21 +411,12 @@ class Login(Resource):
 
 
 # manageUsers
-
-# Define the fields for User resource serialization
-user_field = {
-    'id': fields.Integer,
-    'username': fields.String,
-    'password': fields.String,
-    'role': fields.String
-}
-
 class ManageUsers(Resource):
-    @marshal_with(user_field)
     def get(self):
         # Retrieve all users
         users = User.query.all()
-        return users
+        data = [model_to_dict(user) for user in users]
+        return jsonify(data)
 
     def post(self):
         # Delete a user
@@ -485,15 +447,6 @@ class ManageUsers(Resource):
 
 
 # questions
-question_field = {
-    'id': fields.Integer,
-    'title': fields.String,
-    'create_code': fields.String,
-    'description': fields.String,
-    'difficulty': fields.Integer,
-    'answer_example': fields.String
-}
-
 # 处理单个题目的相关功能
 class Question(Resource):
     @auth_role(AUTH_ALL)
@@ -502,7 +455,7 @@ class Question(Resource):
         question_id = int(request.args.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
-            return ret, HTTP_OK
+            return model_to_dict(ret), HTTP_OK
         else:
             return {"message": "该题目不存在"}, HTTP_NOT_FOUND
 
@@ -541,8 +494,8 @@ class QuestionList(Resource):
     def get(self):
         # 查询所有题目 -> 用于题目列表的查询和显示
         questions = models.Question.query.all()
-        data = [marshal(question, question_field) for question in questions]
-        return {'data': data}, HTTP_OK
+        data = [model_to_dict(question) for question in questions]
+        return jsonify(data)
 
 
 
@@ -565,19 +518,13 @@ class Register(Resource):
         return {"message": "成了，快去登录吧！"}, HTTP_CREATED
 
 # students
-student_fields = {
-    'id': fields.Integer,
-    'username': fields.String
-}
-
 class Student(Resource):
     @auth_role(AUTH_ALL)
-    @marshal_with(student_fields)
     def get(self):
         student_id = int(request.args.get('student_id'))
         ret = models.User.query.filter_by(id=student_id).first()
         if ret:
-            return ret, HTTP_OK
+            return model_to_dict(ret), HTTP_OK
         else:
             return {"message": "该学生不存在"}, HTTP_NOT_FOUND
         
@@ -615,34 +562,23 @@ class StudentList(Resource):
     @auth_role(AUTH_ADMIN)
     def get(self):
         students = models.User.query.filter_by(role=AUTH_STUDENT)
-        data = [marshal(student, student_fields) for student in students]
-        return {'data': data}, HTTP_OK
+        data = [model_to_dict(student) for student in students]
+        return jsonify(data)
 
 
 
 
 # submit
-submit_field = {
-    'id': fields.Integer,
-    'student_id': fields.Integer,
-    'question_id': fields.Integer,
-    "exam_id": fields.Integer,
-    'submit_sql': fields.String,
-    'submit_time': fields.DateTime,
-    'pass_rate': fields.Float
-}
-
 class Submit(Resource):
     # 获取自己的提交信息
     @auth_role(AUTH_ALL)
-    @marshal_with(submit_field)
     def get(self):
         submit_id = int(request.args.get('submit_id'))
         student = request.args.get('student')
         ret = models.Submission.query.filter_by(id=submit_id).first()
         if ret:
             if student and ret['student_id'] == student.id:
-                return ret, HTTP_OK
+                return model_to_dict(ret), HTTP_OK
             else:
                 return {"message": "只可查看自己的提交信息。"}, HTTP_FORBIDDEN
         else:
@@ -698,7 +634,6 @@ class SubmitList(Resource):
         else:
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         data = [model_to_dict(submit) for submit in submits]
-        print(jsonify(data).data)
         return jsonify(data)
 
 
@@ -707,7 +642,6 @@ class SubmitList(Resource):
 
 
 # question accuracy
-
 class SubmitAccuracy(Resource):
     @auth_role(AUTH_ALL)
     def get(self, question_id):
