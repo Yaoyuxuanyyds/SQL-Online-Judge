@@ -2,7 +2,7 @@
   <div>
     <Navbar />
     <div class="container">
-      <el-menu class="side-menu" @select="handleSelect">
+      <el-menu :default-active="'1'" class="side-menu" @select="handleSelect">
         <el-menu-item index="1">所有记录</el-menu-item>
         <el-menu-item index="2">我的记录</el-menu-item>
       </el-menu>
@@ -12,7 +12,6 @@
         <!-- 搜索框和按钮 -->
         <div class="search-bar">
           <input type="text" class="form-control search-field" v-model="searchQuery" placeholder="搜索题目ID...">
-          <button type="button" class="btn btn-search" @click="searchSubmission">搜索</button>
         </div>
         
         <!-- 表格展示提交记录 -->
@@ -20,21 +19,21 @@
           <thead>
             <tr>
               <th>提交ID</th>
+              <th>提交时间</th>
               <th>题目ID</th>
               <th v-if="!hideStudentID">学生ID</th>
               <th>结果</th>
-              <th>提交时间</th>
-              <th v-if="showExtraColumn">提交记录</th>
+              <th>通过率</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="record in filteredSubmissions" :key="record.submissionId">
+            <tr v-for="record in filteredSubmissions" :key="record.id">
               <td>{{ record.id }}</td>
+              <td>{{ record.submit_time | formatDate }}</td>
               <td>{{ record.question_id }}</td>
               <td v-if="!hideStudentID">{{ record.student_id }}</td>
-              <td>{{ judgeResult(record.pass_rate) }}</td>
-              <td>{{ record.submit_time | formatDate }}</td>
-              <td v-if="showExtraColumn">{{ record.submit_sql }}</td>
+              <td :style="{ color: getStatusColor(record.status) }">{{ judgeResult(record.status) }}</td>
+              <td>{{ record.pass_rate }}</td>
             </tr>
           </tbody>
         </table>
@@ -59,6 +58,9 @@ export default {
       hideStudentID: false, // 控制隐藏学生ID列
       searchQuery: '', // 搜索条件：题目ID
     };
+  },
+  mounted() {
+    this.handleSelect('1');
   },
   computed: {
     filteredSubmissions() {
@@ -115,20 +117,27 @@ export default {
           alert(`失败: ${error.response.data.message}`);
         });
     },
-    judgeResult(passRate) {
-      const mapping = {
-        '-1': 'PENDING',
-        '0': 'ACCEPTED',
-        '1': 'RUNERROR',
-        '2': 'WRONGANSWER',
-        '3': 'TIMELIMIT_EXCEED',
-        '4': 'MEMLIMIT_EXCEED',
-      };
-      return mapping[passRate] || 'UNKNOWN';
+    judgeResult(status) {
+      const mapping = [
+        'Pending',
+        'Accepted',
+        'Runtime error',
+        "Wrong answer",
+        "Time limit exceeded",
+        "Memery limit exceeded",
+      ];
+      return mapping[status + 1];
     },
-    searchSubmission() {
-      // Perform search logic if needed
-      // In this example, the computed property `filteredSubmissions` handles the filtering based on `searchQuery`
+    getStatusColor(status) {
+      const colorMapping = [
+        'grey',
+        'green',
+        'red',
+        'orange',
+        'purple',
+        'blue',
+    ];
+      return colorMapping[status + 1] || 'black';
     }
   },
   filters: {

@@ -23,20 +23,37 @@ import axios from 'axios';
 
 export default {
   name: 'Navbar',
+  data() {
+    return {
+      nickname: ''  // 初始化用户昵称
+    };
+  },
+  mounted() {
+    // 在组件挂载时获取用户昵称
+    // userName 有问题
+    this.nickname = localStorage.getItem('userName') || 'Guest';
+  },
   methods: {
     isActive(path) {
       return this.$route.path === path;
     },
     logout() {
-      const sessionToken = localStorage.getItem('sessionToken');
-      axios.delete('/api/login', {session: sessionToken})
-      .then(
-        alert('成功退出登录'),
-        localStorage.removeItem('sessionToken'), // 清除本地存储中的 sessionToken
-        this.$router.push('/') // 回到主页
-      )
+      const sessionToken = localStorage.getItem('session');
+      axios.delete('/api/login', {
+        headers: {
+          'session': sessionToken,
+          'Content-Type': 'application/json'
+        },
+        data: {
+        }
+      })
+      .then(response => {
+        alert(response.data.message); // 显示成功消息
+        localStorage.removeItem('session'); // 清除本地存储中的 session
+        this.$router.push('/'); // 回到主页
+      })
       .catch(error => {
-        alert('退出登录失败:', error.response.data.message);
+        alert('退出登录失败: ' + error.response.data.message);
       });
     }
   }

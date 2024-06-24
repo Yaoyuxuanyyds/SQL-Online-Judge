@@ -413,8 +413,8 @@ class Login(Resource):
             return {"message": '用户名或密码无效'}, HTTP_UNAUTHORIZED
         
     def delete(self):
-        session = request.json.get('session')
-        user = models.User.query.filter_by(session=session)
+        session = request.headers.get('session')
+        user = models.User.query.filter_by(session=session).first()
         if user:
             user.session = None
             db.session.commit()
