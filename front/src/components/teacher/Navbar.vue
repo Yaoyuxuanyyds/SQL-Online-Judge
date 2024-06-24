@@ -2,7 +2,7 @@
   <nav class="navbar">
     <!-- 添加 logo -->
     <div class="logo">
-      <img src="..\..\assets\logo.png" alt="Logo">
+      <img src="@/assets/logo.png" alt="Logo">
     </div>
 
     <router-link :to="{ path: '/teacher' }" :class="{ active: isActive('/teacher') }">Home</router-link>

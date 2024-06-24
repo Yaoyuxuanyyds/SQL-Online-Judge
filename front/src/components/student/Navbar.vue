@@ -2,7 +2,7 @@
   <nav class="el-navbar">
     <!-- Logo 和 Hello, 用户昵称 -->
     <div class="logo">
-      <img src="..\..\assets\logo.png" alt="Logo">
+      <img src="@/assets/logo.png" alt="Logo">
       <span class="hello-user">Hello, {{ nickname }}</span>
     </div>
 

@@ -354,7 +354,34 @@ class Judge(Resource):
                 results[test_id] = (False, JUDGE_WRONGANSWER)
             else:
                 results[test_id] = (True, JUDGE_ACCEPTED)
-        return {"results": results}, HTTP_OK
+        
+        # 之后在此更新submit表的信息
+        submit_id = int(data.get('submit_id')) if data.get('submit_id') else None
+        record = models.Submission.query.filter_by(id=submit_id)
+        finalresult = [True, 'Pending']
+        error_list = []
+        for result in results:
+            if not result[0]:
+                error_list.append(result[1])
+                finalresult[0] = False
+        result_map = {
+            JUDGE_RUNERROR: 'Runtime error',
+            JUDGE_WRONGANSWER: "Wrong answer",
+            JUDGE_TIMELIMIT_EXCEED: "Time limit exceeded",
+            JUDGE_MEMLIMIT_EXCEED: "Memory limit exceeded"
+        }
+        if finalresult[0]:
+            finalresult[1] = 'Accepted'
+            pass_rate = 1
+            record.status = JUDGE_ACCEPTED
+        else:
+            finalresult[1] = result_map[min(error_list)]
+            pass_rate = 1.0 - len(error_list) * 1.0 / len(results) # 可能需要考虑保留小数的问题？
+            record.status = min(error_list)
+
+        record.pass_rate = pass_rate
+        db.session.commit()
+        return {"result": finalresult}, HTTP_OK
     
 
 
@@ -644,7 +671,10 @@ class Submit(Resource):
         
         db.session.add(s)
         db.session.commit()
-        return {"message": "提交成功"}, HTTP_CREATED
+
+        # 同时返回submit的id
+        record = models.Submission.query.filter_by(submit_time=parse_iso_datetime(request.json.get('submit_time'))).first()
+        return {"message": "提交成功", "submit_id": record.id}, HTTP_CREATED
 
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
@@ -672,35 +702,6 @@ class SubmitList(Resource):
 
 
 # question accuracy
-
-
-submit_field = {
-    'id': fields.Integer,
-    'question_id': fields.Integer,
-    'status': fields.String
-}
-
-class SubmitList(Resource):
-    @auth_role(AUTH_ALL)
-    def get(self):
-        fetchall = request.args.get('fetchall')
-        if fetchall == 'true':
-            fetchall = True
-        elif fetchall == 'false':
-            fetchall = False
-        else:
-            fetchall = None  
-        userid = int(request.args.get('user_id')) if request.args.get('user_id') else None
-        
-        if fetchall:
-            submits = models.Submission.query.filter_by()
-        elif userid:
-            submits = models.Submission.query.filter_by(id=userid)
-        else:
-            return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
-        
-        data = [marshal(submit, submit_field) for submit in submits]
-        return {'data': data}, HTTP_OK
 
 class SubmitAccuracy(Resource):
     @auth_role(AUTH_ALL)
