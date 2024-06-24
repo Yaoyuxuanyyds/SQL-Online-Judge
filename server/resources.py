@@ -497,7 +497,6 @@ question_field = {
 # 处理单个题目的相关功能
 class Question(Resource):
     @auth_role(AUTH_ALL)
-    @marshal_with(question_field)
     def get(self):
         # 查询单个题目 -> 用于题目查询和显示
         question_id = int(request.args.get('question_id'))
@@ -630,8 +629,7 @@ submit_field = {
     "exam_id": fields.Integer,
     'submit_sql': fields.String,
     'submit_time': fields.DateTime,
-    'pass_rate': fields.Float,
-    'status': fields.Integer
+    'pass_rate': fields.Float
 }
 
 class Submit(Resource):

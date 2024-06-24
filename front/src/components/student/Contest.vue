@@ -67,7 +67,7 @@ export default {
     },
     goToContestQuestions(contestId) {
       // 导航到考试题目页面
-      this.$router.push({ name: 'contest-questions', params: { id: contestId } });
+      this.$router.push({ name: 'contest-question', params: { id: contestId } });
     }
   }
 };
