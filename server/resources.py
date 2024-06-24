@@ -731,6 +731,31 @@ class Submit(Resource):
 
         # 同时返回submit的id
         return {"message": "提交成功", "submit_id": s.id}, HTTP_CREATED
+    
+
+    # 根据 question_id, exam_id, user_id获取提交信息
+    @auth_role(AUTH_ALL)
+    def get(self):
+        data = dict(request.args)
+        user_id = int(data.get('student_id')) if data.get('student_id') else None
+        question_id = int(data.get('question_id')) if data.get('question_id') else None  
+        exam_id = int(data.get('exam_id')) if data.get('exam_id') else None
+
+        if user_id and question_id and exam_id:
+            submits = models.Submission.query.filter_by(student_id=user_id, question_id=question_id, exam_id=exam_id).all()
+            if not submits:
+                return {"pass_rate": 0}, HTTP_OK
+            else:
+                max_pass_rate = max(submit.pass_rate for submit in submits)
+                return {"pass_rate": max_pass_rate}, HTTP_OK
+        else:
+            return {"message": "提交信息不全"}, HTTP_BAD_REQUEST
+
+
+
+
+
+
 
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
@@ -746,3 +771,42 @@ class SubmitList(Resource):
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         data = [model_to_dict(submit) for submit in submits]
         return jsonify(data)
+    
+
+class UpdateScoreAPI(Resource):
+    @auth_role(AUTH_ALL)
+    def post(self):
+        data = request.get_json()
+        user_id = data.get('user_id')
+        exam_id = data.get('exam_id')
+        question_id = data.get('question_id')
+        old_rate = data.get('old_rate')
+        new_rate = data.get('new_rate')
+
+        if not (user_id and exam_id and question_id and old_rate is not None and new_rate is not None):
+            return {"message": "参数不全"}, 400
+
+        try:
+            # 获取对应的 ExamStudent 项
+            exam_student = models.ExamStudent.query.filter_by(exam_id=exam_id, student_id=user_id).first()
+            if not exam_student:
+                return {"message": "未找到对应的考试学生记录"}, 404
+
+            # 获取对应的 ExamQuestion 项
+            exam_question = models.ExamQuestion.query.filter_by(exam_id=exam_id, question_id=question_id).first()
+            if not exam_question:
+                return {"message": "未找到对应的考试题目记录"}, 404
+
+            # 计算新的总分
+            question_score = exam_question.score
+            old_total = exam_student.score
+            new_total = old_total - old_rate * question_score + new_rate * question_score
+
+            # 更新总分
+            exam_student.score = new_total
+            db.session.commit()
+
+            return {"message": "得分更新成功", "new_score": new_total}, 200
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return {"message": "数据库错误: {}".format(str(e))}, 500
