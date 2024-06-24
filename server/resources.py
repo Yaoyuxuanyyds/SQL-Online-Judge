@@ -667,3 +667,48 @@ class SubmitList(Resource):
 
 
 
+
+
+# question accuracy
+
+
+submit_field = {
+    'id': fields.Integer,
+    'question_id': fields.Integer,
+    'status': fields.String
+}
+
+class SubmitList(Resource):
+    @auth_role(AUTH_ALL)
+    def get(self):
+        fetchall = request.args.get('fetchall')
+        if fetchall == 'true':
+            fetchall = True
+        elif fetchall == 'false':
+            fetchall = False
+        else:
+            fetchall = None  
+        userid = int(request.args.get('user_id')) if request.args.get('user_id') else None
+        
+        if fetchall:
+            submits = Submission.query.filter_by()
+        elif userid:
+            submits = Submission.query.filter_by(id=userid)
+        else:
+            return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
+        
+        data = [marshal(submit, submit_field) for submit in submits]
+        return {'data': data}, HTTP_OK
+
+class SubmitAccuracy(Resource):
+    @auth_role(AUTH_ALL)
+    def get(self, question_id):
+        submissions = Submission.query.filter_by(question_id=question_id).all()
+        total_submissions = len(submissions)
+        accepted_submissions = len([submit for submit in submissions if submit.status == 'accepted'])
+        accuracy = 0 if total_submissions == 0 else round((accepted_submissions / total_submissions) * 100, 2)
+        
+        return {'question_id': question_id, 'accuracy': accuracy}, HTTP_OK
+
+
+
