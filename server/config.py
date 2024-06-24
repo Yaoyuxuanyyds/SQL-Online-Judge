@@ -1,3 +1,6 @@
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
+
 HTTP_OK = 200  # 请求成功,并且处理无错误
 HTTP_CREATED = 201  # 已创建。成功请求并创建了新的资源
 HTTP_ACCEPTED = 202  # 已接受。已经接受请求，但未处理完成
