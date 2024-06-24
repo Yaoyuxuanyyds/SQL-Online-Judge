@@ -40,7 +40,7 @@
         <div class="stat">
           <span class="tag">题目总数: {{ totalQuestions }}</span>
           <span class="tag">做过题数: {{ numberAnswered }}</span>
-          <span class="tag">通过题数: {{ passCount }}</span>
+          <span class="tag">通过题数: {{ pass_count }}</span>
           <span class="tag">通过率: {{ correctRate }}%</span>
           <span class="tag">发表文章数: {{ articlesCount }}</span>
         </div>
@@ -80,7 +80,7 @@ export default {
       roleMap: { '0': '学生', '1': '老师', '2': '管理员' },
       totalQuestions: 0,
       numberAnswered: 0,
-      passCount: 0,
+      pass_count: 0,
       correctRate: 0,
       articlesCount: 0,
       currentTime: new Date().toLocaleString(),
@@ -137,7 +137,7 @@ export default {
       })
       .then(response => {
         this.submissions = response.data.sort((a, b) => b.id - a.id);
-        this.updateChartData(response.data);
+        //this.updateChartData(response.data);
       })
       .catch(error => {
         alert("获取提交列表失败: " + error);
@@ -159,23 +159,6 @@ export default {
         alert("获取做过的题目数失败: " + error);
       });
 
-      // 获取通过的题目数和正确率
-      axios.get('/api/passcount', {
-        headers: {
-          'session': localStorage.getItem('session')
-        },
-        params: {
-          student_id: localStorage.getItem('userID')
-        }
-      })
-      .then(response => {
-        this.passCount = response.data.passCount;
-        this.correctRate = (this.passCount / this.totalQuestions * 100).toFixed(2);
-      })
-      .catch(error => {
-        alert("获取通过的题目数失败: " + error);
-      });
-
       // 获取发表文章数
       axios.get('/api/communitylist', {
         headers: {
@@ -191,48 +174,33 @@ export default {
       .catch(error => {
         alert("获取发表文章数失败: " + error);
       });
+      // 获取提交结果统计数据
+      axios.get('/api/statuscount', {
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+        params: {
+          student_id: localStorage.getItem('userID')
+        }
+      })
+      .then(response => {
+        const { pass_count, status_count } = response.data;
+        this.pass_count = pass_count;
+        this.chartData.datasets[0].data = status_count;
+        if (this.totalQuestions === 0) this.correctRate = 0.0
+        else this.correctRate = (this.pass_count / this.totalQuestions * 100).toFixed(2);
+      })
+      .catch(error => {
+        alert("获取提交结果统计数据失败: " + error);
+      });
     },
+    
     updateTime() {
       this.currentTime = new Date().toLocaleString();
     },
     getDailyQuote() {
       const randomIndex = Math.floor(Math.random() * this.quotes.length);
       this.quote = this.quotes[randomIndex];
-    },
-    updateChartData(data) {
-      const resultCounts = {
-        'Accepted': 0,
-        'Wrong Answer': 0,
-        'Runtime Error': 0,
-        'Time Limit Exceeded': 0,
-        'Memory Limit Exceeded': 0
-      };
-      data.forEach(submission => {
-        switch (submission.status) {
-          case 0:
-            resultCounts['Accepted']++;
-            break;
-          case 2:
-            resultCounts['Wrong Answer']++;
-            break;
-          case 1:
-            resultCounts['Runtime Error']++;
-            break;
-          case 3:
-            resultCounts['Time Limit Exceeded']++;
-            break;
-          case 4:
-            resultCounts['Memory Limit Exceeded']++;
-            break;
-        }
-      });
-      this.chartData.datasets[0].data = [
-        resultCounts['Accepted'],
-        resultCounts['Wrong Answer'],
-        resultCounts['Runtime Error'],
-        resultCounts['Time Limit Exceeded'],
-        resultCounts['Memory Limit Exceeded']
-      ];
     },
     getStatusColor(status) {
       const colorMapping = {

@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from flask_restful import Resource, fields, marshal_with, marshal, request
+from flask_restful import Resource, request
 import models, time, hashlib, os
 from app import db
 from config import *
@@ -57,7 +57,13 @@ class Answer(Resource):
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
 
 
-
+class AnsweredQuestions(Resource):
+    @auth_role(AUTH_ALL)
+    def get(self):
+        student_id = int(request.args.get('student_id'))
+        my_submits = models.Submission.query.filter_by(student_id=student_id).distinct(models.Submission.question_id).all()
+        unique_questions = {submit.question_id for submit in my_submits}
+        return jsonify(list(unique_questions))
 
 
 # community
@@ -149,9 +155,13 @@ class Community(Resource):
 # 文章列表类
 class CommunityList(Resource):
     @auth_role(AUTH_ALL)
-    # @marshal_with(community_field)
     def get(self):
+        user_id = int(request.args.get('user_id')) if request.args.get('user_id') else None
         articles = models.Article.query.all()
+        if user_id:
+            articles = models.Article.query.filter_by(user_id=user_id)
+        else:
+            articles = models.Article.query.all()
         data = [model_to_dict(article) for article in articles]
         return jsonify(data)
 
@@ -502,7 +512,15 @@ class ManageUsers(Resource):
         return {"message": "User updated successfully."}, HTTP_OK
 
 
-
+class StatusCount(Resource):
+    @auth_role(AUTH_ALL)
+    def get(self):
+        student_id = int(request.args.get('student_id'))
+        pass_count = models.Submission.query.filter_by(student_id=student_id, status=0).distinct(models.Submission.question_id).count()
+        status_count = []
+        for i in range(5):
+            status_count.append(models.Submission.query.filter_by(student_id=student_id, status=i).count())
+        return jsonify({'pass_count': pass_count, 'status_count': status_count})
 
 # questions
 # 处理单个题目的相关功能
@@ -558,15 +576,14 @@ class QuestionList(Resource):
         for question in questions:
             all_submits = models.Submission.query.filter_by(question_id=question.id)
             accepted_submits = all_submits.filter_by(status=0)
-            len_all_submits = len([model_to_dict(submit) for submit in all_submits])
-            len_accepted_submits = len([model_to_dict(submit) for submit in accepted_submits])
+            len_all_submits = all_submits.count()
+            len_accepted_submits = accepted_submits.count()
+
             if len_all_submits:
                 accuracy = int(10000 * len_accepted_submits / len_all_submits) / 100.0
             else:
                 accuracy = 0.0
-            ac = False
-            if accepted_submits.filter_by(student_id=student_id).first():
-                ac = True
+            ac = accepted_submits.filter_by(student_id=student_id).first() is not None
             data.append(dict(model_to_dict(question), **{'accuracy' : accuracy, 'AC' : ac}))
         return jsonify(data)
 

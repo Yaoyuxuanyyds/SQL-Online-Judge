@@ -21,6 +21,8 @@ def create_app():
         return ''
 
     # 注册资源API
+    api.add_resource(Answer, '/api/answer')
+    api.add_resource(AnsweredQuestions, '/api/answeredquestions')
     api.add_resource(Community, '/api/community')
     api.add_resource(CommunityList, '/api/communitylist')
     api.add_resource(Judge, '/api/judge')
@@ -29,6 +31,7 @@ def create_app():
     api.add_resource(Question, '/api/question')
     api.add_resource(QuestionList, '/api/questionlist')  
     api.add_resource(Register, '/api/register')
+    api.add_resource(StatusCount, '/api/statuscount')
     api.add_resource(Student, '/api/student')
     api.add_resource(StudentList, '/api/studentlist')
     api.add_resource(Submit, '/api/submit')
