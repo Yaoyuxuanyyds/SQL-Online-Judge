@@ -479,20 +479,9 @@ class ManageUsers(Resource):
 
 
 
-# questions
-question_field = {
-    'id': fields.Integer,
-    'title': fields.String,
-    'create_code': fields.String,
-    'description': fields.String,
-    'difficulty': fields.Integer,
-    'answer_example': fields.String
-}
-
 # 处理单个题目的相关功能
 class Question(Resource):
     @auth_role(AUTH_ALL)
-    @marshal_with(question_field)
     def get(self):
         # 查询单个题目 -> 用于题目查询和显示
         question_id = int(request.args.get('question_id'))
@@ -537,8 +526,8 @@ class QuestionList(Resource):
     def get(self):
         # 查询所有题目 -> 用于题目列表的查询和显示
         questions = models.Question.query.all()
-        data = [marshal(question, question_field) for question in questions]
-        return {'data': data}, HTTP_OK
+
+        return {'data': questions}, HTTP_OK
 
 
 
@@ -559,6 +548,7 @@ class Register(Resource):
         db.session.add(new_user)
         db.session.commit()
         return {"message": "成了，快去登录吧！"}, HTTP_CREATED
+
 
 # students
 student_fields = {

@@ -25,6 +25,7 @@ import Contest from "@/components/student/Contest"
 import Community from "@/components/student/Community"
 import ArticleEditor from "@/components/student/ArticleEditor"
 import ArticleDetails from "@/components/student/ArticleDetails"
+import Contest_Question from "@/components/student/Contest_Question"
 
 
 Vue.use(Router)
@@ -89,6 +90,11 @@ export default new Router({
       name: 'article-editor_t',
       component: ArticleEditor_t
     },
+    {
+      path: '/teacher/create',
+      name: 'create',
+      component: CreateExam
+    },
 
     {
       path: '/student',
@@ -131,11 +137,11 @@ export default new Router({
       component: ArticleDetails
     },
     {
-      path: '/teacher/create',
-      name: 'create',
-      component: CreateExam
+      path: '/student/contest/question',
+      name: 'contest-question',
+      component: Contest_Question
     }
-    
+
     
   ]
 })
