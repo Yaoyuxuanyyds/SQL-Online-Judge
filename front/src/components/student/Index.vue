@@ -34,27 +34,27 @@
       </div>
     </div>
     <!-- 统计信息部分 —— 饼图 -->
-    <!-- <PieChart :chart-data="chartData" /> -->
+    <PieChart :chart-data="chartData" />
   </div>
 </template>
 
 <script>
 import Navbar from '@/components/student/Navbar.vue';
-//import { Pie } from 'vue-chartjs';
+import { Pie } from 'vue-chartjs';
 
 export default {
   components: {
     Navbar,
-    // PieChart: {
-    //   extends: Pie,
-    //   props: ['chartData'],
-    //   mounted() {
-    //     this.renderChart(this.chartData, {
-    //       responsive: true,
-    //       maintainAspectRatio: false
-    //     });
-    //   }
-    // }
+    PieChart: {
+      extends: Pie,
+      props: ['chartData'],
+      mounted() {
+        this.renderChart(this.chartData, {
+          responsive: true,
+          maintainAspectRatio: false
+        });
+      }
+    }
   },
   data() {
     return {
