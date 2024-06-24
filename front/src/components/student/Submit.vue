@@ -94,7 +94,7 @@ export default {
         }
       })
         .then(response => {
-          this.submissions = response.data.data.sort((a, b) => new Date(b.submit_time) - new Date(a.submit_time));
+          this.submissions = response.data.data.sort((a, b) => b.id - a.id);
         })
         .catch(error => {
           alert(`失败: ${error.response.data.message}`);
@@ -111,7 +111,7 @@ export default {
         }
       })
         .then(response => {
-          this.submissions = response.data.data.sort((a, b) => new Date(b.submit_time) - new Date(a.submit_time));
+          this.submissions = response.data.data.sort((a, b) => b.id - a.id);
         })
         .catch(error => {
           alert(`失败: ${error.response.data.message}`);
