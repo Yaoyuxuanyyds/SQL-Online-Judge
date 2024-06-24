@@ -455,7 +455,6 @@ class Question(Resource):
     def get(self):
         # 查询单个题目 -> 用于题目查询和显示
         question_id = int(request.args.get('question_id'))
-        print(question_id)
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
             return model_to_dict(ret), HTTP_OK
@@ -510,7 +509,6 @@ class QuestionList(Resource):
             else:
                 accuracy = 0.0
             ac = False
-            print(accepted_submits.first())
             if accepted_submits.filter_by(student_id=student_id).first():
                 ac = True
             data.append(dict(model_to_dict(question), **{'accuracy' : accuracy, 'AC' : ac}))

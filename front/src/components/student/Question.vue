@@ -3,6 +3,22 @@
     <Navbar />
     <div class="container">
       <h1>题目列表</h1>
+      <div class="button-bar">
+        <el-button
+          type="primary"
+          @click="randomQuestion"
+          class="random-button"
+        >
+          随机一题
+        </el-button>
+        <el-button
+          type="primary"
+          @click="refreshPage"
+          class="refresh-button"
+        >
+          刷新
+        </el-button>
+      </div>
       <div class="search-bar">
         <div class="left-controls">
           <el-input
@@ -28,29 +44,15 @@
             <el-option label="地狱" value="5" />
           </el-select>
         </div>
-        <div class="right-controls">
-          <el-button
-            type="primary"
-            @click="randomQuestion"
-            class="random-button"
-          >
-            随机一题
-          </el-button>
-          <el-button
-            type="primary"
-            @click="fetchQuestions"
-            class="refresh-button"
-          >
-            刷新
-          </el-button>
-        </div>
       </div>
       <el-table
         :data="filteredQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
         style="width: 100%"
-        border stripe>
-        <el-table-column prop="id" label="ID" width="100" align="center"></el-table-column>
-        <el-table-column prop="title" label="标题" align="center"></el-table-column>
+        border
+        stripe
+      >
+        <el-table-column prop="id" label="ID" width="100" align="center" />
+        <el-table-column prop="title" label="标题" align="center" />
         <el-table-column prop="difficulty" label="难度" width="120" align="center">
           <template slot-scope="scope">
             <span :class="getDifficultyClass(scope.row.difficulty)">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
@@ -67,7 +69,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="150" align="center">
-          <template slot-scope="scope">
+          <template #default="scope">
             <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
           </template>
         </el-table-column>
@@ -178,6 +180,9 @@ export default {
         'difficulty-challenge': difficulty === 4,
         'difficulty-hell': difficulty === 5,
       };
+    },
+    refreshPage() {
+      location.reload();
     }
   }
 }
@@ -199,9 +204,19 @@ h1 {
   padding: 20px 0;
 }
 
+.button-bar {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.button-bar .random-button,
+.button-bar .refresh-button {
+  margin-left: 10px;
+}
+
 .search-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   margin-bottom: 20px;
 }
@@ -218,25 +233,12 @@ h1 {
 
 .search-tip {
   margin-left: 10px;
+  margin-right: 10px;
   color: #666;
 }
 
 .filter-select {
   width: 150px;
-  margin-left: 20px;
-}
-
-.right-controls {
-  display: flex;
-  align-items: center;
-}
-
-.random-button {
-  margin-left: 20px;
-}
-
-.refresh-button {
-  margin-left: 10px;
 }
 
 .el-table {

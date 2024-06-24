@@ -1,40 +1,43 @@
 <template>
-  <div class="container">
+  <div>
     <Navbar />
-    <div class="question-container">
-      <div class="card">
-        <h1>{{ question.title }}</h1>
-        <p><strong>难度:</strong> {{ getDifficultyLabel(question.difficulty) }}</p>
-      </div>
-      <div class="card">
-        <h2>题目描述:</h2>
-        <p>{{ question.description }}</p>
-      </div>
-      <div class="card">
-        <h2>建表语句:</h2>
-        <p>{{ question.create_code }}</p>
-      </div>
-      <div class="card">
-        <h2>输入示例:</h2>
-        <p>{{ question.input_example }}</p>
-      </div>
-      <div class="card">
-        <h2>输出示例:</h2>
-        <p>{{ question.output_example }}</p>
-      </div>
-      <div class="card">
-        <h2>参考答案示例:</h2>
-        <p>{{ question.answer_example }}</p>
-      </div>
-      <textarea v-model="userAnswer" placeholder="在这里输入你的答案..." class="answer-textbox"></textarea>
-      <button @click="submitAnswer" class="submit-btn">提交答案</button>
-    </div>
+    <div class="container">
+<div class="question-container">
+  <div class="card">
+    <h1>{{ question.title }}</h1>
+    <p><strong>难度:</strong> {{ getDifficultyLabel(question.difficulty) }}</p>
   </div>
+  <div class="card">
+    <h2>题目描述:</h2>
+    <p>{{ question.description }}</p>
+  </div>
+  <div class="card">
+    <h2>建表语句:</h2>
+    <p>{{ question.create_code }}</p>
+  </div>
+  <div class="card">
+    <h2>输入示例:</h2>
+    <p>{{ question.input_example }}</p>
+  </div>
+  <div class="card">
+    <h2>输出示例:</h2>
+    <p>{{ question.output_example }}</p>
+  </div>
+  <div class="card">
+    <h2>参考答案示例:</h2>
+    <p>{{ question.answer_example }}</p>
+  </div>
+  <textarea v-model="userAnswer" placeholder="在这里输入你的答案..." class="answer-textbox"></textarea>
+  <button @click="submitAnswer" class="submit-btn">提交答案</button>
+</div>
+</div>
+  </div>
+
 </template>
 
 <script>
 import axios from 'axios';
-import Navbar from '@/components/student/Navbar.vue';
+import Navbar from '@/components/teacher/Navbar.vue';
 
 export default {
   components: {
