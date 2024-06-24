@@ -198,7 +198,6 @@ export default {
             alert('创建考试时出错，请重试。');
           }
         } catch (error) {
-          console.error('Error creating exam:', error);
           alert('创建考试时出错，请重试。');
         }
       } else {
