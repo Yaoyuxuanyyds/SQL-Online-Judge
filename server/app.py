@@ -33,6 +33,8 @@ def create_app():
     api.add_resource(StudentList, '/api/studentlist')
     api.add_resource(Submit, '/api/submit')
     api.add_resource(SubmitList, '/api/submitlist')
+    api.add_resource(ContestList, '/api/contestlist')
+    api.add_resource(Contest, '/api/contest')
 
 
     with app.app_context():

@@ -18,9 +18,6 @@
           <td>{{ contest.teacher_id }}</td>
           <td>{{ contest.start_time }}</td>
           <td>{{ contest.end_time }}</td>
-          <td>
-            <button @click="deleteContest(contest.id)">删除</button>
-          </td>
         </tr>
       </tbody>
     </table>
@@ -47,13 +44,10 @@ export default {
   },
   methods: {
     fetchContests() {
-      axios.get('/api/contests', {
-        headers: {
-          'session': localStorage.getItem('session')
-        }
-        , data: { 
-            user_id: localStorage.getItem('userId')
-          }
+      const userId = localStorage.getItem('userId');
+      // 发送请求获取考试列表
+      axios.get('/api/contestlist', {
+            user_id: userId
         })
         .then(response => {
           this.contests = response.data.data;
@@ -62,15 +56,6 @@ export default {
           console.error("There was an error fetching the contests!", error);
         });
     },
-    deleteContest(contestId) {
-      axios.delete(`/api/contest?contest_id=${contestId}`)
-        .then(response => {
-          this.fetchContests();
-        })
-        .catch(error => {
-          console.error("There was an error deleting the contest!", error);
-        });
-    }
   }
 };
 </script>
