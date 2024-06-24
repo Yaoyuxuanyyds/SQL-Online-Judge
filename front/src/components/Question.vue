@@ -66,7 +66,7 @@
               <span :class="scope.row.AC ? 'completed-true' : 'completed-false'">{{ scope.row.AC ? '已完成' : '未完成' }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="accuracy" label="准确率" width="120" align="center">
+          <el-table-column prop="accuracy" label="通过率" width="120" align="center">
             <template slot-scope="scope">
               {{ scope.row.accuracy }}%
             </template>

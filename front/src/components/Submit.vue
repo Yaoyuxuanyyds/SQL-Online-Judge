@@ -180,7 +180,7 @@ export default {
 
 .side-menu {
   width: 200px;
-  height: 100vh;
+  height: calc(100vh - 40px);
   border-right: 1px solid #ebeef5;
   border-radius: 10px 0 0 10px;
 }
@@ -193,12 +193,12 @@ export default {
   background-color: white;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  min-width: 800px; /* 添加这一行确保内容区最小宽度 */
+  min-width: 800px; /* 确保内容区最小宽度 */
 }
 
 .header-title {
   text-align: center;
-  color: #2c3e50;
+  color: #007bff;
   margin-bottom: 20px;
   font-size: 24px;
   font-weight: bold;
@@ -243,7 +243,6 @@ export default {
   background-color: #f4f4f4;
   font-weight: bold;
 }
-
 
 .view-code-btn {
   background-color: #28a745;
