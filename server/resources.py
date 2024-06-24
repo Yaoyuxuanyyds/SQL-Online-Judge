@@ -291,13 +291,16 @@ class GetScore(Resource):
         student_id = int(request.args.get('student_id'))
 
         if not (exam_id and student_id):
+            print(1)
             return {"message": "信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
         
         exam_student = models.ExamStudent.query.filter_by(exam_id=exam_id, student_id=student_id).first()
         if not exam_student:
+            print(2)
             return {"message": "该学生没有关联的考试"}, HTTP_NOT_FOUND
         
         score = exam_student.score
+        print(score)
         return {"score": score}, HTTP_OK
 
 

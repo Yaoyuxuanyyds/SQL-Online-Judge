@@ -18,6 +18,8 @@ import ArticleEditor from "@/components/ArticleEditor"
 import ArticleDetails from "@/components/ArticleDetails"
 import Contest_Question from "@/components/Contest_Question"
 import AnswerQuestion_contest from '@/components/AnswerQuestion_contest'
+import ContestStatistics from '@/components/Statistics'
+
 
 Vue.use(Router)
 
@@ -95,6 +97,11 @@ export default new Router({
       path: '/answer-question-contest/:examId/:questionId',
       name: 'answer-question-contest',
       component: AnswerQuestion_contest
-    }
+    },
+    {
+      path: '/contest/statistics/:id',
+      name: 'contest-statistics',
+      component: ContestStatistics
+    },
   ]
 })

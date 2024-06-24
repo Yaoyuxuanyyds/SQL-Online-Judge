@@ -20,6 +20,7 @@
             <th>结束时间</th>
             <th>状态</th>
             <th>操作</th>
+            <th v-if="userRole !== 0">查看答题</th>
           </tr>
         </thead>
         <tbody>
@@ -33,6 +34,9 @@
             </td>
             <td>
               <button @click="goToContestQuestions(contest.id)">开始考试</button>
+            </td>
+            <td v-if="userRole !== 0">
+              <button @click="viewScores(contest.id)">查看答题</button>
             </td>
           </tr>
         </tbody>
@@ -54,7 +58,8 @@ export default {
     return {
       contests: [],
       filteredContests: [],
-      filterStatus: ''
+      filterStatus: '',
+      userRole: parseInt(localStorage.getItem('userRole')),
     };
   },
   created() {
@@ -118,6 +123,9 @@ export default {
     },
     goToContestQuestions(contestId) {
       this.$router.push({ name: 'contest-question', params: { id: contestId } });
+    },
+    viewScores(contestId) {
+      this.$router.push({ name: 'contest-statistics', params: { id: contestId } });
     },
     getStatusText(status) {
       switch (status) {

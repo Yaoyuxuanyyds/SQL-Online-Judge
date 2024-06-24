@@ -73,7 +73,7 @@ export default {
   mounted() {
     this.fetchExamInfo();
     this.fetchContestQuestions();
-    if (this.userRole !== 0) {
+    if (this.userRole == 0) {
       this.fetchTotalScore();
     }
   },
