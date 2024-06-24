@@ -693,9 +693,9 @@ class SubmitList(Resource):
         userid = int(request.args.get('user_id')) if request.args.get('user_id') else None
         
         if fetchall:
-            submits = Submission.query.filter_by()
+            submits = models.Submission.query.filter_by()
         elif userid:
-            submits = Submission.query.filter_by(id=userid)
+            submits = models.Submission.query.filter_by(id=userid)
         else:
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         
