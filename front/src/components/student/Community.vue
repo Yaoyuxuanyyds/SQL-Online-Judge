@@ -122,6 +122,7 @@ h1 {
   max-width: 1400px;
 }
 .article-item {
+  margin: auto;
   border: 1px solid #dee2e6;
   margin-bottom: 10px;
   padding: 20px;
@@ -137,7 +138,7 @@ h1 {
 .article-header {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 20px;
 }
 .article-title {
@@ -152,6 +153,7 @@ h1 {
   font-size: 1.1rem;
   color: #666;
   margin-top: 10px;
+  text-align: center;
 }
 .article-content p {
   margin: 0 0 10px;
