@@ -17,6 +17,7 @@ import Community from "@/components/Community"
 import ArticleEditor from "@/components/ArticleEditor"
 import ArticleDetails from "@/components/ArticleDetails"
 import Contest_Question from "@/components/Contest_Question"
+import AnswerQuestion_contest from '@/components/AnswerQuestion_contest'
 
 Vue.use(Router)
 
@@ -89,6 +90,11 @@ export default new Router({
       path: '/contest/question/:id',
       name: 'contest-question',
       component: Contest_Question
+    },
+    {
+      path: '/answer-question-contest/:examId/:questionId',
+      name: 'answer-question-contest',
+      component: AnswerQuestion_contest
     }
   ]
 })
