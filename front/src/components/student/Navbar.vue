@@ -43,11 +43,12 @@ export default {
           'session': sessionToken,
           'Content-Type': 'application/json'
         },
-        data: {}
+        data: {
+        }
       })
-      .then(() => {
-        alert('成功退出登录');
-        localStorage.removeItem('sessionToken'); // 清除本地存储中的 sessionToken
+      .then(response => {
+        alert(response.data.message); // 显示成功消息
+        localStorage.removeItem('session'); // 清除本地存储中的 session
         this.$router.push('/'); // 回到主页
       })
       .catch(error => {
