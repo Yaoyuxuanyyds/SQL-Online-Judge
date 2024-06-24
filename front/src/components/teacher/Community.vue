@@ -55,7 +55,7 @@ export default {
         }
       })
         .then(response => {
-          this.articles = response.data.data;
+          this.articles = response.data;
         })
         .catch(error => {
           alert(`失败: ${error.response.data.message}`);

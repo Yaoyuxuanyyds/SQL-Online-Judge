@@ -110,7 +110,7 @@ export default {
       })
       .then(response => {
         // 假设后端返回的数据结构包含了 accuracy 字段
-        this.questions = response.data.data.map(question => ({
+        this.questions = response.data.map(question => ({
           ...question,
           accuracy: Math.floor(Math.random() * 100) // 示例：随机生成准确率
         }));
