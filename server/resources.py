@@ -178,6 +178,69 @@ class CommunityList(Resource):
 
 
 
+# Contest (Exam) 的字段定义
+contest_field = {
+    'id': fields.Integer,
+    'teacher_id': fields.Integer,
+    'start_time': fields.DateTime,
+    'end_time': fields.DateTime
+}
+
+# 处理单个考试的相关功能
+class Contest(Resource):
+    @auth_role(AUTH_ALL)
+    @marshal_with(contest_field)
+    def get(self):
+        # 查询单个考试 -> 用于考试查询和显示
+        contest_id = int(request.args.get('contest_id'))
+        ret = models.Exam.query.filter_by(id=contest_id).first()
+        if ret:
+            return ret, HTTP_OK
+        else:
+            return {"message": "该考试不存在"}, HTTP_NOT_FOUND
+
+    @auth_role(AUTH_TEACHER)
+    def delete(self):
+        contest_id = int(request.args.get('contest_id'))
+        ret = models.Exam.query.filter_by(id=contest_id).first()
+        if ret:
+            db.session.delete(ret)
+            db.session.commit()
+            return {}, HTTP_OK
+        else:
+            return {"message": "该考试不存在"}, HTTP_NOT_FOUND
+    
+    @auth_role(AUTH_TEACHER)
+    def post(self):
+        c = models.Exam()
+        c.teacher_id = int(request.json.get('teacher_id'))
+        c.start_time = request.json.get('start_time')
+        c.end_time = request.json.get('end_time')
+
+        if not (c.teacher_id and c.start_time and c.end_time):
+            return {"message": "考试信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
+        db.session.add(c)
+        db.session.commit()
+        return {"message": "新增考试成功"}, HTTP_CREATED
+    
+class ContestList(Resource):
+    @auth_role(AUTH_ALL)
+    def get(self):
+        # 获取当前用户ID
+        current_user_id = request.json.get('user_id')
+
+        # 查询与当前用户相关的考试ID
+        student_exams = models.ExamStudent.query.filter_by(student_id=current_user_id).all()
+        exam_ids = [exam.exam_id for exam in student_exams]
+
+        # 查询相关考试信息
+        contests = models.Exam.query.filter(models.Exam.id.in_(exam_ids)).all()
+        data = [marshal(contest, contest_field) for contest in contests]
+        return {'data': data}, HTTP_OK
+
+
+
+
 
 
 # judge
@@ -446,6 +509,9 @@ class QuestionList(Resource):
         data = [marshal(question, question_field) for question in questions]
         return {'data': data}, HTTP_OK
 
+
+
+
 # register
 class Register(Resource):
     def post(self):
@@ -509,6 +575,10 @@ class Student(Resource):
             return {"message": "学生信息不全，补全后提交！"}, HTTP_BAD_REQUEST
     
     # TODO: 添加修改学生信息的函数
+
+
+
+
 
 class StudentList(Resource):
     @auth_role(AUTH_ADMIN)
@@ -596,53 +666,4 @@ class SubmitList(Resource):
 
 
 
-# createexam
-# Define the fields for Exam resource serialization
-exam_field = {
-    'id': fields.Integer,
-    'name': fields.String,
-    'category': fields.String,
-    'start_time': fields.String,
-    'end_time': fields.String,
-    'problems': fields.List(fields.Nested({
-        'id': fields.Integer,
-        'title': fields.String,
-        'difficulty': fields.Integer
-    }))
-}
 
-class CreateExam(Resource):
-    @marshal_with(exam_field)
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str, required=True, help="Exam name is required")
-        parser.add_argument('category', type=str, required=True, help="Exam category is required")
-        parser.add_argument('start_time', type=str, required=True, help="Exam start time is required")
-        parser.add_argument('end_time', type=str, required=True, help="Exam end time is required")
-        parser.add_argument('problems', type=list, required=True, help="List of problem IDs is required")
-
-        args = parser.parse_args()
-        exam_name = args['name']
-        exam_category = args['category']
-        start_time = args['start_time']
-        end_time = args['end_time']
-        problem_ids = args['problems']
-
-        # Retrieve questions from database based on problem_ids
-        problems = Question.query.filter(Question.id.in_(problem_ids)).all()
-
-        if not problems:
-            return {"message": "No valid problems found"}, 400
-
-        new_exam = Exam(
-            name=exam_name,
-            category=exam_category,
-            start_time=start_time,
-            end_time=end_time,
-            problems=problems
-        )
-
-        db.session.add(new_exam)
-        db.session.commit()
-
-        return new_exam, 201
