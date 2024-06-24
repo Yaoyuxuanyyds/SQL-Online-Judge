@@ -14,20 +14,20 @@
             <tr>
               <th>提交ID</th>
               <th>题目ID</th>
-              <th>学生ID</th>
+              <th v-if="!hideStudentID">学生ID</th>
               <th>结果</th>
               <th>提交时间</th>
-              <th v-if="showExtraColumn">提交记录</th> <!-- 条件渲染: 仅在我的记录时显示 -->
+              <th v-if="showExtraColumn">提交记录</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="record in submissions" :key="record.submissionId">
               <td>{{ record.id }}</td>
               <td>{{ record.question_id }}</td>
-              <td>{{ record.student_id }}</td>
+              <td v-if="!hideStudentID">{{ record.student_id }}</td>
               <td>{{ judgeResult(record.pass_rate) }}</td>
               <td>{{ record.submit_time | formatDate }}</td>
-              <td v-if="showExtraColumn">{{ record.submit_sql }}</td> <!-- 条件渲染 -->
+              <td v-if="showExtraColumn">{{ record.submit_sql }}</td>
             </tr>
           </tbody>
         </table>
@@ -48,12 +48,14 @@ export default {
   data() {
     return {
       submissions: [],
-      showExtraColumn: false,  // 控制额外列的显示
+      showExtraColumn: false,
+      hideStudentID: false, // 控制隐藏学生ID列
     };
   },
   methods: {
     handleSelect(index) {
-      this.showExtraColumn = (index === '2');  // 当选择我的记录时显示额外的列
+      this.showExtraColumn = (index === '2');
+      this.hideStudentID = (index === '2'); // 当选择我的记录时隐藏学生ID列
       if (index === '1') {
         this.fetchAll();
       } else if (index === '2') {
