@@ -30,7 +30,6 @@ export default {
   },
   mounted() {
     // 在组件挂载时获取用户昵称
-    // userName 有问题
     this.nickname = localStorage.getItem('userName') || 'Guest';
   },
   methods: {
