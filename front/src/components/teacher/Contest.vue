@@ -19,7 +19,7 @@
           <td>{{ contest.start_time }}</td>
           <td>{{ contest.end_time }}</td>
           <td>
-            <button @click="deleteContest(contest.id)">删除</button>
+            <button @click="goToContestQuestions(contest.id)">查看题目</button>
           </td>
         </tr>
       </tbody>
@@ -30,7 +30,6 @@
 <script>
 import axios from 'axios';
 import Navbar from '@/components/teacher/Navbar.vue';
-
 
 export default {
   name: 'Contest',
@@ -47,29 +46,27 @@ export default {
   },
   methods: {
     fetchContests() {
-      axios.get('/api/contests', {
+      const userId = localStorage.getItem('userID');
+      const userRole = localStorage.getItem('userRole');
+      // 发送请求获取考试列表
+      axios.get('/api/contestlist', {
         headers: {
           'session': localStorage.getItem('session')
+        },
+        params: {
+          user_id: userId,
+          user_role: userRole
         }
-        , data: { 
-            user_id: localStorage.getItem('userId')
-          }
         })
         .then(response => {
           this.contests = response.data.data;
         })
         .catch(error => {
-          console.error("There was an error fetching the contests!", error);
+          alert("There was an error fetching the contests!", error);
         });
     },
-    deleteContest(contestId) {
-      axios.delete(`/api/contest?contest_id=${contestId}`)
-        .then(response => {
-          this.fetchContests();
-        })
-        .catch(error => {
-          console.error("There was an error deleting the contest!", error);
-        });
+    goToContestQuestions(contestId) {
+      this.$router.push({ name: 'contest-questions', params: { id: contestId } });
     }
   }
 };
@@ -89,5 +86,18 @@ th, td {
 
 th {
   background-color: #f2f2f2;
+}
+
+button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+button:hover {
+  background-color: #0056b3;
 }
 </style>

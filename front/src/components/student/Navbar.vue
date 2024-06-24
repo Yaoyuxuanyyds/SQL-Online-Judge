@@ -29,7 +29,8 @@ export default {
   },
   mounted() {
     // 在组件挂载时获取用户昵称
-    this.nickname = localStorage.getItem('nickname') || 'Guest';
+    // userName 有问题
+    this.nickname = localStorage.getItem('userName') || 'Guest';
   },
   methods: {
     isActive(path) {
@@ -41,7 +42,8 @@ export default {
         headers: {
           'session': sessionToken,
           'Content-Type': 'application/json'
-        }
+        },
+        data: {}
       })
       .then(() => {
         alert('成功退出登录');

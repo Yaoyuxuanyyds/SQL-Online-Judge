@@ -18,6 +18,9 @@
           <td>{{ contest.teacher_id }}</td>
           <td>{{ contest.start_time }}</td>
           <td>{{ contest.end_time }}</td>
+          <td>
+            <button @click="goToContestQuestions(contest.id)">开始考试</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -27,7 +30,6 @@
 <script>
 import axios from 'axios';
 import Navbar from '@/components/student/Navbar.vue';
-
 
 export default {
   name: 'Contest',
@@ -44,24 +46,29 @@ export default {
   },
   methods: {
     fetchContests() {
-      const userId = localStorage.getItem('userId');
+      const userId = localStorage.getItem('userID');
+      const userRole = localStorage.getItem('userRole');
       // 发送请求获取考试列表
       axios.get('/api/contestlist', {
         headers: {
           'session': localStorage.getItem('session')
         },
         params: {
-          user_id: userId 
+          user_id: userId,
+          user_role: userRole
         }
         })
         .then(response => {
           this.contests = response.data.data;
-          alert(this.contests);
         })
         .catch(error => {
-          console.error("There was an error fetching the contests!", error);
+          alert("There was an error fetching the contests!", error);
         });
     },
+    goToContestQuestions(contestId) {
+      // 导航到考试题目页面
+      this.$router.push({ name: 'contest-questions', params: { id: contestId } });
+    }
   }
 };
 </script>
@@ -80,5 +87,18 @@ th, td {
 
 th {
   background-color: #f2f2f2;
+}
+
+button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+button:hover {
+  background-color: #0056b3;
 }
 </style>
