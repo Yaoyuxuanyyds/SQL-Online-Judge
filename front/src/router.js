@@ -137,7 +137,7 @@ export default new Router({
       component: ArticleDetails
     },
     {
-      path: '/student/contest/question',
+      path: '/student/contest/question/:id',
       name: 'contest-question',
       component: Contest_Question
     }
