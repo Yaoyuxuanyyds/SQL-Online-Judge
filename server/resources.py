@@ -224,9 +224,10 @@ class Contest(Resource):
         return {"message": "新增考试成功"}, HTTP_CREATED
     
 class ContestList(Resource):
+    @auth_role(AUTH_ALL)
     def get(self):
         # 获取当前用户ID
-        current_user_id = request.json.get('user_id')
+        current_user_id = request.args.get('user_id')
 
         # 查询与当前用户相关的考试ID
         student_exams = models.ExamStudent.query.filter_by(student_id=current_user_id).all()
@@ -235,6 +236,7 @@ class ContestList(Resource):
         # 查询相关考试信息
         contests = models.Exam.query.filter(models.Exam.id.in_(exam_ids)).all()
         data = [marshal(contest, contest_field) for contest in contests]
+        print(data)
         return {'data': data}, HTTP_OK
 
 
@@ -383,6 +385,7 @@ class Login(Resource):
     def delete(self):
         session = request.json.get('session')
         user = models.User.query.filter_by(session=session).first()
+        print(user)
         if user:
             user.session = None
             db.session.commit()

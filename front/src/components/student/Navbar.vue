@@ -36,8 +36,13 @@ export default {
       return this.$route.path === path;
     },
     logout() {
-      const sessionToken = localStorage.getItem('sessionToken');
-      axios.delete('/api/login', {session: sessionToken})
+      const sessionToken = localStorage.getItem('session');
+      axios.delete('/api/login', {
+        headers: {
+          'session': sessionToken,
+          'Content-Type': 'application/json'
+        }
+      })
       .then(() => {
         alert('成功退出登录');
         localStorage.removeItem('sessionToken'); // 清除本地存储中的 sessionToken

@@ -47,10 +47,16 @@ export default {
       const userId = localStorage.getItem('userId');
       // 发送请求获取考试列表
       axios.get('/api/contestlist', {
-            user_id: userId
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+        params: {
+          user_id: userId 
+        }
         })
         .then(response => {
           this.contests = response.data.data;
+          alert(this.contests);
         })
         .catch(error => {
           console.error("There was an error fetching the contests!", error);
