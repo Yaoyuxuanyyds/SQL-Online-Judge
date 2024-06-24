@@ -357,7 +357,7 @@ class Judge(Resource):
             record.status = JUDGE_ACCEPTED
         else:
             finalresult[1] = result_map[min(error_list)]
-            pass_rate = 100 * (1.0 - len(error_list) * 1.0 / len(results)) # 可能需要考虑保留小数的问题？
+            pass_rate = int(10000 * (1.0 - len(error_list) * 1.0 / len(results))) / 100.0 # 可能需要考虑保留小数的问题？
             record.status = min(error_list)
 
         record.pass_rate = pass_rate
@@ -504,7 +504,11 @@ class QuestionList(Resource):
             accepted_submits = models.Submission.query.filter_by(question_id=question.id, status=1)
             len_all_submits = len([model_to_dict(submit) for submit in all_submits])
             len_accepted_submits = len([model_to_dict(submit) for submit in accepted_submits])
-            data.append(dict(model_to_dict(question), **{'accuracy' : 100.0 * len_accepted_submits / len_all_submits}))
+            if len_all_submits:
+                accuracy = int(10000 * len_accepted_submits / len_all_submits) / 100.0
+            else:
+                accuracy = 0.0
+            data.append(dict(model_to_dict(question), **{'accuracy' : accuracy}))
         return jsonify(data)
 
 
