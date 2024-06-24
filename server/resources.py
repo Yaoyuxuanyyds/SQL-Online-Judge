@@ -510,6 +510,7 @@ class QuestionList(Resource):
             else:
                 accuracy = 0.0
             ac = False
+            print(accepted_submits)
             if accepted_submits.filter_by(student_id=student_id).first():
                 ac = True
             data.append(dict(model_to_dict(question), **{'accuracy' : accuracy, 'AC' : ac}))
