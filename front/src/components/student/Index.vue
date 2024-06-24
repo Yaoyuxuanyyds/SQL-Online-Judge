@@ -1,44 +1,54 @@
 <template>
-  <div>
-    <Navbar />
-    <!-- 用户信息部分 -->
-    <div class="user-info">
-      <h1>欢迎来到主页，<span class="highlight">{{ nickname }}</span></h1>
-      <p><span class="highlight">{{ nickname }}</span>, 你已经完成{{ totalQuestions }}道题啦！</p>
-      <div :class="{ 'encouragement': true, 'alert': correctRate < 30 }" v-if="correctRate < 30">
-        <span class="special-quote">山重水复疑无路，柳暗花明又一村！</span>
+  <div class="home-container">
+    <div class="left-column">
+      <div class="card user-info">
+        <h1>欢迎来到主页，<span class="highlight">{{ name }}</span></h1>
+        <p><span class="highlight">{{ name }}</span>, 你已经完成{{ totalQuestions }}道题啦！</p>
+        <div v-if="quote" class="daily-quote">每日一言：{{ quote }}</div>
+        <div class="current-time">当前时间：{{ currentTime }}</div>
+        <table>
+          <tr>
+            <td>昵称：</td>
+            <td><span class="highlight">{{ name }}</span></td>
+          </tr>
+          <tr>
+            <td>身份：</td>
+            <td><span class="highlight">{{ roleMap[role] }}</span></td>
+          </tr>
+        </table>
       </div>
-      <div v-else-if="correctRate >= 31 && correctRate <= 60" :class="{ 'encouragement': true, 'notice': true }">
-        <p>破釜沉舟，百二秦关终属楚！</p>
-      </div>
-      <div v-else-if="correctRate >= 61 && correctRate <= 85" :class="{ 'encouragement': true, 'progress': true }">
-        <p>天生我材必有用，千金散尽还复来！</p>
-      </div>
-      <div v-else-if="correctRate >= 86 && correctRate <= 100" :class="{ 'encouragement': true, 'success': true }">
-        <p>博观而约取，厚积而薄发！</p>
-      </div>
-      <table>
-        <tr>
-          <td>昵称：</td>
-          <td><span class="highlight">{{ nickname }}</span></td>
-        </tr>
-        <tr>
-          <td>个性签名：</td>
-          <td><span class="highlight">{{ signature }}</span></td>
-        </tr>
-      </table>
-      <!-- 显示统计数据为标签 -->
-      <div class="stat" v-if="numberAnswered && totalQuestions">
-        <span class="tag">做题数 / 总题数: {{ numberAnswered }} / {{ totalQuestions }}</span>
-        <span class="tag">正确率: {{ correctRate }}%</span>
+      <div class="card submissions">
+        <h2>最近提交</h2>
+        <el-table :data="submissions" style="width: 100%">
+          <el-table-column prop="id" label="提交ID" width="100" align="center"></el-table-column>
+          <el-table-column prop="question_id" label="题目ID" align="center"></el-table-column>
+          <el-table-column prop="status" label="提交结果" align="center"></el-table-column>
+          <el-table-column prop="pass_rate" label="通过率" align="center"></el-table-column>
+          <el-table-column prop="submit_time" label="时间" align="center"></el-table-column>
+        </el-table>
       </div>
     </div>
-    <!-- 统计信息部分 —— 饼图 -->
-    <PieChart :chart-data="chartData" />
+    <div class="right-column">
+      <div class="card statistics">
+        <h2>做题统计</h2>
+        <div class="stat">
+          <span class="tag">题目总数: {{ totalQuestions }}</span>
+          <span class="tag">做过题数: {{ numberAnswered }}</span>
+          <span class="tag">通过题数: {{ passCount }}</span>
+          <span class="tag">通过率: {{ correctRate }}%</span>
+          <span class="tag">发表文章数: {{ articlesCount }}</span>
+        </div>
+      </div>
+      <div class="card chart">
+        <h2>提交结果</h2>
+        <PieChart :chart-data="chartData" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import Navbar from '@/components/student/Navbar.vue';
 import { Pie } from 'vue-chartjs';
 
@@ -58,65 +68,164 @@ export default {
   },
   data() {
     return {
-      nickname: 'YourNickname',
-      signature: 'YourSignature',
-      totalQuestions: 100,
-      numberAnswered: 80, // 做过的题目总数
-      correctRate: 75, // 正确率百分比
+      name: localStorage.getItem('name'),
+      role: localStorage.getItem('role'),
+      roleMap: { '0': '学生', '1': '老师', '2': '管理员' },
+      totalQuestions: 0,
+      numberAnswered: 0,
+      passCount: 0,
+      correctRate: 0,
+      articlesCount: 0,
+      currentTime: new Date().toLocaleString(),
+      quote: '',
+      submissions: [],
       chartData: {
-        labels: ['Accepted', 'Wrong Answer', 'Complete Error'],
+        labels: ['Accepted', 'Wrong Answer', 'Runtime Error', 'Time Limit Exceeded', 'Memory Limit Exceeded'],
         datasets: [{
           label: 'Statistics',
-          backgroundColor: ['#83b799', '#e7cfc9', '#c1beb0'], // 莫兰迪色
-          data: [60, 15, 5] // 示例数据，实际应根据后端数据调整
+          backgroundColor: ['#83b799', '#e7cfc9', '#c1beb0', '#f5b7b1', '#aed6f1'],
+          data: [0, 0, 0, 0, 0]
         }]
-      }
+      },
+      quotes: [
+        "程序员的世界里没有Bug，只有无限可能的Feature！",
+        "代码如诗，写出来要让人赏心悦目。",
+        "一天不写代码，手就会发痒。",
+        "没有什么问题是重启解决不了的，如果有，那就再重启一次。",
+        "代码是程序员与世界沟通的桥梁。"
+      ]
     };
+  },
+  mounted() {
+    this.fetchInfo();
+    this.updateTime();
+    this.getDailyQuote();
+    setInterval(this.updateTime, 1000); // 每秒更新时间
+  },
+  methods: {
+    fetchInfo() {
+      const session = localStorage.getItem('session');
+      const userId = localStorage.getItem('userID');
+      axios.get('/api/questionlist', { headers: { session }, params: { student_id: userId } })
+        .then(response => {
+          this.totalQuestions = response.data.length;
+        })
+        .catch(error => {
+          alert("获取题目列表失败: " + error);
+        });
+
+      axios.get('/api/submitlist', { headers: { session }, params: { fetchall: false, user_id: userId } })
+        .then(response => {
+          this.submissions = response.data.sort((a, b) => b.id - a.id);
+          this.updateChartData(response.data);
+        })
+        .catch(error => {
+          alert("获取提交列表失败: " + error);
+        });
+
+      axios.get('/api/answeredquestions', { headers: { session }, params: { student_id: userId } })
+        .then(response => {
+          this.numberAnswered = response.data.length;
+        })
+        .catch(error => {
+          alert("获取做过的题目数失败: " + error);
+        });
+
+      axios.get('/api/passcount', { headers: { session }, params: { student_id: userId } })
+        .then(response => {
+          this.passCount = response.data.passCount;
+          this.correctRate = ((this.passCount / this.totalQuestions) * 100).toFixed(2);
+        })
+        .catch(error => {
+          alert("获取通过的题目数失败: " + error);
+        });
+
+      axios.get('/api/articlescount', { headers: { session }, params: { user_id: userId } })
+        .then(response => {
+          this.articlesCount = response.data.length;
+        })
+        .catch(error => {
+          alert("获取发表文章数失败: " + error);
+        });
+    },
+    updateTime() {
+      this.currentTime = new Date().toLocaleString();
+    },
+    getDailyQuote() {
+      const randomIndex = Math.floor(Math.random() * this.quotes.length);
+      this.quote = this.quotes[randomIndex];
+    },
+    updateChartData(data) {
+      const resultCounts = {
+        'Accepted': 0,
+        'Wrong Answer': 0,
+        'Runtime Error': 0,
+        'Time Limit Exceeded': 0,
+        'Memory Limit Exceeded': 0
+      };
+      data.forEach(submission => {
+        switch (submission.status) {
+          case 0:
+            resultCounts['Accepted']++;
+            break;
+          case 2:
+            resultCounts['Wrong Answer']++;
+            break;
+          case 1:
+            resultCounts['Runtime Error']++;
+            break;
+          case 3:
+            resultCounts['Time Limit Exceeded']++;
+            break;
+          case 4:
+            resultCounts['Memory Limit Exceeded']++;
+            break;
+        }
+      });
+      this.chartData.datasets[0].data = [
+        resultCounts['Accepted'],
+        resultCounts['Wrong Answer'],
+        resultCounts['Runtime Error'],
+        resultCounts['Time Limit Exceeded'],
+        resultCounts['Memory Limit Exceeded']
+      ];
+    }
   }
 };
 </script>
 
 <style scoped>
-.user-info {
-  text-align: center; /* 居中文本 */
-  margin: 20px;
+.home-container {
+  display: flex;
+  justify-content: space-between;
   padding: 20px;
-  background-color: #f9f9f9;
+}
+.left-column, .right-column {
+  width: 48%;
+}
+.card {
+  background-color: #fff;
   border-radius: 10px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease-in-out;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  padding: 20px;
 }
-
-.user-info:hover {
-  transform: scale(1.02);
+.user-info {
+  text-align: center;
 }
-
-.highlight, .tag {
-  color: #4A90E2; /* Royal blue for better visibility */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  text-shadow: 1px 1px 1px #aaa; /* Slight shadow for depth */
+.highlight {
+  color: #4A90E2;
+  font-weight: bold;
 }
-
 .tag {
   display: inline-block;
-  background-color: #e8eaf6; /* 莫兰迪灰色背景 */
+  background-color: #e8eaf6;
   padding: 5px 10px;
   margin: 5px;
   border-radius: 5px;
-  font-size: 0.9em;
 }
-
-.encouragement p {
+.daily-quote, .current-time {
+  margin-top: 10px;
   font-size: 1.1em;
 }
-
-.special-quote {
-  font-size: 1.2em;
-  font-family: 'Courier New', Courier, monospace;
-}
-
-.alert { background: linear-gradient(to right, #fcebeb, #ffcdd2); color: #b71c1c; }
-.notice { background: linear-gradient(to right, #fff3e0, #ffe0b2); color: #e65100; }
-.progress { background: linear-gradient(to right, #e1f5fe, #81d4fa); color: #01579b; }
-.success { background: linear-gradient(toright, #e8f5e9, #c8e6c9); color: #2e7d32; }
 </style>

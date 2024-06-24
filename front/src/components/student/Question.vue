@@ -131,7 +131,6 @@ export default {
         }
       })
       .then(response => {
-        // 假设后端返回的数据结构包含了 accuracy 和 completed 字段
         this.questions = response.data.map(question => ({
           ...question
         }));
