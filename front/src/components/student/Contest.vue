@@ -29,7 +29,7 @@
 
 <script>
 import axios from 'axios';
-import Navbar from '@/components/teacher/Navbar.vue';
+import Navbar from '@/components/student/Navbar.vue';
 
 
 export default {

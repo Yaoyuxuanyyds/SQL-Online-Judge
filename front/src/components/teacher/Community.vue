@@ -2,39 +2,37 @@
   <div>
     <Navbar />
     <div class="community-page">
-<div class="page-header">
-  <h1>社群分享</h1>
-</div>
-<div class="controls">
-  <input type="text" class="form-control search-field" placeholder="搜索文章...">
-  <button type="button" @click="goToEditor" class="btn btn-create">
-    创建新文章
-  </button>
-</div>
-<div class="article-list">
-  <div v-for="article in articles" :key="article.id" class="article-item shadow" @click="goToArticle(article.id)">
-    <div class="article-header">
-      <span class="article-id">{{ article.id }}</span>
-      <span class="article-title">{{ article.title }}</span>
-      <div class="article-info">
-        <span class="article-user-id">作者ID: {{ article.user_id }}</span>
-        <span class="article-question-id">问题ID: {{ article.question_id }}</span>
+      <div class="page-header">
+        <h1>社群分享</h1>
+      </div>
+      <div class="controls">
+        <input type="text" class="form-control search-field" placeholder="搜索文章...">
+        <button type="button" @click="goToEditor" class="btn btn-create">
+          创建新文章
+        </button>
+      </div>
+      <div class="article-list">
+        <div v-for="article in articles" :key="article.id" class="article-item" @click="goToArticle(article.id)">
+          <div class="article-header">
+            <h2 class="article-title">{{ article.title }}</h2>
+            <div class="article-info">
+              <span class="article-user-id">作者: {{ article.user_id }}</span>
+              <span class="article-question-id">问题ID: {{ article.question_id }}</span>
+            </div>
+          </div>
+          <div class="article-content">
+            <p>{{ articleExcerpt(article.content) }}</p>
+            <span class="article-time">{{ formatDate(article.publish_time) }}</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="article-content">
-      <p>{{ articleExcerpt(article.content) }}</p>
-      <span class="article-time">{{ formatDate(article.publish_time) }}</span>
-    </div>
-  </div>
-</div>
-</div>
   </div>
 </template>
 
-
 <script>
-import axios from 'axios';
 import Navbar from '@/components/teacher/Navbar.vue';
+import axios from 'axios';
 
 export default {
   name: 'Community',
@@ -73,9 +71,8 @@ export default {
       this.$router.push({ name: 'article-editor' });
     },
     goToArticle(articleId) {
-    this.$router.push({ name: 'article-details', params: { id: articleId } });
-  }
-    
+      this.$router.push({ name: 'article-details', params: { id: articleId } });
+    }
   }
 }
 </script>
@@ -84,6 +81,7 @@ export default {
 .community-page {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 .page-header {
   margin-bottom: 20px;
@@ -120,8 +118,8 @@ h1 {
   background-color: #218838;
 }
 .article-list {
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  max-width: 1400px;
 }
 .article-item {
   border: 1px solid #dee2e6;
@@ -129,41 +127,39 @@ h1 {
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 .article-item:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .article-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.article-id, .article-question-id {
-  background-color: #007bff;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 50%;
-  text-align: center;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
 }
 .article-title {
-  font-size: 1.5rem;
-  margin: 0 15px;
-  flex-grow: 1;
+  font-size: 1.8rem;
+  margin: 0;
+  color: #007bff;
+  font-weight: bold;
 }
 .article-info {
   display: flex;
-  align-items: center;
-}
-.article-user-id, .article-question-id {
-  margin-left: 10px;
+  gap: 20px;
+  font-size: 1.1rem;
+  color: #666;
+  margin-top: 10px;
 }
 .article-content p {
-  margin: 10px 0 5px;
+  margin: 0 0 10px;
+  color: #333;
 }
 .article-time {
   font-size: 0.85rem;
-  color: #666;
+  color: #999;
+  align-self: flex-end;
 }
 </style>
