@@ -573,20 +573,6 @@ class StudentList(Resource):
 
 # submit
 class Submit(Resource):
-    # 获取自己的提交信息
-    @auth_role(AUTH_ALL)
-    def get(self):
-        submit_id = int(request.args.get('submit_id'))
-        student = request.args.get('student')
-        ret = models.Submission.query.filter_by(id=submit_id).first()
-        if ret:
-            if student and ret['student_id'] == student.id:
-                return model_to_dict(ret), HTTP_OK
-            else:
-                return {"message": "只可查看自己的提交信息。"}, HTTP_FORBIDDEN
-        else:
-            return {"message": "该提交记录不存在"}, HTTP_NOT_FOUND
-
     # 删除提交信息
     @auth_role(AUTH_ADMIN)
     def delete(self):
@@ -622,18 +608,13 @@ class Submit(Resource):
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
-        fetchall = request.args.get('fetchall')
-        if fetchall == 'true':
-            fetchall = True
-        elif fetchall == 'false':
-            fetchall = False
-        else:
-            fetchall = None  
-        userid = int(request.args.get('user_id')) if request.args.get('user_id') else None
+        data = dict(request.args)
+        fetchall = True if data.get('fetchall') == 'true' else False
+        userid = int(data.get('user_id')) if data.get('user_id') else None
         if fetchall:
             submits = models.Submission.query.filter_by()
         elif userid:
-            submits = models.Submission.query.filter_by(id=userid)
+            submits = models.Submission.query.filter_by(student_id=userid)
         else:
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         data = [model_to_dict(submit) for submit in submits]

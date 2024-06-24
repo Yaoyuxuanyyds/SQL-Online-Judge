@@ -83,7 +83,7 @@ export default {
         });
     },
     formatDate(date) {
-      return new Date(date).toISOString();
+      return new Date(date).toLocaleString();
     },
     updateFontSize() {
       this.$refs.articleContent.style.fontSize = this.selectedFontSize;
