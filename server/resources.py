@@ -224,7 +224,6 @@ class Contest(Resource):
         return {"message": "新增考试成功"}, HTTP_CREATED
     
 class ContestList(Resource):
-    @auth_role(AUTH_ALL)
     def get(self):
         # 获取当前用户ID
         current_user_id = request.json.get('user_id')
