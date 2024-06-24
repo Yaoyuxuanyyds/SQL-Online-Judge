@@ -1,87 +1,91 @@
 <template>
   <div>
     <Navbar />
-    <div class="container">
-      <h1 class="title">题目列表</h1>
-      <div class="button-bar">
-        <el-button
-          type="primary"
-          @click="randomQuestion"
-          class="random-button"
-        >
-          随机一题
-        </el-button>
-        <el-button
-          type="primary"
-          @click="refreshPage"
-          class="refresh-button"
-        >
-          刷新
-        </el-button>
-      </div>
-      <div class="search-bar">
-        <div class="left-controls">
-          <el-input
-            placeholder="输入标题关键词进行搜索..."
-            v-model="searchQuery"
-            class="search-input"
-            size="medium"
-            clearable
-          />
-          <span class="search-tip">难度</span>
-          <el-select
-            v-model="filterType"
-            placeholder="按难度筛选"
-            size="medium"
-            class="filter-select"
-            @change="filterQuestions"
+    <div class="create-question-container">
+      <h1 class="header-title">题目列表</h1>
+      <div class="section-container">
+        <div class="button-bar">
+          <el-button
+            type="primary"
+            @click="randomQuestion"
+            class="random-button"
           >
-            <el-option label="全部" value="all" />
-            <el-option label="简单" value="1" />
-            <el-option label="中等" value="2" />
-            <el-option label="困难" value="3" />
-            <el-option label="挑战" value="4" />
-            <el-option label="地狱" value="5" />
-          </el-select>
+            随机一题
+          </el-button>
+          <el-button
+            type="primary"
+            @click="refreshPage"
+            class="refresh-button"
+          >
+            刷新
+          </el-button>
+        </div>
+        <div class="search-bar">
+          <div class="left-controls">
+            <el-input
+              placeholder="输入标题关键词进行搜索..."
+              v-model="searchQuery"
+              class="search-input"
+              size="medium"
+              clearable
+            />
+            <span class="search-tip">难度</span>
+            <el-select
+              v-model="filterType"
+              placeholder="按难度筛选"
+              size="medium"
+              class="filter-select"
+              @change="filterQuestions"
+            >
+              <el-option label="全部" value="all" />
+              <el-option label="简单" value="1" />
+              <el-option label="中等" value="2" />
+              <el-option label="困难" value="3" />
+              <el-option label="挑战" value="4" />
+              <el-option label="地狱" value="5" />
+            </el-select>
+          </div>
         </div>
       </div>
-      <el-table
-        :data="filteredQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-        style="width: 100%"
-        border
-        stripe
-      >
-        <el-table-column prop="id" label="ID" width="100" align="center" />
-        <el-table-column prop="title" label="标题" align="center" />
-        <el-table-column prop="difficulty" label="难度" width="120" align="center">
-          <template slot-scope="scope">
-            <span :class="getDifficultyClass(scope.row.difficulty)">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="completed" label="是否完成" width="120" align="center">
-          <template slot-scope="scope">
-            <span :class="scope.row.AC ? 'completed-true' : 'completed-false'">{{ scope.row.AC ? '已完成' : '未完成' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="accuracy" label="准确率" width="120" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.accuracy }}%
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="150" align="center">
-          <template #default="scope">
-            <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        @current-change="handlePageChange"
-        :current-page="currentPage"
-        :page-size="pageSize"
-        :page-sizes="[5, 10, 20, 30]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="filteredQuestions.length"
-      />
+      <div class="section-container">
+        <el-table
+          :data="filteredQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+          style="width: 100%"
+          border
+          stripe
+        >
+          <el-table-column prop="id" label="ID" width="100" align="center" />
+          <el-table-column prop="title" label="标题" align="center" />
+          <el-table-column prop="difficulty" label="难度" width="120" align="center">
+            <template slot-scope="scope">
+              <span :class="getDifficultyClass(scope.row.difficulty)">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="completed" label="是否完成" width="120" align="center">
+            <template slot-scope="scope">
+              <span :class="scope.row.AC ? 'completed-true' : 'completed-false'">{{ scope.row.AC ? '已完成' : '未完成' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="accuracy" label="准确率" width="120" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.accuracy }}%
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="150" align="center">
+            <template #default="scope">
+              <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          @current-change="handlePageChange"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          :page-sizes="[5, 10, 20, 30]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="filteredQuestions.length"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -189,20 +193,33 @@ export default {
 }
 </script>
 
+
 <style scoped>
-.container {
-  padding: 20px;
+.create-question-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 30px;
   background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.title {
+.section-container {
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.header-title {
   text-align: center;
-  font-size: 24px;
-  color: #333;
-  margin: 0;
-  padding: 20px 0;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  color: #007bff;
+  font-weight: bold;
 }
 
 .button-bar {
@@ -225,22 +242,25 @@ export default {
 .left-controls {
   display: flex;
   align-items: center;
+  flex-wrap: wrap; /* 允许内容换行 */
 }
 
 .search-input {
   max-width: 300px;
   margin-right: 10px;
+  flex: 1 1 auto; /* 允许输入框扩展 */
 }
 
 .search-tip {
   margin-left: 10px;
   margin-right: 10px;
   color: #666;
-  writing-mode: vertical-rl; /* 将文字垂直显示 */
+  white-space: nowrap; /* 防止文字换行 */
 }
 
 .filter-select {
-  width: 150px;
+  width: 80px;
+  flex: 1 1 auto; /* 允许选择框扩展 */
 }
 
 .el-table {
@@ -262,14 +282,14 @@ th {
   color: #333;
   font-weight: bold;
   text-align: center;
-  font-family: 'Arial', sans-serif; /* 使用 Arial 字体 */
-  font-size: 16px; /* 设置字体大小 */
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
 }
 
 td {
   text-align: center;
-  font-family: 'Arial', sans-serif; /* 使用 Arial 字体 */
-  font-size: 14px; /* 设置字体大小 */
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
 }
 
 tr:nth-child(even) {
