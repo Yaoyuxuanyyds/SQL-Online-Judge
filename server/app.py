@@ -4,14 +4,12 @@ from flask_cors import CORS
 import os,sys
 sys.path.append(os.getcwd())
 import config
-from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
 from resources import *
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
-    db.init_app(app)
+    config.db.init_app(app)
     CORS(app, resources={r"/api/*": {"origins": "*"}})
     
     api = Api(app)
@@ -46,7 +44,7 @@ def create_app():
 
 
     with app.app_context():
-        db.create_all()
+        config.db.create_all()
     return app
 
 if __name__ == '__main__':
