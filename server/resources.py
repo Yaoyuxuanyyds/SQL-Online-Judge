@@ -191,7 +191,7 @@ class Contest(Resource):
             return {"message": "考试信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
         db.session.add(c)
         db.session.commit()
-        return {"message": "新增考试成功"}, HTTP_CREATED
+        return {"message": "新增考试成功", "id": c.id}, HTTP_CREATED
     
 class ContestList(Resource):
     @auth_role(AUTH_ALL)
@@ -223,6 +223,60 @@ class ContestQuestion(Resource):
         question_ids = [eq.question_id for eq in exam_questions]
 
         return jsonify({'questionIds': question_ids})
+    
+    @auth_role(AUTH_TEACHER)
+    def post(self):
+        exam_id = int(request.json.get('exam_id'))
+        question_id = int(request.json.get('question_id'))
+        score = int(request.json.get('score'))
+
+        if not (exam_id and question_id and score):
+            return {"message": "信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
+        
+        exam_question = models.ExamQuestion(
+            exam_id=exam_id,
+            question_id=question_id,
+            score=score
+        )
+        
+        db.session.add(exam_question)
+        db.session.commit()
+        return {"message": "考试-题目关联成功"}, HTTP_CREATED
+
+
+class ContestStudent(Resource):
+    @auth_role(AUTH_TEACHER)
+    def post(self):
+        exam_id = int(request.json.get('exam_id'))
+        student_id = int(request.json.get('student_id'))
+
+        if not (exam_id and student_id):
+            return {"message": "信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
+        
+        exam_student = models.ExamStudent(
+            exam_id=exam_id,
+            student_id=student_id,
+            score=0  # 默认分数为0
+        )
+        
+        db.session.add(exam_student)
+        db.session.commit()
+        return {"message": "考试-学生关联成功"}, HTTP_CREATED
+
+    @auth_role(AUTH_TEACHER)
+    def get(self):
+        student_id = int(request.args.get('userId'))
+        if not student_id:
+            return {"message": "缺少userId参数"}, HTTP_BAD_REQUEST
+        
+        exam_students = models.ExamStudent.query.filter_by(student_id=student_id).all()
+        if not exam_students:
+            return {"message": "该学生没有关联的考试"}, HTTP_NOT_FOUND
+        
+        exam_ids = [exam_student.exam_id for exam_student in exam_students]
+        return {"exam_ids": exam_ids}, HTTP_OK
+
+
 
 
 

@@ -6,10 +6,10 @@
 
       <!-- 考试名称和时间部分 -->
       <div class="section-container">
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label>考试名称:</label>
           <input v-model="examName" placeholder="请输入考试名称" class="large-input" />
-        </div>
+        </div> -->
         <div class="form-group-horizontal">
           <div class="form-group">
             <label>开始时间:</label>
@@ -105,6 +105,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import Navbar from '@/components/teacher/Navbar.vue';
 
 export default {
@@ -114,7 +115,7 @@ export default {
   name: 'CreateExam',
   data() {
     return {
-      examName: '',
+      // examName: '',
       startTime: '',
       endTime: '',
       questionId: '',
@@ -159,15 +160,54 @@ export default {
     removeStudent(index) {
       this.students.splice(index, 1);
     },
-    submitExam() {
-      if (this.examName && this.questions.length > 0 && this.startTime && this.endTime) {
-        alert('考试创建成功！');
+    async submitExam() {
+      if (this.startTime && this.endTime) {
+        try {
+          // 提交考试基本信息
+          const examResponse = await axios.post('/api/contest', {
+            teacher_id: localStorage.getItem('userID'),
+            start_time: this.startTime,
+            end_time: this.endTime,
+          },
+          { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
+
+          if (examResponse.status === 201) {
+            const examId = examResponse.data.id;
+
+            // 提交考试-题目关联信息
+            for (const question of this.questions) {
+              await axios.post('/api/contest-question', {
+                exam_id: examId,
+                question_id: question.id,
+                score: question.score
+              },
+              { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
+            }
+
+            // 提交考试-学生关联信息
+            for (const student of this.students) {
+              await axios.post('/api/contest-student', {
+                exam_id: examId,
+                student_id: student.id,
+              },
+              { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
+            }
+
+            alert('考试创建成功！');
+          } else {
+            alert('创建考试时出错，请重试。');
+          }
+        } catch (error) {
+          alert('创建考试时出错，请重试。');
+        }
       } else {
         alert('请填写完整的考试信息！');
       }
     }
   }
 };
+
+
 </script>
 
 <style scoped>
