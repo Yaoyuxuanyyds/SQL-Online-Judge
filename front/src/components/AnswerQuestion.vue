@@ -50,13 +50,15 @@
       <div class="sidebar">
         <div class="card">
           <div class="card-content">
-            <h1>题目信息</h1>
-            <p><strong>题目ID：</strong>{{ question.id }}</p>
+            <h1 class="header-title">题目信息</h1>
+            <div>
+              <p><strong>题目ID：</strong>{{ question.id }}</p>
             <p><strong>题目难度：</strong>{{ getDifficultyLabel(question.difficulty) }}</p>
             <p><strong>已完成？</strong> {{ question.completed ? '是' : '否' }}</p>
             <p><strong>通过率：</strong> {{ question.accuracy }}%</p>
             <p><strong>完成率：</strong> {{ question.completion_rate }}%</p>
             <p><strong>提交数：</strong> {{ question.submission_count }}</p>
+            </div>
           </div>
         </div>
       </div>
