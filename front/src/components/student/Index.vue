@@ -47,7 +47,7 @@
       </div>
       <div class="card chart">
         <h2>提交结果</h2>
-        <PieChart :chart-data="chartData" />
+        <PieChart ref="pieChart" :chart-data="chartData" />
       </div>
     </div>
   </div>
@@ -66,10 +66,6 @@ export default {
       extends: Pie,
       props: ['chartData'],
       mounted() {
-        this.renderChart(this.chartData, {
-          responsive: true,
-          maintainAspectRatio: false
-        });
       }
     }
   },
@@ -109,6 +105,17 @@ export default {
     this.getDailyQuote();
     setInterval(this.updateTime, 1000); // 每秒更新时间
   },
+  watch: {
+    chartData: {
+      deep: true,
+      handler() {
+        this.$refs.pieChart.renderChart(this.chartData, {
+        responsive: true,
+        maintainAspectRatio: false
+      });
+      }
+    }
+  },
   methods: {
     fetchInfo() {
       axios.get('/api/questionlist', {
@@ -137,7 +144,6 @@ export default {
       })
       .then(response => {
         this.submissions = response.data.sort((a, b) => b.id - a.id);
-        //this.updateChartData(response.data);
       })
       .catch(error => {
         alert("获取提交列表失败: " + error);
@@ -188,13 +194,12 @@ export default {
         this.pass_count = pass_count;
         this.chartData.datasets[0].data = status_count;
         if (this.totalQuestions === 0) this.correctRate = 0.0
-        else this.correctRate = (this.pass_count / this.totalQuestions * 100).toFixed(2);
+        else this.correctRate = (this.pass_count / this.totalQuestions * 100.0).toFixed(2);
       })
       .catch(error => {
         alert("获取提交结果统计数据失败: " + error);
       });
     },
-    
     updateTime() {
       this.currentTime = new Date().toLocaleString();
     },
