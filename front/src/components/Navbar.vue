@@ -6,14 +6,56 @@
     </div>
 
     <!-- 根据用户角色动态显示链接 -->
-    <router-link v-if="canAccessHomePage" :to="{ path: '/index' }" :class="{ active: isActive('/index') }">主页</router-link>
-    <router-link v-if="canAccessCreateQuestion" :to="{ path: '/import' }" :class="{ active: isActive('/import') }">创建题目</router-link>
-    <router-link v-if="canAccessCreateContest" :to="{ path: '/create' }" :class="{ active: isActive('/create') }">创建比赛</router-link>
-    <router-link v-if="canAccessQuestionList" :to="{ path: '/question' }" :class="{ active: isActive('/question') }">题目列表</router-link>
-    <router-link v-if="canAccessContestList" :to="{ path: '/contest' }" :class="{ active: isActive('/contest') }">比赛列表</router-link>
-    <router-link v-if="canAccessSubmitRecords" :to="{ path: '/submit' }" :class="{ active: isActive('/submit') }">提交记录</router-link>
-    <router-link v-if="canAccessCommunity" :to="{ path: '/community' }" :class="{ active: isActive('/community') }">社群动态</router-link>
-    <router-link v-if="canAccessUserManagement" :to="{ path: '/admin' }" :class="{ active: isActive('/admin') }">用户管理</router-link>
+    <div class="links-container">
+      <router-link
+        v-if="canAccessHomePage"
+        :to="{ path: '/index' }"
+        :class="['nav-link', isActive('/index'), { 'activated': isCurrentPath('/index') }]"
+        @click="handleClick('/index')"
+      >主页</router-link>
+      <router-link
+        v-if="canAccessCreateQuestion"
+        :to="{ path: '/import' }"
+        :class="['nav-link', isActive('/import'), { 'activated': isCurrentPath('/import') }]"
+        @click="handleClick('/import')"
+      >创建题目</router-link>
+      <router-link
+        v-if="canAccessCreateContest"
+        :to="{ path: '/create' }"
+        :class="['nav-link', isActive('/create'), { 'activated': isCurrentPath('/create') }]"
+        @click="handleClick('/create')"
+      >创建比赛</router-link>
+      <router-link
+        v-if="canAccessQuestionList"
+        :to="{ path: '/question' }"
+        :class="['nav-link', isActive('/question'), { 'activated': isCurrentPath('/question') }]"
+        @click="handleClick('/question')"
+      >题目列表</router-link>
+      <router-link
+        v-if="canAccessContestList"
+        :to="{ path: '/contest' }"
+        :class="['nav-link', isActive('/contest'), { 'activated': isCurrentPath('/contest') }]"
+        @click="handleClick('/contest')"
+      >比赛列表</router-link>
+      <router-link
+        v-if="canAccessSubmitRecords"
+        :to="{ path: '/submit' }"
+        :class="['nav-link', isActive('/submit'), { 'activated': isCurrentPath('/submit') }]"
+        @click="handleClick('/submit')"
+      >提交记录</router-link>
+      <router-link
+        v-if="canAccessCommunity"
+        :to="{ path: '/community' }"
+        :class="['nav-link', isActive('/community'), { 'activated': isCurrentPath('/community') }]"
+        @click="handleClick('/community')"
+      >社群动态</router-link>
+      <router-link
+        v-if="canAccessUserManagement"
+        :to="{ path: '/admin' }"
+        :class="['nav-link', isActive('/admin'), { 'activated': isCurrentPath('/admin') }]"
+        @click="handleClick('/admin')"
+      >用户管理</router-link>
+    </div>
 
     <button class="logout-button" @click="logout">退出登录</button>
   </nav>
@@ -27,7 +69,8 @@ export default {
   data() {
     return {
       nickname: '', // 初始化用户昵称
-      userRole: parseInt(localStorage.getItem('userRole')) || 0 // 从本地存储中获取用户角色，默认为 0 (student)
+      userRole: parseInt(localStorage.getItem('userRole')) || 0, // 从本地存储中获取用户角色，默认为 0 (student)
+      currentPath: ''
     };
   },
   computed: {
@@ -58,7 +101,13 @@ export default {
   },
   methods: {
     isActive(path) {
-      return this.$route.path === path;
+      return this.$route.path === path ? 'active' : '';
+    },
+    isCurrentPath(path) {
+      return this.currentPath === path;
+    },
+    handleClick(path) {
+      this.currentPath = path;
     },
     logout() {
       const sessionToken = localStorage.getItem('session');
@@ -82,6 +131,7 @@ export default {
   mounted() {
     // 在组件挂载时获取用户昵称
     this.nickname = localStorage.getItem('userName') || 'Guest';
+    this.currentPath = this.$route.path;
   }
 };
 </script>
@@ -89,38 +139,68 @@ export default {
 <style scoped>
 .navbar {
   display: flex;
-  justify-content: space-around;
-  align-items: center; /* 确保项目在垂直方向上居中对齐 */
-  background-color: #f5f5f5;
-  padding: 10px;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logo img {
   height: 40px;
+  margin: 10px 20px;
 }
 
-.navbar a {
+.links-container {
+  display: flex;
+  flex: 1;
+}
+
+.nav-link {
+  flex: 1;
+  text-align: center;
   text-decoration: none;
-  color: #333;
-  padding: 10px;
-  border-radius: 5px;
+  color: #000;
+  padding: 15px 0;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  background-color: #fff;
+  border: none;
+  border-bottom: 2px solid transparent;
 }
 
-.navbar a.active {
-  background-color: #333;
+.nav-link:hover {
+  background-color: #f0f0f0;
+}
+
+.nav-link.active {
+  background-color: #000;
   color: #fff;
+  border-bottom: 2px solid #000;
+}
+
+.nav-link.activated {
+  transform: scale(1.05);
+  background-color: #666;
+  color: #fff;
+  font-size: 18px;
+  box-shadow: 0 4px 8px rgba(102, 102, 102, 0.5);
 }
 
 .logout-button {
-  background-color: #ff4d4f;
+  background-color: #ff4d4d;
   color: #fff;
   border: none;
-  padding: 10px 15px;
+  padding: 10px 20px;
+  margin: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
 }
 
 .logout-button:hover {
-  background-color: #ff7875;
+  transform: translateY(-2px);
+  background-color: #ff1a1a;
 }
+
 </style>

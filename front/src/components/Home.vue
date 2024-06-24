@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="background">
-      <img src="@/assets/bk.png" alt="Background">
+      <img src="@/assets/bk1.png" alt="Background">
     </div>
     <div class="overlay">
       <header>
@@ -27,10 +27,12 @@
             <input type="text" v-model="username" placeholder="用户名" required>
           </div>
           <input type="password" v-model="password" placeholder="密码" required>
-          <button type="submit">{{ isLogin ? '登录' : '注册' }}</button>
-          <button type="button" @click="toggleForm(isLogin ? 'register' : 'login')">
-            {{ isLogin ? '没有账号？注册' : '已有账号？登录' }}
-          </button>
+          <button type="submit" class="submit-btn">{{ isLogin ? '登录' : '注册' }}</button>
+          <div class="switch-form">
+            <button type="button" @click="toggleForm(isLogin ? 'register' : 'login')" class="switch-btn">
+              {{ isLogin ? '没有账号？注册一个' : '已有账号？登录' }}
+            </button>
+          </div>
         </form>
       </div>
     </transition>
@@ -155,7 +157,7 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(8px);
+  filter: blur(0px);
   z-index: -1;
 }
 
@@ -193,16 +195,17 @@ header {
 
 .buttons {
   display: flex;
-  gap: 10px;
+  gap: 20px; /* 调整按钮之间的间距 */
 }
 
 .btn {
-  padding: 10px 10px;
+  padding: 15px 20px; /* 增加按钮的内边距 */
   border: none;
   border-radius: 10px;
   background-color: #2b8cd1;
   color: white;
   cursor: pointer;
+  font-size: 18px; /* 增加字体大小 */
 }
 
 main {
@@ -221,12 +224,15 @@ main p {
 }
 
 .typewriter {
+  display: inline-block; /* 确保元素是行内块级元素 */
   overflow: hidden;
   border-right: .15em solid orange;
   white-space: nowrap;
   margin: 0 auto;
   letter-spacing: .15em;
   animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+  font-size: 24px; /* 调整字体大小 */
+  line-height: 1.5; /* 增加行高 */
 }
 
 .subtitle {
@@ -281,7 +287,12 @@ main p {
   border-radius: 5px;
 }
 
-.form button {
+.form .form-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.form .submit-btn {
   padding: 10px;
   width: 100%;
   border: none;
@@ -291,7 +302,29 @@ main p {
   cursor: pointer;
 }
 
-.back-btn {
+.form .submit-btn:hover {
+  background-color: #1a6ca7;
+}
+
+.form .switch-form {
+  margin-top: 10px;
+}
+
+.form .switch-btn {
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  background-color: #6c757d;
+  color: white;
+  cursor: pointer;
+}
+
+.form .switch-btn:hover {
+  background-color: #5a6268;
+}
+
+.form .back-btn {
   position: absolute;
   top: 10px;
   left: 10px;
@@ -314,5 +347,21 @@ main p {
 .slide-fade-enter, .slide-fade-leave-to {
   transform: translateX(100%);
   opacity: 0;
+}
+
+.logout-button {
+  background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.logout-button:hover {
+  transform: translateY(-2px);
+  background-color: #ff1a1a;
 }
 </style>
