@@ -1,25 +1,25 @@
 <template>
-  <div>
+  <div :class="theme">
     <Navbar />
     <div class="article-detail-page">
       <div class="controls">
-        <label for="font-size">字体大小:</label>
-        <select id="font-size" @change="updateFontSize" v-model="selectedFontSize">
-          <option value="0.8rem">小</option>
-          <option value="1.2rem">中</option>
-          <option value="1.5rem">大</option>
+        <label for="theme-selector">选择主题颜色:</label>
+        <select id="theme-selector" v-model="selectedTheme" @change="updateTheme">
+          <option value="default">默认</option>
+          <option value="black">黑色</option>
+          <option value="white">白色</option>
+          <option value="morandi">莫兰迪色</option>
+          <option value="blue-black">蓝黑色系</option>
         </select>
-        <button @click="toggleUnderline" :class="{ active: isUnderline }">下划线</button>
-        <button @click="toggleHighlight" :class="{ active: isHighlight }">高亮</button>
       </div>
-      <div class="article-container shadow" :style="{ fontSize: selectedFontSize }" ref="articleContent">
+      <div class="article-container shadow">
         <h1>{{ article.title }}</h1>
         <div class="article-metadata">
           <span class="author">作者ID: {{ article.user_id }}</span>
           <span class="publish-time">发布时间: {{ formatDate(article.publish_time) }}</span>
         </div>
         <div class="article-content">
-          <p v-html="formattedContent"></p>
+          <p v-html="article.content"></p>
         </div>
       </div>
     </div>
@@ -44,25 +44,11 @@ export default {
         user_id: '',
         publish_time: ''
       },
-      selectedFontSize: '1.1rem',
-      isUnderline: false,
-      isHighlight: false
+      selectedTheme: 'default' // 默认主题
     };
   },
   mounted() {
     this.fetchArticleDetails();
-  },
-  computed: {
-    formattedContent() {
-      let content = this.article.content;
-      if (this.isUnderline) {
-        content = `<u>${content}</u>`;
-      }
-      if (this.isHighlight) {
-        content = `<mark>${content}</mark>`;
-      }
-      return content;
-    }
   },
   methods: {
     fetchArticleDetails() {
@@ -85,90 +71,148 @@ export default {
     formatDate(date) {
       return new Date(date).toLocaleString();
     },
-    updateFontSize() {
-      this.$refs.articleContent.style.fontSize = this.selectedFontSize;
-    },
-    toggleUnderline() {
-      this.isUnderline = !this.isUnderline;
-    },
-    toggleHighlight() {
-      this.isHighlight = !this.isHighlight;
+    updateTheme() {
+      this.theme = this.selectedTheme;
+    }
+  },
+  computed: {
+    theme() {
+      return {
+        default: 'theme-default',
+        black: 'theme-black',
+        white: 'theme-white',
+        morandi: 'theme-morandi',
+        'blue-black': 'theme-blue-black'
+      }[this.selectedTheme];
     }
   }
 }
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.theme-default {
+  background-color: #f7f7f7;
+}
+
+.theme-black {
+  background-color: #000;
+  color: #fff;
+}
+
+.theme-white {
+  background-color: #fff;
+  color: #000;
+}
+
+.theme-morandi {
+  background-color: #d8c8c8;
+  color: #383838;
+}
+
+.theme-blue-black {
+  background-color: #1e1e2e;
+  color: #b0c4de;
+}
+
 .article-detail-page {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: #f7f7f7; /* 背景颜色 */
-  min-height: 100vh; /* 保证页面至少占满整个视窗高度 */
+  min-height: 100vh;
 }
+
 .controls {
   margin-bottom: 20px;
   display: flex;
   gap: 10px;
   align-items: center;
 }
-#font-size {
+
+#theme-selector {
   padding: 5px;
   border-radius: 3px;
   border: 1px solid #ccc;
 }
-button {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 3px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-button.active {
-  background-color: #0056b3;
-}
-button:hover {
-  background-color: #0056b3;
-}
+
 .article-container {
-  width: 50%; /* 占屏幕宽度的60% */
-  background-color: #fff; /* 白色背景 */
-  padding: 40px; /* 内部边距 */
+  width: 70%;
+  max-width: 1200px;
+  background-color: #fff;
+  padding: 40px;
   border-radius: 10px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-  margin-top: 20px; /* 顶部间距 */
-  transition: transform 0.2s, box-shadow 0.2s; /* 动效 */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+
+.theme-black .article-container {
+  background-color: #333;
+  color: #fff;
+}
+
+.theme-white .article-container {
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.theme-morandi .article-container {
+  background-color: #f2ede3;
+  color: #383838;
+}
+
+.theme-blue-black .article-container {
+  background-color: #26263a;
+  color: #b0c4de;
+}
+
 .article-container:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* 悬停效果 */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
+
 h1 {
-  margin-bottom: 20px; /* 标题底部间距 */
-  color: #333; /* 标题颜色 */
-  font-size: 2rem; /* 标题字体大小 */
+  margin-bottom: 20px;
+  color: inherit;
+  font-size: 2.4rem;
+  text-align: center;
 }
+
 .article-metadata {
   display: flex;
   justify-content: space-between;
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 1rem;
+  color: inherit;
   margin-bottom: 20px;
 }
+
 .author, .publish-time {
   display: inline-block;
-  background-color: #e9ecef; /* 标签背景色 */
+  background-color: #e9ecef;
   padding: 5px 10px;
   border-radius: 5px;
 }
+
+.theme-black .author, .theme-black .publish-time,
+.theme-blue-black .author, .theme-blue-black .publish-time {
+  background-color: #444;
+  color: #b0c4de;
+}
+
 .article-content {
   font-size: 1.1rem;
-  line-height: 1.8; /* 行间距 */
-  text-align: justify; /* 对齐方式 */
-  color: #444; /* 内容颜色 */
-  margin-bottom: 20px; /* 内容底部间距 */
+  line-height: 1.8;
+  color: inherit;
+  text-align: justify;
+}
+
+.article-content p {
+  margin-bottom: 20px;
 }
 </style>
