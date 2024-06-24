@@ -4,24 +4,38 @@
     <div class="container">
       <h1>题目列表</h1>
       <div class="search-bar">
-        <el-input
-          placeholder="搜索标题..."
-          v-model="searchQuery"
-          class="search-input"
+        <div class="search-input-group">
+          <el-input
+            placeholder="搜索标题..."
+            v-model="searchQuery"
+            class="search-input"
+            size="medium"
+          />
+          <el-button
+            type="primary"
+            @click="handleSearch"
+            class="search-button"
+          >
+            搜索
+          </el-button>
+        </div>
+        <el-select
+          v-model="filterType"
+          placeholder="状态"
           size="medium"
-        />
+          class="filter-select"
+        >
+          <el-option label="全部" value="all" />
+          <el-option label="已完成" value="completed" />
+          <el-option label="未完成" value="uncompleted" />
+        </el-select>
         <el-button
           type="primary"
-          @click="handleSearch"
-          class="search-button"
+          @click="randomQuestion"
+          class="random-button"
         >
-          搜索
+          随机一题
         </el-button>
-        <el-radio-group v-model="filterType" size="medium">
-          <el-radio label="all">全部</el-radio>
-          <el-radio label="completed">已完成</el-radio>
-          <el-radio label="uncompleted">未完成</el-radio>
-        </el-radio-group>
       </div>
       <el-table
         :data="filteredQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
@@ -117,6 +131,10 @@ export default {
     },
     handleSearch() {
       // Placeholder for potentially updating list or analytics
+    },
+    randomQuestion() {
+      // Placeholder for random question functionality
+      alert("随机一题功能尚未实现！");
     }
   }
 }
@@ -129,13 +147,25 @@ export default {
 .search-bar {
   display: flex;
   align-items: center;
+  justify-content: center;
   margin-bottom: 20px;
 }
+.search-input-group {
+  display: flex;
+  align-items: center;
+}
 .search-input {
-  flex: 1;
   max-width: 300px;
+  margin-right: 10px;
 }
 .search-button {
+  margin-left: 10px;
+}
+.filter-select {
+  width: 120px;
+  margin-left: 10px;
+}
+.random-button {
   margin-left: 10px;
 }
 </style>
