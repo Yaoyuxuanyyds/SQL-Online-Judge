@@ -2,43 +2,48 @@
   <div>
     <Navbar />
     <div class="container">
-    <h1>题目列表</h1>
-    <div class="search-bar">
-      <el-input
-        placeholder="搜索标题..."
-        v-model="searchQuery"
-        class="search-input"
-      />
-      <el-button
-        type="primary"
-        @click="handleSearch"
-        class="search-button">搜索</el-button>
+      <h1>题目列表</h1>
+      <div class="search-bar">
+        <el-input
+          placeholder="搜索标题..."
+          v-model="searchQuery"
+          class="search-input"
+        />
+        <el-button
+          type="primary"
+          @click="handleSearch"
+          class="search-button">搜索</el-button>
+      </div>
+      <el-table
+        :data="filteredQuestions.slice((currentPage-1) * pageSize, currentPage * pageSize)"
+        style="width: 100%" 
+        border
+        stripe>
+        <el-table-column prop="id" label="ID" width="180"/>
+        <el-table-column prop="title" label="标题"/>
+        <el-table-column prop="difficulty" label="难度" width="120"/>
+        <!-- 新增的动态列 -->
+        <el-table-column label="准确率" width="120">
+          <template #default="scope">
+            {{ calculateAccuracy(scope.row) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="150">
+          <template #default="scope">
+            <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        @current-change="handlePageChange"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :page-sizes="[5, 10, 20, 30]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="filteredQuestions.length">
+      </el-pagination>
     </div>
-    <el-table
-      :data="filteredQuestions.slice((currentPage-1) * pageSize, currentPage * pageSize)"
-      style="width: 100%" 
-      border
-      stripe>
-      <el-table-column prop="id" label="ID" width="180"/>
-      <el-table-column prop="title" label="标题"/>
-      <el-table-column prop="difficulty" label="难度" width="120"/>
-      <el-table-column label="操作" width="150">
-        <template #default="scope">
-          <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-pagination
-      @current-change="handlePageChange"
-      :current-page="currentPage"
-      :page-size="pageSize"
-      :page-sizes="[5, 10, 20, 30]"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="filteredQuestions.length">
-    </el-pagination>
   </div>
-  </div>
-  
 </template>
 
 <script>
@@ -90,6 +95,10 @@ export default {
     },
     handleSearch() {
       // Placeholder for potentially updating list or analytics
+    },
+    calculateAccuracy(row) {
+      // Placeholder for accuracy calculation based on row data
+      return '90%';  // Example accuracy value
     }
   }
 }
