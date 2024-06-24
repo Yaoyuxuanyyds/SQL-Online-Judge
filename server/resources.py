@@ -1,13 +1,11 @@
 from flask import request, jsonify
-from flask_restful import Resource, request
+from flask_restful import Resource
 import models, time, hashlib, os
-from app import db
 from config import *
 from permissions import auth_role
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError, TimeoutError, OperationalError
 from sqlalchemy.orm import sessionmaker
-from models import db, User
 from sqlalchemy import func
 from datetime import datetime
 def parse_iso_datetime(iso_str):
@@ -484,14 +482,14 @@ class Login(Resource):
 class ManageUsers(Resource):
     def get(self):
         # Retrieve all users
-        users = User.query.all()
+        users = models.User.query.all()
         data = [model_to_dict(user) for user in users]
         return jsonify(data)
 
     def post(self):
         # Delete a user
         user_id = int(request.json.get('id'))
-        user = User.query.filter_by(id=user_id).first()
+        user = models.User.query.filter_by(id=user_id).first()
 
         if not user:
             return {"message": "User not found."}, HTTP_NOT_FOUND
@@ -504,7 +502,7 @@ class ManageUsers(Resource):
         # Update user role
         user_id = request.json.get('id')
         new_role = request.json.get('role')
-        user = User.query.filter_by(id=user_id).first()
+        user = models.User.query.filter_by(id=user_id).first()
 
         if not user:
             return {"message": "User not found."}, HTTP_NOT_FOUND
