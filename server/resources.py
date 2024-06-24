@@ -228,15 +228,20 @@ class ContestList(Resource):
     def get(self):
         # 获取当前用户ID
         current_user_id = request.args.get('user_id')
+        current_user_role = request.args.get('user_role')
+        if current_user_role == 0:
+            # 查询与当前用户相关的考试ID
+            student_exams = models.ExamStudent.query.filter_by(student_id=current_user_id).all()
+            exam_ids = [exam.exam_id for exam in student_exams]
 
-        # 查询与当前用户相关的考试ID
-        student_exams = models.ExamStudent.query.filter_by(student_id=current_user_id).all()
-        exam_ids = [exam.exam_id for exam in student_exams]
+            # 查询相关考试信息
+            contests = models.Exam.query.filter(models.Exam.id.in_(exam_ids)).all()
+            data = [marshal(contest, contest_field) for contest in contests]
+        else:
+            # 查询所有考试信息
+            contests = models.Exam.query.all()
+            data = [marshal(contest, contest_field) for contest in contests]
 
-        # 查询相关考试信息
-        contests = models.Exam.query.filter(models.Exam.id.in_(exam_ids)).all()
-        data = [marshal(contest, contest_field) for contest in contests]
-        print(data)
         return {'data': data}, HTTP_OK
 
 
@@ -411,8 +416,8 @@ class Login(Resource):
         
     def delete(self):
         session = request.json.get('session')
-        user = models.User.query.filter_by(session=session).first()
-        print(user)
+        user = models.User.query.filter_by(session=session)
+        print(user.id)
         if user:
             user.session = None
             db.session.commit()
@@ -605,16 +610,15 @@ class Student(Resource):
     
     # TODO: 添加修改学生信息的函数
 
-
-
-
-
 class StudentList(Resource):
     @auth_role(AUTH_ADMIN)
     def get(self):
         students = models.User.query.filter_by(role=AUTH_STUDENT)
         data = [marshal(student, student_fields) for student in students]
         return {'data': data}, HTTP_OK
+
+
+
 
 # submit
 submit_field = {
