@@ -138,8 +138,8 @@
           const questionId = this.$route.params.questionId;
           const userId = localStorage.getItem('userID');
           const pass_rate = response.data.pass_rate;
-          alert(`pass_rate: ${pass_rate
-            + `\n判题结果: ${JSON.stringify(response.data.result)}`
+          alert(`判题结果: ${JSON.stringify(response.data.result)
+            + `\n通过率: ${pass_rate}`
           }`)
           if (pass_rate > this.pass_rate) {
             // 更新得分
