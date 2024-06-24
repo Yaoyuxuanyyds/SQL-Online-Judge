@@ -64,7 +64,7 @@ export default {
         .catch(error => {
           alert("There was an error fetching the contests!", error);
         });
-    },
+    },    
     goToContestQuestions(contestId) {
       // 导航到考试题目页面
       this.$router.push({ name: 'contest-question', params: { id: contestId } });
