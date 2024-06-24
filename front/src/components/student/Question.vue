@@ -37,11 +37,9 @@
       <el-table
         :data="filteredQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
         style="width: 100%"
-        border
-        stripe
-      >
-        <el-table-column prop="id" label="ID" width="100" align="center" />
-        <el-table-column prop="title" label="标题" align="center" />
+        border stripe>
+        <el-table-column prop="id" label="ID" width="100" align="center"></el-table-column>
+        <el-table-column prop="title" label="标题" align="center"></el-table-column>
         <el-table-column prop="difficulty" label="难度" width="120" align="center">
           <template slot-scope="scope">
             <span :class="getDifficultyClass(scope.row.difficulty)">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
@@ -58,7 +56,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="150" align="center">
-          <template #default="scope">
+          <template slot-scope="scope">
             <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
           </template>
         </el-table-column>
