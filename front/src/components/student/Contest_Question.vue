@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <Navbar />
-    <div class="container">
+  <div class="container">
     <h1 class="exam-title">{{ examName }}</h1>
     <div class="exam-info">
       <p>开始时间: {{ examStartTime | formatDate }}</p>
@@ -37,20 +35,13 @@
       :total="filteredQuestions.length"
     />
   </div>
-  </div>
-
 </template>
 
 <script>
 import axios from 'axios';
-import Navbar from '@/components/student/Navbar.vue';
-
 
 export default {
   name: 'QuestionList',
-  components: {
-    Navbar,
-  },
   data() {
     return {
       examName: '',
@@ -74,11 +65,15 @@ export default {
   methods: {
     fetchExamInfo() {
       const contestId = this.$route.params.id;
-      axios.get(`/api/contest/${contestId}`)
+      axios.get(`/api/contest`, {
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+         params: { contest_id: contestId } })
         .then(response => {
           this.examName = response.data.name;
-          this.examStartTime = response.data.startTime;
-          this.examEndTime = response.data.endTime;
+          this.examStartTime = response.data.start_time;
+          this.examEndTime = response.data.end_time;
         })
         .catch(error => {
           alert('获取考试信息失败: ' + error.response.data.message);
@@ -86,34 +81,28 @@ export default {
     },
     fetchContestQuestions() {
       const contestId = this.$route.params.id;
-      axios.get(`/api/contest-questions/${contestId}`, {
-        headers: {
-          'session': localStorage.getItem('session')
-        }
-      })
-      .then(response => {
-        this.contestQuestions = response.data.questionIds;
-        this.fetchQuestions();
-      })
-      .catch(error => {
-        alert("获取竞赛题目列表失败: " + error.response.data.message);
-      });
+      axios.get(`/api/contest-questions`,{params: { contest_id: contestId }})
+        .then(response => {
+          this.contestQuestions = response.data.questionIds;
+          this.fetchQuestions();
+        })
+        .catch(error => {
+          alert("获取竞赛题目列表失败: " + error.response.data.message);
+        });
     },
     fetchQuestions() {
-      axios.get(`/api/questionlist`, {
-        headers: {
-          'session': localStorage.getItem('session')
-        }
-      })
-      .then(response => {
-        this.questions = response.data.data.map(question => ({
-          ...question,
-          accuracy: 0 // 假设不需要显示准确率，设置为默认值
-        }));
-      })
-      .catch(error => {
-        alert("获取题目列表失败: " + error.response.data.message);
-      });
+      axios.get(`/api/questionlist`,
+        { headers: { 'session': localStorage.getItem('session') },}
+      )
+        .then(response => {
+          this.questions = response.data.map(question => ({
+            ...question,
+            accuracy: 0 // 假设不需要显示准确率，设置为默认值
+          }));
+        })
+        .catch(error => {
+          alert("获取题目列表失败: " + error.response.data.message);
+        });
     },
     enterQuestion(id) {
       this.$router.push({ name: 'answer-question', params: { id: id } });
@@ -122,12 +111,24 @@ export default {
       this.currentPage = newPage;
     },
     getDifficultyLabel(difficulty) {
-      const labels = ['简单', '中等', '困难'];
-      return labels[difficulty] || '未知';
+      switch (difficulty) {
+        case 1: return '简单';
+        case 2: return '中等';
+        case 3: return '困难';
+        case 4: return '挑战';
+        case 5: return '地狱';
+        default: return '未知';
+      }
     },
     getColor(difficulty) {
-      const colors = ['green', 'orange', 'red'];
-      return colors[difficulty] || 'black';
+      switch (difficulty) {
+        case 1: return 'green';
+        case 2: return 'blue';
+        case 3: return 'orange';
+        case 4: return 'purple';
+        case 5: return 'red';
+        default: return 'black';
+      }
     }
   },
   filters: {
