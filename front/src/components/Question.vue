@@ -21,14 +21,14 @@
           </el-button>
         </div>
         <div class="search-bar">
-          <div class="left-controls">
-            <el-input
-              placeholder="输入标题关键词进行搜索..."
-              v-model="searchQuery"
-              class="search-input"
-              size="medium"
-              clearable
-            />
+          <el-input
+            placeholder="输入标题关键词进行搜索..."
+            v-model="searchQuery"
+            class="search-input"
+            size="medium"
+            clearable
+          />
+          <div class="difficulty-filter">
             <span class="search-tip">难度</span>
             <el-select
               v-model="filterType"
@@ -190,7 +190,6 @@ export default {
 }
 </script>
 
-
 <style scoped>
 .create-question-container {
   max-width: 1000px;
@@ -231,21 +230,19 @@ export default {
 
 .search-bar {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  flex-direction: column; /* 纵向排列 */
   margin-bottom: 20px;
 }
 
-.left-controls {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap; /* 允许内容换行 */
+.search-input {
+  max-width: 100%;
+  flex: 1;
+  margin-bottom: 20px;
 }
 
-.search-input {
-  max-width: 300px;
-  margin-right: 10px;
-  flex: 1 1 auto; /* 允许输入框扩展 */
+.difficulty-filter {
+  display: flex;
+  align-items: center;
 }
 
 .search-tip {
@@ -256,8 +253,7 @@ export default {
 }
 
 .filter-select {
-  width: 80px;
-  flex: 1 1 auto; /* 允许选择框扩展 */
+  width: 100px;
 }
 
 .el-table {

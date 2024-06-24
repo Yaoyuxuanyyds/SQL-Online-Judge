@@ -61,7 +61,7 @@ class AnsweredQuestions(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
         student_id = int(request.args.get('student_id'))
-        my_submits = models.Submission.query.filter_by(student_id=student_id).distinct(models.Submission.question_id).all()
+        my_submits = models.Submission.query.filter_by(student_id=student_id).with_entities(models.Submission.question_id).distinct().all()
         unique_questions = {submit.question_id for submit in my_submits}
         return jsonify(list(unique_questions))
 
@@ -540,7 +540,7 @@ class Question(Resource):
             accepted_submits = all_submits.filter_by(status=0)
             len_all_submits = all_submits.count()
             len_accepted_submits = accepted_submits.count()
-            len_submit_users = all_submits.distinct(models.Submission.student_id).count()
+            len_submit_users = all_submits.with_entities(models.Submission.student_id).distinct().count()
             len_users = models.User.query.count()
             if len_users:
                 completion_rate = int(10000 * len_submit_users / len_users) / 100.0

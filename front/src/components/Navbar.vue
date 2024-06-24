@@ -5,18 +5,19 @@
       <img src="@/assets/logo.png" alt="Logo">
     </div>
 
-    <router-link :to="{ path: '/index' }" :class="{ active: isActive('/index') }">主页</router-link>
-    <router-link :to="{ path: '/import' }" :class="{ active: isActive('/import') }">创建题目</router-link>
-    <router-link :to="{ path: '/create' }" :class="{ active: isActive('/create') }">创建比赛</router-link>
-    <router-link :to="{ path: '/question' }" :class="{ active: isActive('/question') }">题目列表</router-link>
-    <router-link :to="{ path: '/contest' }" :class="{ active: isActive('/contest') }">比赛列表</router-link>
-    <router-link :to="{ path: '/submit' }" :class="{ active: isActive('/submit') }">提交记录</router-link>
-    <router-link :to="{ path: '/community' }" :class="{ active: isActive('/community') }">社群动态</router-link>
-    <router-link :to="{ path: '/admin' }" :class="{ active: isActive('/admin') }">用户管理</router-link>
+    <!-- 根据用户角色动态显示链接 -->
+    <router-link v-if="canAccessHomePage" :to="{ path: '/index' }" :class="{ active: isActive('/index') }">主页</router-link>
+    <router-link v-if="canAccessCreateQuestion" :to="{ path: '/import' }" :class="{ active: isActive('/import') }">创建题目</router-link>
+    <router-link v-if="canAccessCreateContest" :to="{ path: '/create' }" :class="{ active: isActive('/create') }">创建比赛</router-link>
+    <router-link v-if="canAccessQuestionList" :to="{ path: '/question' }" :class="{ active: isActive('/question') }">题目列表</router-link>
+    <router-link v-if="canAccessContestList" :to="{ path: '/contest' }" :class="{ active: isActive('/contest') }">比赛列表</router-link>
+    <router-link v-if="canAccessSubmitRecords" :to="{ path: '/submit' }" :class="{ active: isActive('/submit') }">提交记录</router-link>
+    <router-link v-if="canAccessCommunity" :to="{ path: '/community' }" :class="{ active: isActive('/community') }">社群动态</router-link>
+    <router-link v-if="canAccessUserManagement" :to="{ path: '/admin' }" :class="{ active: isActive('/admin') }">用户管理</router-link>
+
     <button class="logout-button" @click="logout">退出登录</button>
   </nav>
 </template>
-
 
 <script>
 import axios from 'axios';
@@ -25,12 +26,35 @@ export default {
   name: 'Navbar',
   data() {
     return {
-      nickname: ''  // 初始化用户昵称
+      nickname: '', // 初始化用户昵称
+      userRole: parseInt(localStorage.getItem('userRole')) || 0 // 从本地存储中获取用户角色，默认为 0 (student)
     };
   },
-  mounted() {
-    // 在组件挂载时获取用户昵称
-    this.nickname = localStorage.getItem('userName') || 'Guest';
+  computed: {
+    canAccessHomePage() {
+      return this.userRole === 0 || this.userRole === 1 || this.userRole === 2;
+    },
+    canAccessCreateQuestion() {
+      return this.userRole === 1 || this.userRole === 2;
+    },
+    canAccessCreateContest() {
+      return this.userRole === 1 || this.userRole === 2;
+    },
+    canAccessQuestionList() {
+      return this.userRole === 0 || this.userRole === 1 || this.userRole === 2;
+    },
+    canAccessContestList() {
+      return this.userRole === 0 || this.userRole === 1 || this.userRole === 2;
+    },
+    canAccessSubmitRecords() {
+      return this.userRole === 0 || this.userRole === 1 || this.userRole === 2;
+    },
+    canAccessCommunity() {
+      return this.userRole === 0 || this.userRole === 1 || this.userRole === 2;
+    },
+    canAccessUserManagement() {
+      return this.userRole === 2;
+    }
   },
   methods: {
     isActive(path) {
@@ -43,8 +67,7 @@ export default {
           'session': sessionToken,
           'Content-Type': 'application/json'
         },
-        data: {
-        }
+        data: {}
       })
       .then(response => {
         alert(response.data.message); // 显示成功消息
@@ -55,6 +78,10 @@ export default {
         alert('退出登录失败: ' + error.response.data.message);
       });
     }
+  },
+  mounted() {
+    // 在组件挂载时获取用户昵称
+    this.nickname = localStorage.getItem('userName') || 'Guest';
   }
 };
 </script>
