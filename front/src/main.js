@@ -38,7 +38,7 @@ Vue.use(VueMaterial)
 //     next('/student')
 //   }
 //   else if (store.getters.Usertype === 'teacher' && !to.path.includes('teacher')) {
-//     next('/teacher')
+//     next('/index')
 //   }
 //   else if (!to.path.includes('home') && store.getters.Usertype === '') {
 //     next('/')

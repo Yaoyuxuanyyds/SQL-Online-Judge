@@ -43,7 +43,7 @@
 
 <script>
 import axios from 'axios';
-import Navbar from '@/components/teacher/Navbar.vue';
+import Navbar from '@/components/Navbar.vue';
 
 export default {
   name: 'Contest',
@@ -117,7 +117,7 @@ export default {
       }
     },
     goToContestQuestions(contestId) {
-      this.$router.push({ name: 'contest-question_t', params: { id: contestId } });
+      this.$router.push({ name: 'contest-question', params: { id: contestId } });
     },
     getStatusText(status) {
       switch (status) {

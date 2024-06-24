@@ -5,13 +5,13 @@
       <img src="@/assets/logo.png" alt="Logo">
     </div>
 
-    <router-link :to="{ path: '/teacher' }" :class="{ active: isActive('/teacher') }">Home</router-link>
-    <router-link :to="{ path: '/teacher/import' }" :class="{ active: isActive('/teacher/import') }">Create Questions</router-link>
-    <router-link :to="{ path: '/teacher/create' }" :class="{ active: isActive('/teacher/create') }">Create Contest</router-link>
-    <router-link :to="{ path: '/teacher/question' }" :class="{ active: isActive('/teacher/question') }">Questions</router-link>
-    <router-link :to="{ path: '/teacher/contest' }" :class="{ active: isActive('/teacher/contest') }">Contest</router-link>
-    <router-link :to="{ path: '/teacher/submit' }" :class="{ active: isActive('/teacher/submit') }">Submit</router-link>
-    <router-link :to="{ path: '/teacher/community' }" :class="{ active: isActive('/teacher/community') }">Community</router-link>
+    <router-link :to="{ path: '/index' }" :class="{ active: isActive('/index') }">主页</router-link>
+    <router-link :to="{ path: '/import' }" :class="{ active: isActive('/import') }">创建题目</router-link>
+    <router-link :to="{ path: '/create' }" :class="{ active: isActive('/create') }">创建比赛</router-link>
+    <router-link :to="{ path: '/question' }" :class="{ active: isActive('/question') }">题目列表</router-link>
+    <router-link :to="{ path: '/contest' }" :class="{ active: isActive('/contest') }">比赛列表</router-link>
+    <router-link :to="{ path: '/submit' }" :class="{ active: isActive('/submit') }">提交记录</router-link>
+    <router-link :to="{ path: '/community' }" :class="{ active: isActive('/community') }">社群动态</router-link>
     <!-- 添加 logout 按钮 -->
     <button class="logout-button" @click="logout">Logout</button>
   </nav>

@@ -1,15 +1,22 @@
 <template>
-  <nav class="el-navbar">
-    <!-- Logo 和 Hello, 用户昵称 -->
+  <nav class="navbar">
+    <!-- 添加 logo -->
     <div class="logo">
       <img src="@/assets/logo.png" alt="Logo">
-      <span class="hello-user">Hello, {{ nickname }}</span>
     </div>
 
+    <router-link :to="{ path: '/index' }" :class="{ active: isActive('/index') }">主页</router-link>
+    <router-link :to="{ path: '/import' }" :class="{ active: isActive('/import') }">创建题目</router-link>
+    <router-link :to="{ path: '/create' }" :class="{ active: isActive('/create') }">创建比赛</router-link>
+    <router-link :to="{ path: '/question' }" :class="{ active: isActive('/question') }">题目列表</router-link>
+    <router-link :to="{ path: '/contest' }" :class="{ active: isActive('/contest') }">比赛列表</router-link>
+    <router-link :to="{ path: '/submit' }" :class="{ active: isActive('/submit') }">提交记录</router-link>
+    <router-link :to="{ path: '/community' }" :class="{ active: isActive('/community') }">社群动态</router-link>
     <!-- 添加 logout 按钮 -->
     <button class="logout-button" @click="logout">Logout</button>
   </nav>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -54,37 +61,26 @@ export default {
 </script>
 
 <style scoped>
-.el-navbar {
+.navbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: space-around;
+  align-items: center; /* 确保项目在垂直方向上居中对齐 */
   background-color: #f5f5f5;
   padding: 10px;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-}
-
 .logo img {
   height: 40px;
-  margin-right: 10px;
 }
 
-.hello-user {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.el-navbar a {
+.navbar a {
   text-decoration: none;
   color: #333;
   padding: 10px;
   border-radius: 5px;
 }
 
-.el-navbar a.active {
+.navbar a.active {
   background-color: #333;
   color: #fff;
 }

@@ -43,7 +43,7 @@
 
 <script>
 import axios from 'axios';
-import Navbar from '@/components/teacher/Navbar.vue';
+import Navbar from '@/components/Navbar.vue';
 
 export default {
   name: 'QuestionList',
@@ -89,8 +89,6 @@ export default {
     },
     fetchContestQuestions() {
       const contestId = this.$route.params.id;
-      const session = localStorage.getItem('session');
-      const userId = localStorage.getItem('userID');
       axios.get(`/api/contest-question`,{params: { contest_id: contestId }})
         .then(response => {
           this.contestQuestions = response.data.questionIds;
@@ -120,7 +118,7 @@ export default {
         });
     },
     enterQuestion(id) {
-      this.$router.push({ name: 'answer-question_t', params: { id: id } });
+      this.$router.push({ name: 'answer-question', params: { id: id } });
     },
     handlePageChange(newPage) {
       this.currentPage = newPage;

@@ -3,31 +3,20 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 
 // Admin
-import ManageUsers from '@/components/admin/ManageUsers'
+import ManageUsers from '@/components/ManageUsers'
 
-// Teacher
-import TeacherHome from '@/components/teacher/Index'
-import ImportQuestions from '@/components/teacher/ImportQuestions.vue'
-import CreateExam from '@/components/teacher/CreateExam.vue'
-import Submit_t from '@/components/teacher/Submit'
-import Question_t from "@/components/teacher/Question"
-import AnswerQuestion_t from '@/components/teacher/AnswerQuestion.vue'
-import Contest_t from "@/components/teacher/Contest"
-import Community_t from "@/components/teacher/Community"
-import ArticleEditor_t from "@/components/teacher/ArticleEditor"
-import Contest_Question_t from "@/components/teacher/Contest_Question"
-
-// Student
-import StudentHome from '@/components/student/Index'
-import Submit from '@/components/student/Submit'
-import Question from "@/components/student/Question"
-import AnswerQuestion from '@/components/student/AnswerQuestion.vue'
-import Contest from "@/components/student/Contest"
-import Community from "@/components/student/Community"
-import ArticleEditor from "@/components/student/ArticleEditor"
-import ArticleDetails from "@/components/student/ArticleDetails"
-import Contest_Question from "@/components/student/Contest_Question"
-
+// Teacher & Students
+import Index from '@/components/Index'
+import ImportQuestions from '@/components/ImportQuestions'
+import CreateExam from '@/components/CreateExam'
+import Submit from '@/components/Submit'
+import Question from "@/components/Question"
+import AnswerQuestion from '@/components/AnswerQuestion.vue'
+import Contest from "@/components/Contest"
+import Community from "@/components/Community"
+import ArticleEditor from "@/components/ArticleEditor"
+import ArticleDetails from "@/components/ArticleDetails"
+import Contest_Question from "@/components/Contest_Question"
 
 Vue.use(Router)
 
@@ -47,110 +36,59 @@ export default new Router({
     },
 
     {
-      path: '/teacher',
-      name: 'teacher',
-      component: TeacherHome,
+      path: '/index',
+      name: 'index',
+      component: Index,
     },
     {
-      path: '/teacher/import',
+      path: '/import',
       name: 'import',
       component: ImportQuestions
     },
     {
-      path: '/teacher/create',
+      path: '/create',
       name: 'create',
       component: CreateExam
     },
     {
-      path: '/teacher/submit',
-      name: 'submit_t',
-      component: Submit_t
-    },
-    {
-      path: '/teacher/contest',
-      name: 'contest_t',
-      component: Contest_t
-    },
-    {
-      path: '/teacher/question',
-      name: 'question_t',
-      component: Question_t
-    },
-    {
-      path: '/teacher/question/:id',
-      name: 'answer-question_t',
-      component: AnswerQuestion_t
-    },
-    {
-      path: '/teacher/community',
-      name: 'community_t',
-      component: Community_t
-    },
-    {
-      path: '/teacher/community/edit',
-      name: 'article-editor_t',
-      component: ArticleEditor_t
-    },
-    {
-      path: '/teacher/contest/question/:id',
-      name: 'contest-question_t',
-      component: Contest_Question_t
-    },
-    {
-      path: '/teacher/create',
-      name: 'create',
-      component: CreateExam
-    },
-
-
-
-
-    {
-      path: '/student',
-      name: 'student',
-      component: StudentHome,
-    },
-    {
-      path: '/student/submit',
+      path: '/submit',
       name: 'submit',
       component: Submit
     },
     {
-      path: '/student/question',
+      path: '/question',
       name: 'question',
       component: Question
     },
     {
-      path: '/student/question/:id',
+      path: '/question/:id',
       name: 'answer-question',
       component: AnswerQuestion
     },
     {
-      path: '/student/contest',
+      path: '/contest',
       name: 'contest',
       component: Contest
     },
     {
-      path: '/student/community',
+      path: '/community',
       name: 'community',
       component: Community
     },
     {
-      path: '/student/community/edit',
+      path: '/community/edit',
       name: 'article-editor',
       component: ArticleEditor
     },
     {
-      path: '/student/community/:id',
+      path: '/community/:id',
       name: 'article-details',
       component: ArticleDetails
     },
     {
-      path: '/student/contest/question/:id',
+      path: '/contest/question/:id',
       name: 'contest-question',
       component: Contest_Question
     }
-
-    
   ]
 })

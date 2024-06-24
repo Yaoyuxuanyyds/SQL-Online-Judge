@@ -56,7 +56,7 @@
 
 <script>
 import axios from 'axios';
-import Navbar from '@/components/student/Navbar.vue';
+import Navbar from '@/components/Navbar.vue';
 import { Pie } from 'vue-chartjs';
 
 export default {
