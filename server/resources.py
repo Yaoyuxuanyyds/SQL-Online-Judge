@@ -562,14 +562,13 @@ class Question(Resource):
             return {"message": "题目信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
         db.session.add(q)
         db.session.commit()
-        return {"message": "新增题目成功"}, HTTP_CREATED
+        return {"message": "新增题目成功", 'question_id': q.id}, HTTP_CREATED
 
 class TestCase(Resource):
     @auth_role(AUTH_TEACHER)
     def post(self):
         test_cases = request.json.get('test_cases')
         question_id = request.json.get('question_id')
-
         if not test_cases or not question_id:
             return {"message": "测试点信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
 
