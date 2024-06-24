@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from flask_restful import Resource, fields, marshal_with, marshal, request
 import models, time, hashlib, os
 from app import db
@@ -13,6 +13,11 @@ from datetime import datetime
 def parse_iso_datetime(iso_str):
     dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
     return dt
+def model_to_dict(obj):
+    """
+    将 SQLAlchemy 模型对象转换为字典。
+    """
+    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
 
 
@@ -479,6 +484,16 @@ class ManageUsers(Resource):
 
 
 
+# questions
+question_field = {
+    'id': fields.Integer,
+    'title': fields.String,
+    'create_code': fields.String,
+    'description': fields.String,
+    'difficulty': fields.Integer,
+    'answer_example': fields.String
+}
+
 # 处理单个题目的相关功能
 class Question(Resource):
     @auth_role(AUTH_ALL)
@@ -526,8 +541,8 @@ class QuestionList(Resource):
     def get(self):
         # 查询所有题目 -> 用于题目列表的查询和显示
         questions = models.Question.query.all()
-
-        return {'data': questions}, HTTP_OK
+        data = [marshal(question, question_field) for question in questions]
+        return {'data': data}, HTTP_OK
 
 
 
@@ -548,7 +563,6 @@ class Register(Resource):
         db.session.add(new_user)
         db.session.commit()
         return {"message": "成了，快去登录吧！"}, HTTP_CREATED
-
 
 # students
 student_fields = {
@@ -615,8 +629,7 @@ submit_field = {
     "exam_id": fields.Integer,
     'submit_sql': fields.String,
     'submit_time': fields.DateTime,
-    'pass_rate': fields.Float,
-    'status': fields.Integer
+    'pass_rate': fields.Float
 }
 
 class Submit(Resource):
@@ -684,8 +697,9 @@ class SubmitList(Resource):
             submits = models.Submission.query.filter_by(id=userid)
         else:
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
-        data = [marshal(submit, submit_field) for submit in submits]
-        return {'data': data}, HTTP_OK
+        data = [model_to_dict(submit) for submit in submits]
+        print(jsonify(data).data)
+        return jsonify(data)
 
 
 
