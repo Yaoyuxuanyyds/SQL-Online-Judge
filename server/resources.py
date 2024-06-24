@@ -65,9 +65,9 @@ class Community(Resource):
             return {"message": "缺少article_id参数"}, HTTP_BAD_REQUEST
 
         article_id = int(article_id)
-        article = models.Article.query.filter_by(id=article_id).first()
-        if article:
-            return model_to_dict(article), HTTP_OK
+        ret = models.Article.query.filter_by(id=article_id).first()
+        if ret:
+            return model_to_dict(ret), HTTP_OK
         else:
             return {"message": "文章不存在"}, HTTP_NOT_FOUND
     
