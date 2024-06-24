@@ -133,12 +133,14 @@
           });
         })
         .then(response => {
-          alert(`判题结果: ${JSON.stringify(response.data.result)}`)
           // 进一步调用api更新得分
           const examId = this.$route.params.examId;
           const questionId = this.$route.params.questionId;
           const userId = localStorage.getItem('userID');
-          const pass_rate = response.data.result.pass_rate;
+          const pass_rate = response.data.pass_rate;
+          alert(`当前最高pass_rate: ${pass_rate
+            + `\n判题结果: ${JSON.stringify(response.data.result)}`
+          }`)
           if (pass_rate > this.pass_rate) {
             // 更新得分
             return axios.post('/api/updatescore', {
