@@ -593,22 +593,23 @@ exam_field = {
     }))
 }
 
-class CreateExam(Resource):
-    @marshal_with(exam_field)
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str, required=True, help="Exam name is required")
-        parser.add_argument('category', type=str, required=True, help="Exam category is required")
-        parser.add_argument('start_time', type=str, required=True, help="Exam start time is required")
-        parser.add_argument('end_time', type=str, required=True, help="Exam end time is required")
-        parser.add_argument('problems', type=list, required=True, help="List of problem IDs is required")
+from flask import request, jsonify
+from flask_restful import Resource
+from models import db, Exam, Question
+from sqlalchemy import func
 
-        args = parser.parse_args()
-        exam_name = args['name']
-        exam_category = args['category']
-        start_time = args['start_time']
-        end_time = args['end_time']
-        problem_ids = args['problems']
+class CreateExam(Resource):
+    def post(self):
+        data = request.json
+
+        exam_name = data.get('name')
+        exam_category = data.get('category')
+        start_time = data.get('start_time')
+        end_time = data.get('end_time')
+        problem_ids = data.get('problems')
+
+        if not exam_name or not exam_category or not start_time or not end_time or not problem_ids:
+            return {"message": "Missing required parameters"}, 400
 
         # Retrieve questions from database based on problem_ids
         problems = Question.query.filter(Question.id.in_(problem_ids)).all()
@@ -627,4 +628,5 @@ class CreateExam(Resource):
         db.session.add(new_exam)
         db.session.commit()
 
-        return new_exam, 201
+        return jsonify(new_exam), 201
+
