@@ -64,6 +64,39 @@ class AnsweredQuestions(Resource):
         return jsonify(list(unique_questions))
 
 
+
+
+
+class CheckQuestions(Resource):
+    def post(self):
+        data = request.get_json()
+        question_ids = data.get('questionIds', [])
+        invalid_ids = []
+
+        for q_id in question_ids:
+            question = models.Question.query.get(q_id)
+            if not question:
+                invalid_ids.append(q_id)
+
+        return {"invalidIds": invalid_ids}, 200
+
+class CheckStudents(Resource):
+    def post(self):
+        data = request.get_json()
+        student_ids = data.get('studentIds', [])
+        invalid_ids = []
+
+        for s_id in student_ids:
+            student = models.User.query.get(s_id)
+            if not student:
+                invalid_ids.append(s_id)
+
+        return {"invalidIds": invalid_ids}, 200
+    
+
+
+
+
 # community
 class Community(Resource):
     @auth_role(AUTH_ALL)
@@ -283,6 +316,37 @@ class ContestStudent(Resource):
         
         exam_ids = [exam_student.exam_id for exam_student in exam_students]
         return {"exam_ids": exam_ids}, HTTP_OK
+
+
+class ContestScores(Resource):
+    def get(self):
+        contest_id = request.args.get('contest_id')
+
+        if not contest_id:
+            return {"message": "缺少考试ID"}, 400
+
+        try:
+            contest_id = int(contest_id)
+        except ValueError:
+            return {"message": "考试ID无效"}, 400
+
+        exam_students = models.ExamStudent.query.filter_by(exam_id=contest_id).order_by(models.ExamStudent.score.desc()).all()
+        
+        if not exam_students:
+            return {"message": "未找到相关成绩"}, 404
+
+        student_scores = [
+            {
+                "id": exam_student.student_id,
+                "score": exam_student.score,
+                "rank": index + 1
+            }
+            for index, exam_student in enumerate(exam_students)
+        ]
+
+        return student_scores, 200
+
+
 
 class GetScore(Resource):
     @auth_role(AUTH_ALL)

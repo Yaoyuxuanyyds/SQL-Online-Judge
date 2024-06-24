@@ -44,7 +44,7 @@
     methods: {
       fetchStudentScores() {
         const contestId = this.$route.params.id;
-        axios.get(`/api/contest-scores`, {
+        axios.get(`/api/contestscores`, {
           headers: {
             'session': localStorage.getItem('session')
           },
@@ -56,7 +56,8 @@
           this.studentScores = response.data;
         })
         .catch(error => {
-          alert("获取学生成绩时发生错误！", error);
+          alert("获取学生成绩时发生错误！")
+          alert(error);
         });
       },
       goBack() {

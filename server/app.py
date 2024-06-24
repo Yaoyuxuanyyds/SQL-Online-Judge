@@ -41,7 +41,9 @@ def create_app():
     api.add_resource(TestCase, '/api/testcase')
     api.add_resource(UpdateScoreAPI, '/api/updatescore')
     api.add_resource(GetScore, '/api/getscore')
-
+    api.add_resource(ContestScores, '/api/contestscores')
+    api.add_resource(CheckQuestions, '/api/check-questions')
+    api.add_resource(CheckStudents, '/api/check-students')
 
     with app.app_context():
         config.db.create_all()

@@ -33,7 +33,13 @@
               <span :class="getStatusClass(contest.status)">{{ getStatusText(contest.status) }}</span>
             </td>
             <td>
-              <button @click="goToContestQuestions(contest.id)">开始考试</button>
+              <button 
+                @click="goToContestQuestions(contest.id)" 
+                :disabled="contest.status !== 'ongoing'"
+                :class="{ 'disabled-button': contest.status !== 'ongoing' }"
+              >
+                开始考试
+              </button>
             </td>
             <td v-if="userRole !== 0">
               <button @click="viewScores(contest.id)">查看答题</button>
@@ -217,6 +223,11 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+
+.disabled-button {
+  background-color: red;
+  cursor: not-allowed;
 }
 
 .status-not-started {

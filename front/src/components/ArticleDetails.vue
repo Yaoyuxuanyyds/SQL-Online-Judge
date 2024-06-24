@@ -13,7 +13,7 @@
         </select>
       </div>
       <div class="article-container shadow">
-        <h1>{{ article.title }}</h1>
+        <h1 class="article-title">{{ article.title }}</h1>
         <div class="article-metadata">
           <span class="author">作者ID: {{ article.user_id }}</span>
           <span class="publish-time">发布时间: {{ formatDate(article.publish_time) }}</span>
@@ -177,11 +177,13 @@ body {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-h1 {
+.article-title {
   margin-bottom: 20px;
   color: inherit;
   font-size: 2.4rem;
   text-align: center;
+  word-break: break-word; /* 关键词很长时可以换行 */
+  line-height: 1.2; /* 行高设置，让换行时有足够空间 */
 }
 
 .article-metadata {

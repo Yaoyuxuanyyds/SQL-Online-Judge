@@ -115,7 +115,6 @@ export default {
   name: 'CreateExam',
   data() {
     return {
-      // examName: '',
       startTime: '',
       endTime: '',
       questionId: '',
@@ -160,37 +159,59 @@ export default {
     removeStudent(index) {
       this.students.splice(index, 1);
     },
+    async validateIds() {
+      const questionIds = this.questions.map(q => q.id);
+      const studentIds = this.students.map(s => s.id);
+
+      try {
+        const questionCheck = await axios.post('/api/check-questions', { questionIds }, { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
+        const studentCheck = await axios.post('/api/check-students', { studentIds }, { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
+
+        if (questionCheck.data.invalidIds.length > 0 || studentCheck.data.invalidIds.length > 0) {
+          let errorMessage = '';
+          if (questionCheck.data.invalidIds.length > 0) {
+            errorMessage += `以下题目ID无效: ${questionCheck.data.invalidIds.join(', ')}\n`;
+          }
+          if (studentCheck.data.invalidIds.length > 0) {
+            errorMessage += `以下学生ID无效: ${studentCheck.data.invalidIds.join(', ')}`;
+          }
+          alert(errorMessage);
+          return false;
+        }
+        return true;
+      } catch (error) {
+        alert('验证ID时出错，请重试。');
+        return false;
+      }
+    },
     async submitExam() {
       if (this.startTime && this.endTime) {
+        const valid = await this.validateIds();
+        if (!valid) return;
+
         try {
-          // 提交考试基本信息
           const examResponse = await axios.post('/api/contest', {
             teacher_id: localStorage.getItem('userID'),
             start_time: this.startTime,
             end_time: this.endTime,
-          },
-          { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
+          }, { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
 
           if (examResponse.status === 201) {
             const examId = examResponse.data.id;
 
-            // 提交考试-题目关联信息
             for (const question of this.questions) {
               await axios.post('/api/contest-question', {
                 exam_id: examId,
                 question_id: question.id,
                 score: question.score
-              },
-              { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
+              }, { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
             }
 
-            // 提交考试-学生关联信息
             for (const student of this.students) {
               await axios.post('/api/contest-student', {
                 exam_id: examId,
                 student_id: student.id,
-              },
-              { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
+              }, { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
             }
 
             alert('考试创建成功！');
@@ -206,9 +227,8 @@ export default {
     }
   }
 };
-
-
 </script>
+
 
 <style scoped>
 /* 主容器样式 */
