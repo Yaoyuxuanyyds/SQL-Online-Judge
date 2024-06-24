@@ -47,6 +47,11 @@
             <span :class="getDifficultyClass(scope.row.difficulty)">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="completed" label="是否完成" width="120" align="center">
+          <template slot-scope="scope">
+            <span :class="scope.row.completed ? 'completed-true' : 'completed-false'">{{ scope.row.completed ? '已完成' : '未完成' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="accuracy" label="准确率" width="120" align="center">
           <template slot-scope="scope">
             {{ scope.row.accuracy }}%
@@ -87,6 +92,8 @@ export default {
       searchQuery: '',
       filterType: 'all', // 默认显示全部
       randomMode: false,
+      randomQuestionId: null,
+      userId: localStorage.getItem('userId'), // Assuming userId is stored in localStorage
     }
   },
   mounted() {
@@ -107,10 +114,13 @@ export default {
       axios.get(`/api/questionlist`, {
         headers: {
           'session': localStorage.getItem('session')
+        },
+        params: {
+          userId: this.userId
         }
       })
       .then(response => {
-        // 假设后端返回的数据结构包含了 accuracy 字段
+        // 假设后端返回的数据结构包含了 accuracy 和 completed 字段
         this.questions = response.data.map(question => ({
           ...question
         }));
@@ -283,6 +293,20 @@ button:hover {
 }
 
 .difficulty-hell {
+  background-color: red;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.completed-true {
+  background-color: green;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.completed-false {
   background-color: red;
   color: white;
   padding: 5px 10px;
