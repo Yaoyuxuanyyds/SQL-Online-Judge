@@ -23,11 +23,11 @@
           <tr v-for="(user) in filteredUsers" :key="user.id">
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
-            <td>{{ user.role === 0 ? '教师' : '学生' }}</td>
+            <td>{{ user.role !== 0 ? '教师' : '学生' }}</td>
             <td>
               <!-- 根据角色显示不同按钮 -->
               <button @click="toggleUserRole(user.id, user.role)" :class="user.role === 0 ? 'teacher-button' : 'student-button'">
-                {{ user.role === 0 ? '设为学生' : '设为教师' }}
+                {{ user.role !== 0 ? '设为学生' : '设为教师' }}
               </button>
               <!-- 删除用户按钮 -->
               <button @click="deleteUser(user.id)" class="delete-button">删除用户</button>
