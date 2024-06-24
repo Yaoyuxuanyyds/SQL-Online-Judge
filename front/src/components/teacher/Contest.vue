@@ -19,7 +19,7 @@
           <td>{{ contest.start_time }}</td>
           <td>{{ contest.end_time }}</td>
           <td>
-            <button @click="goToContestQuestions(contest.id)">查看题目</button>
+            <button @click="goToContestQuestions(contest.id)">开始考试</button>
           </td>
         </tr>
       </tbody>
@@ -66,6 +66,7 @@ export default {
         });
     },
     goToContestQuestions(contestId) {
+      // 导航到考试题目页面
       this.$router.push({ name: 'contest-questions', params: { id: contestId } });
     }
   }
