@@ -1,5 +1,7 @@
 <template>
-  <div class="manage-users-container">
+<div> 
+  <Navbar />
+   <div class="manage-users-container">
     <h1>用户管理</h1>
 
     <!-- 搜索框 -->
@@ -34,13 +36,18 @@
         </tr>
       </tbody>
     </table>
-  </div>
+  </div></div>
+
 </template>
 
 <script>
 import axios from 'axios';
+import Navbar from '@/components/admin/Navbar.vue';
 
 export default {
+  components: {
+    Navbar
+  },
   name: 'ManageUsers',
   data() {
     return {
