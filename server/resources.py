@@ -290,6 +290,21 @@ class ContestStudent(Resource):
         exam_ids = [exam_student.exam_id for exam_student in exam_students]
         return {"exam_ids": exam_ids}, HTTP_OK
 
+class GetScore(Resource):
+    @auth_role(AUTH_ALL)
+    def get(self):
+        exam_id = int(request.args.get('exam_id'))
+        student_id = int(request.args.get('student_id'))
+
+        if not (exam_id and student_id):
+            return {"message": "信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
+        
+        exam_student = models.ExamStudent.query.filter_by(exam_id=exam_id, student_id=student_id).first()
+        if not exam_student:
+            return {"message": "该学生没有关联的考试"}, HTTP_NOT_FOUND
+        
+        score = exam_student.score
+        return {"score": score}, HTTP_OK
 
 
 
