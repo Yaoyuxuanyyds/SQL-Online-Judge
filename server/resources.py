@@ -225,6 +225,7 @@ class ContestList(Resource):
 
 
 
+
 # judge
 # 定义返回结果的字段
 
