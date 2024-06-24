@@ -13,7 +13,7 @@
     <router-link :to="{ path: '/submit' }" :class="{ active: isActive('/submit') }">提交记录</router-link>
     <router-link :to="{ path: '/community' }" :class="{ active: isActive('/community') }">社群动态</router-link>
     <router-link :to="{ path: '/admin' }" :class="{ active: isActive('/admin') }">用户管理</router-link>
-    <button class="logout-button" @click="logout">Logout</button>
+    <button class="logout-button" @click="logout">退出登录</button>
   </nav>
 </template>
 
