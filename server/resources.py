@@ -438,6 +438,7 @@ class Login(Resource):
 
 
 # manageUsers
+
 # Define the fields for User resource serialization
 user_field = {
     'id': fields.Integer,
