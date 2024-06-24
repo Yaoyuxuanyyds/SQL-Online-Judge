@@ -81,7 +81,7 @@ export default {
     },
     fetchContestQuestions() {
       const contestId = this.$route.params.id;
-      axios.get(`/api/contest-questions`,{params: { contest_id: contestId }})
+      axios.get(`/api/contest-question`,{params: { contest_id: contestId }})
         .then(response => {
           this.contestQuestions = response.data.questionIds;
           this.fetchQuestions();

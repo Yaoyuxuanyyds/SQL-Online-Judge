@@ -35,7 +35,8 @@ def create_app():
     api.add_resource(SubmitList, '/api/submitlist')
     api.add_resource(ContestList, '/api/contestlist')
     api.add_resource(Contest, '/api/contest')
-    api.add_resource(ContestQuestion, '/api/contest-questions')
+    api.add_resource(ContestQuestion, '/api/contest-question')
+    api.add_resource(ContestStudent, '/api/contest-student')
 
 
 
