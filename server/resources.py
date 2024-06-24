@@ -496,6 +496,7 @@ class QuestionList(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
         # 查询所有题目 -> 用于题目列表的查询和显示
+        student_id = int(request.args.get('student_id'))
         questions = models.Question.query.all()
         # 计算题目难度
         data = []
@@ -508,7 +509,10 @@ class QuestionList(Resource):
                 accuracy = int(10000 * len_accepted_submits / len_all_submits) / 100.0
             else:
                 accuracy = 0.0
-            data.append(dict(model_to_dict(question), **{'accuracy' : accuracy}))
+            ac = False
+            if accepted_submits.filter_by(student_id=student_id).first():
+                ac = True
+            data.append(dict(model_to_dict(question), **{'accuracy' : accuracy, 'AC' : ac}))
         return jsonify(data)
 
 
