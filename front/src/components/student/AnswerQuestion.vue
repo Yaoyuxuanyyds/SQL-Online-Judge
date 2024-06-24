@@ -62,6 +62,7 @@ export default {
   methods: {
     fetchQuestion() {
       const QuestionId = this.$route.params.id;
+      // 发送请求获取题目信息
       axios.get(`/api/question`, {
         headers: {
           'session': localStorage.getItem('session'),
