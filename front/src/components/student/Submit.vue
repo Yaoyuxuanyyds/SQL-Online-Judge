@@ -12,7 +12,6 @@
         <!-- 搜索框和按钮 -->
         <div class="search-bar">
           <input type="text" class="form-control search-field" v-model="searchQuery" placeholder="搜索题目ID...">
-          <button type="button" class="btn btn-search" @click="searchSubmission">搜索</button>
         </div>
         
         <!-- 表格展示提交记录 -->
@@ -20,21 +19,20 @@
           <thead>
             <tr>
               <th>提交ID</th>
+              <th>提交时间</th>
               <th>题目ID</th>
               <th v-if="!hideStudentID">学生ID</th>
               <th>结果</th>
-              <th>提交时间</th>
-              <th v-if="showExtraColumn">提交记录</th>
+              <th>通过率</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="record in filteredSubmissions" :key="record.submissionId">
               <td>{{ record.id }}</td>
+              <td>{{ record.submit_time | formatDate }}</td>
               <td>{{ record.question_id }}</td>
               <td v-if="!hideStudentID">{{ record.student_id }}</td>
-              <td>{{ judgeResult(record.pass_rate) }}</td>
-              <td>{{ record.submit_time | formatDate }}</td>
-              <td v-if="showExtraColumn">{{ record.submit_sql }}</td>
+              <td>{{ judgeResult(record.status) }}</td>
             </tr>
           </tbody>
         </table>
@@ -115,20 +113,16 @@ export default {
           alert(`失败: ${error.response.data.message}`);
         });
     },
-    judgeResult(passRate) {
+    judgeResult(status) {
       const mapping = {
-        '-1': 'PENDING',
-        '0': 'ACCEPTED',
-        '1': 'RUNERROR',
-        '2': 'WRONGANSWER',
-        '3': 'TIMELIMIT_EXCEED',
-        '4': 'MEMLIMIT_EXCEED',
+        '-1': 'Pending',
+        '0': 'Accepted',
+        '1': 'Runtime error',
+        '2': "Wrong answer",
+        '3': "Time limit exceeded",
+        '4': "Memery limit exceeded",
       };
-      return mapping[passRate] || 'UNKNOWN';
-    },
-    searchSubmission() {
-      // Perform search logic if needed
-      // In this example, the computed property `filteredSubmissions` handles the filtering based on `searchQuery`
+      return mapping[status];
     }
   },
   filters: {
