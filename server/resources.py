@@ -348,7 +348,7 @@ class Judge(Resource):
             record.status = JUDGE_ACCEPTED
         else:
             finalresult[1] = result_map[min(error_list)]
-            pass_rate = 1.0 - len(error_list) * 1.0 / len(results) # 可能需要考虑保留小数的问题？
+            pass_rate = 100 * (1.0 - len(error_list) * 1.0 / len(results)) # 可能需要考虑保留小数的问题？
             record.status = min(error_list)
 
         record.pass_rate = pass_rate
@@ -488,7 +488,14 @@ class QuestionList(Resource):
     def get(self):
         # 查询所有题目 -> 用于题目列表的查询和显示
         questions = models.Question.query.all()
-        data = [model_to_dict(question) for question in questions]
+        # 计算题目难度
+        data = []
+        for question in questions:
+            all_submits = models.Submission.query.filter_by(question_id=question.id)
+            accepted_submits = models.Submission.query.filter_by(question_id=question.id, status=1)
+            len_all_submits = len([model_to_dict(submit) for submit in all_submits])
+            len_accepted_submits = len([model_to_dict(submit) for submit in accepted_submits])
+            data.append(dict(model_to_dict(question), **{'accuracy' : 100.0 * len_accepted_submits / len_all_submits}))
         return jsonify(data)
 
 
@@ -610,22 +617,3 @@ class SubmitList(Resource):
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
         data = [model_to_dict(submit) for submit in submits]
         return jsonify(data)
-
-
-
-
-
-
-# question accuracy
-class SubmitAccuracy(Resource):
-    @auth_role(AUTH_ALL)
-    def get(self, question_id):
-        submissions = models.Submission.query.filter_by(question_id=question_id).all()
-        total_submissions = len(submissions)
-        accepted_submissions = len([submit for submit in submissions if submit.status == 'accepted'])
-        accuracy = 0 if total_submissions == 0 else round((accepted_submissions / total_submissions) * 100, 2)
-        
-        return {'question_id': question_id, 'accuracy': accuracy}, HTTP_OK
-
-
-
