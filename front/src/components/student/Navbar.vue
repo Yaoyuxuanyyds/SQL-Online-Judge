@@ -1,8 +1,9 @@
 <template>
-  <nav class="navbar">
-    <!-- 添加 logo -->
+  <nav class="el-navbar">
+    <!-- Logo 和 Hello, 用户昵称 -->
     <div class="logo">
       <img src="..\..\assets\logo.png" alt="Logo">
+      <span class="hello-user">Hello, {{ nickname }}</span>
     </div>
 
     <router-link :to="{ path: '/student' }" :class="{ active: isActive('/student') }">Home</router-link>
@@ -16,12 +17,20 @@
   </nav>
 </template>
 
-
 <script>
 import axios from 'axios';
 
 export default {
   name: 'Navbar',
+  data() {
+    return {
+      nickname: ''  // 初始化用户昵称
+    };
+  },
+  mounted() {
+    // 在组件挂载时获取用户昵称
+    this.nickname = localStorage.getItem('nickname') || 'Guest';
+  },
   methods: {
     isActive(path) {
       return this.$route.path === path;
@@ -29,13 +38,13 @@ export default {
     logout() {
       const sessionToken = localStorage.getItem('sessionToken');
       axios.delete('/api/login', {session: sessionToken})
-      .then(
-        alert('成功退出登录'),
-        localStorage.removeItem('sessionToken'), // 清除本地存储中的 sessionToken
-        this.$router.push('/') // 回到主页
-      )
+      .then(() => {
+        alert('成功退出登录');
+        localStorage.removeItem('sessionToken'); // 清除本地存储中的 sessionToken
+        this.$router.push('/'); // 回到主页
+      })
       .catch(error => {
-        alert('退出登录失败:', error.response.data.message);
+        alert('退出登录失败: ' + error.response.data.message);
       });
     }
   }
@@ -43,26 +52,37 @@ export default {
 </script>
 
 <style scoped>
-.navbar {
+.el-navbar {
   display: flex;
-  justify-content: space-around;
-  align-items: center; /* 确保项目在垂直方向上居中对齐 */
+  justify-content: space-between;
+  align-items: center;
   background-color: #f5f5f5;
   padding: 10px;
 }
 
-.logo img {
-  height: 40px;
+.logo {
+  display: flex;
+  align-items: center;
 }
 
-.navbar a {
+.logo img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.hello-user {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.el-navbar a {
   text-decoration: none;
   color: #333;
   padding: 10px;
   border-radius: 5px;
 }
 
-.navbar a.active {
+.el-navbar a.active {
   background-color: #333;
   color: #fff;
 }
