@@ -2,7 +2,7 @@
   <div>
     <Navbar />
     <div class="container">
-      <el-menu class="side-menu" @select="handleSelect">
+      <el-menu :default-active="'1'" class="side-menu" @select="handleSelect">
         <el-menu-item index="1">所有记录</el-menu-item>
         <el-menu-item index="2">我的记录</el-menu-item>
       </el-menu>
@@ -27,12 +27,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="record in filteredSubmissions" :key="record.submissionId">
+            <tr v-for="record in filteredSubmissions" :key="record.id">
               <td>{{ record.id }}</td>
               <td>{{ record.submit_time | formatDate }}</td>
               <td>{{ record.question_id }}</td>
               <td v-if="!hideStudentID">{{ record.student_id }}</td>
-              <td>{{ judgeResult(record.status) }}</td>
+              <td :style="{ color: getStatusColor(record.status) }">{{ judgeResult(record.status) }}</td>
+              <td>{{ record.pass_rate }}</td>
             </tr>
           </tbody>
         </table>
@@ -57,6 +58,9 @@ export default {
       hideStudentID: false, // 控制隐藏学生ID列
       searchQuery: '', // 搜索条件：题目ID
     };
+  },
+  mounted() {
+    this.handleSelect('1');
   },
   computed: {
     filteredSubmissions() {
@@ -114,15 +118,26 @@ export default {
         });
     },
     judgeResult(status) {
-      const mapping = {
-        '-1': 'Pending',
-        '0': 'Accepted',
-        '1': 'Runtime error',
-        '2': "Wrong answer",
-        '3': "Time limit exceeded",
-        '4': "Memery limit exceeded",
-      };
-      return mapping[status];
+      const mapping = [
+        'Pending',
+        'Accepted',
+        'Runtime error',
+        "Wrong answer",
+        "Time limit exceeded",
+        "Memery limit exceeded",
+      ];
+      return mapping[status + 1];
+    },
+    getStatusColor(status) {
+      const colorMapping = [
+        'grey',
+        'green',
+        'red',
+        'orange',
+        'purple',
+        'blue',
+    ];
+      return colorMapping[status + 1] || 'black';
     }
   },
   filters: {
