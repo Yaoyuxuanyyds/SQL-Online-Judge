@@ -53,17 +53,17 @@
         <h2>添加测试点</h2>
         <div class="form-group">
           <label>测试表:</label>
-          <textarea v-model="newQuestion.tablename" placeholder="测试表" class="large-textarea"></textarea>
+          <textarea v-model="newQuestion.tablename" placeholder="测试表(输入建表语句中的表名)" class="small-textarea"></textarea>
         </div>
         <div v-for="(testCase, index) in testCases" :key="index" class="test-case">
           <div class="form-group-horizontal">
             <div class="form-group">
               <label>输入数据:</label>
-              <textarea v-model="testCase.input_sql" placeholder="输入数据" class="large-textarea"></textarea>
+              <textarea v-model="testCase.input_sql" placeholder="输入数据， 即向测试表插入数据的SQL语句" class="large-textarea"></textarea>
             </div>
             <div class="form-group">
               <label>输出数据:</label>
-              <textarea v-model="testCase.output" placeholder="输出数据" class="large-textarea"></textarea>
+              <textarea v-model="testCase.output" placeholder="输出数据，即测试表中查询到的结果" class="large-textarea"></textarea>
             </div>
           </div>
           <div class="form-group form-group--center">
@@ -191,7 +191,11 @@ select.large-input {
   box-sizing: border-box;
   font-size: 16px;
 }
-
+.small-textarea {
+  height: 20px;
+  width: 250px;
+  resize: vertical;
+}
 .large-textarea {
   height: 120px;
   resize: vertical;
