@@ -52,6 +52,11 @@
             <span v-else-if="scope.row.difficulty === 'hard'" style="color: red;">困难</span>
           </template>
         </el-table-column>
+        <el-table-column prop="accuracy" label="准确率" width="120" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.accuracy }}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="150" align="center">
           <template #default="scope">
             <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
