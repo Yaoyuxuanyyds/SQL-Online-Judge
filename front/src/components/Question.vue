@@ -158,9 +158,6 @@ export default {
     handlePageChange(newPage) {
       this.currentPage = newPage;
     },
-    handleSearch() {
-      // Placeholder for potentially updating list or analytics
-    },
     randomQuestion() {
       const publicQuestions = this.questions.filter(question => question.is_public);
       const randomIndex = Math.floor(Math.random() * publicQuestions.length);

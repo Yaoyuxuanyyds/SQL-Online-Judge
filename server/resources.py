@@ -531,7 +531,27 @@ class Question(Resource):
         question_id = int(request.args.get('question_id'))
         ret = models.Question.query.filter_by(id=question_id).first()
         if ret:
-            return model_to_dict(ret), HTTP_OK
+            student_id = int(request.args.get('student_id'))
+            all_submits = models.Submission.query.filter_by(question_id=question_id)
+            submission_count = all_submits.filter_by(student_id=student_id).count()
+            completed = all_submits.filter_by(student_id=student_id, status=0).first() is not None
+            accepted_submits = all_submits.filter_by(status=0)
+            len_all_submits = all_submits.count()
+            len_accepted_submits = accepted_submits.count()
+            len_submit_users = all_submits.distinct(models.Submission.student_id).count()
+            len_users = models.User.query.count()
+            if len_users:
+                completion_rate = int(10000 * len_submit_users / len_users) / 100.0
+            else:
+                completion_rate = 0.0
+            if len_all_submits:
+                accuracy = int(10000 * len_accepted_submits / len_all_submits) / 100.0
+            else:
+                accuracy = 0.0
+            return dict(model_to_dict(ret), **{'accuracy' : accuracy, 
+                                               'completion_rate': completion_rate,
+                                               'completed': completed,
+                                               'submission_count': submission_count}), HTTP_OK
         else:
             return {"message": "该题目不存在"}, HTTP_NOT_FOUND
 
