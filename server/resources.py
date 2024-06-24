@@ -199,10 +199,12 @@ class ContestList(Resource):
         # 获取当前用户ID
         current_user_id = request.args.get('user_id')
         current_user_role = request.args.get('user_role')
-        if current_user_role == 0:
+
+        if int(current_user_role) == 0:
             # 查询与当前用户相关的考试ID
             student_exams = models.ExamStudent.query.filter_by(student_id=current_user_id).all()
             exam_ids = [exam.exam_id for exam in student_exams]
+            print(exam_ids)
 
             # 查询相关考试信息
             contests = models.Exam.query.filter(models.Exam.id.in_(exam_ids)).all()

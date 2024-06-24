@@ -1,11 +1,12 @@
 <template>
-  <div class="manage-users-container">
+<div> 
+  <Navbar />
+   <div class="manage-users-container">
     <h1>用户管理</h1>
 
     <!-- 搜索框 -->
     <div class="search-container">
       <input v-model="searchId" placeholder="通过ID搜索">
-      <button @click="searchUser">搜索</button>
     </div>
 
     <!-- 用户列表 -->
@@ -34,13 +35,18 @@
         </tr>
       </tbody>
     </table>
-  </div>
+  </div></div>
+
 </template>
 
 <script>
 import axios from 'axios';
+import Navbar from '@/components/admin/Navbar.vue';
 
 export default {
+  components: {
+    Navbar
+  },
   name: 'ManageUsers',
   data() {
     return {
@@ -69,11 +75,6 @@ export default {
         .catch(error => {
           alert('获取用户列表失败:', error);
         });
-    },
-    searchUser() {
-      alert('搜索 ID:', this.searchId);
-      // 可以在这里添加向后端发送搜索请求的逻辑
-      // TODO
     },
     toggleUserRole(user_id, currentRole) {
       const userId = parseInt(user_id);

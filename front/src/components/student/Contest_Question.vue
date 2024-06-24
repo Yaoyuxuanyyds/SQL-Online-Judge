@@ -89,8 +89,6 @@ export default {
     },
     fetchContestQuestions() {
       const contestId = this.$route.params.id;
-      const session = localStorage.getItem('session');
-      const userId = localStorage.getItem('userID');
       axios.get(`/api/contest-question`,{params: { contest_id: contestId }})
         .then(response => {
           this.contestQuestions = response.data.questionIds;

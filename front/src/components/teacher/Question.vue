@@ -38,7 +38,7 @@
           </el-button>
           <el-button
             type="primary"
-            @click="fetchQuestions"
+            @click="refreshPage"
             class="refresh-button"
           >
             刷新
@@ -149,7 +149,7 @@ export default {
       }
     },
     enterQuestion(id) {
-      this.$router.push({ name: 'answer-question', params: { id: id } });
+      this.$router.push({ name: 'answer-question_t', params: { id: id } });
     },
     handlePageChange(newPage) {
       this.currentPage = newPage;
@@ -180,6 +180,9 @@ export default {
         'difficulty-challenge': difficulty === 4,
         'difficulty-hell': difficulty === 5,
       };
+    },
+    refreshPage() {
+      location.reload();
     }
   }
 }

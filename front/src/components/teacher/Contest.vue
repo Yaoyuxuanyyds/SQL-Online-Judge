@@ -117,7 +117,7 @@ export default {
       }
     },
     goToContestQuestions(contestId) {
-      this.$router.push({ name: 'contest-question', params: { id: contestId } });
+      this.$router.push({ name: 'contest-question_t', params: { id: contestId } });
     },
     getStatusText(status) {
       switch (status) {

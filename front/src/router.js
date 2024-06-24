@@ -14,7 +14,8 @@ import Question_t from "@/components/teacher/Question"
 import AnswerQuestion_t from '@/components/teacher/AnswerQuestion.vue'
 import Contest_t from "@/components/teacher/Contest"
 import Community_t from "@/components/teacher/Community"
-import ArticleEditor_t from "@/components/student/ArticleEditor"
+import ArticleEditor_t from "@/components/teacher/ArticleEditor"
+import Contest_Question_t from "@/components/teacher/Contest_Question"
 
 // Student
 import StudentHome from '@/components/student/Index'
@@ -91,10 +92,18 @@ export default new Router({
       component: ArticleEditor_t
     },
     {
+      path: '/teacher/contest/question/:id',
+      name: 'contest-question_t',
+      component: Contest_Question_t
+    },
+    {
       path: '/teacher/create',
       name: 'create',
       component: CreateExam
     },
+
+
+
 
     {
       path: '/student',

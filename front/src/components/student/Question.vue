@@ -2,7 +2,7 @@
   <div>
     <Navbar />
     <div class="container">
-      <h1>题目列表</h1>
+      <h1 class="title">题目列表</h1>
       <div class="button-bar">
         <el-button
           type="primary"
@@ -113,7 +113,7 @@ export default {
   computed: {
     filteredQuestions() {
       if (this.randomMode) {
-        return this.questions.filter(question => question.id === this.randomQuestionId);
+        return this.questions.filter(question => question.id === this.randomQuestionId && question.is_public);
       }
       return this.questions.filter(question => 
         this.filterQuestion(question)
@@ -141,10 +141,11 @@ export default {
     },
     filterQuestion(question) {
       const matchesSearch = question.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+      const matchesPublic = question.is_public;
       if (this.filterType === 'all') {
-        return matchesSearch;
+        return matchesSearch && matchesPublic;
       } else {
-        return question.difficulty == this.filterType && matchesSearch;
+        return question.difficulty == this.filterType && matchesSearch && matchesPublic;
       }
     },
     enterQuestion(id) {
@@ -157,8 +158,9 @@ export default {
       // Placeholder for potentially updating list or analytics
     },
     randomQuestion() {
-      const randomIndex = Math.floor(Math.random() * this.questions.length);
-      this.randomQuestionId = this.questions[randomIndex].id;
+      const publicQuestions = this.questions.filter(question => question.is_public);
+      const randomIndex = Math.floor(Math.random() * publicQuestions.length);
+      this.randomQuestionId = publicQuestions[randomIndex].id;
       this.randomMode = true;
     },
     getDifficultyLabel(difficulty) {
@@ -195,7 +197,7 @@ export default {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
+.title {
   text-align: center;
   font-size: 24px;
   color: #333;
@@ -234,6 +236,7 @@ h1 {
   margin-left: 10px;
   margin-right: 10px;
   color: #666;
+  writing-mode: vertical-rl; /* 将文字垂直显示 */
 }
 
 .filter-select {
@@ -259,10 +262,14 @@ th {
   color: #333;
   font-weight: bold;
   text-align: center;
+  font-family: 'Arial', sans-serif; /* 使用 Arial 字体 */
+  font-size: 16px; /* 设置字体大小 */
 }
 
 td {
   text-align: center;
+  font-family: 'Arial', sans-serif; /* 使用 Arial 字体 */
+  font-size: 14px; /* 设置字体大小 */
 }
 
 tr:nth-child(even) {

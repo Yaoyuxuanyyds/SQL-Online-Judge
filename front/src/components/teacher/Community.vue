@@ -68,10 +68,10 @@ export default {
       return content.length > 100 ? content.substring(0, 100) + '...' : content;
     },
     goToEditor() {
-      this.$router.push({ name: 'article-editor' });
+      this.$router.push({ name: 'article-editor_t' });
     },
     goToArticle(articleId) {
-      this.$router.push({ name: 'article-details', params: { id: articleId } });
+      this.$router.push({ name: 'article-details_t', params: { id: articleId } });
     }
   }
 }
