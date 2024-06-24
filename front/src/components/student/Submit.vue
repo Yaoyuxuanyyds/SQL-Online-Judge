@@ -1,31 +1,65 @@
 <template>
   <div>
     <Navbar />
-    <h1>Submissions</h1>
-    <button @click="fetchAll">All Submissions</button>
-    <button @click="fetchMine">My Submissions</button>
-    <div v-for="item in submissions" :key="item.id">
-      <SubmissionRecord :record="item"/>
+    <div class="container">
+      <el-menu class="side-menu" @select="handleSelect">
+        <el-menu-item index="1">所有记录</el-menu-item>
+        <el-menu-item index="2">我的记录</el-menu-item>
+      </el-menu>
+      <div class="content">
+        <h1>提交记录</h1>
+        <!-- 表格展示提交记录 -->
+        <table>
+          <thead>
+            <tr>
+              <th>提交ID</th>
+              <th>题目ID</th>
+              <th>学生ID</th>
+              <th>结果</th>
+              <th>提交时间</th>
+              <th v-if="showExtraColumn">提交记录</th> <!-- 条件渲染: 仅在我的记录时显示 -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="record in submissions" :key="record.submissionId">
+              <td>{{ record.id }}</td>
+              <td>{{ record.question_id }}</td>
+              <td>{{ record.student_id }}</td>
+              <td>{{ judgeResult(record.pass_rate) }}</td>
+              <td>{{ record.submit_time | formatDate }}</td>
+              <td v-if="showExtraColumn">{{ record.submit_sql }}</td> <!-- 条件渲染 -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import Navbar from '@/components/student/Navbar.vue';
-import SubmissionRecord from './SubmissionRecord.vue';
 import axios from 'axios';
+
 export default {
-  name: 'Submit',
+  name: 'Submissions',
   components: {
-    Navbar,
-    SubmissionRecord
+    Navbar
   },
   data() {
     return {
       submissions: [],
+      showExtraColumn: false,  // 控制额外列的显示
     };
   },
   methods: {
+    handleSelect(index) {
+      this.showExtraColumn = (index === '2');  // 当选择我的记录时显示额外的列
+      if (index === '1') {
+        this.fetchAll();
+      } else if (index === '2') {
+        this.fetchMine();
+      }
+    },
     fetchAll() {
       axios.get('/api/submitlist', {
         headers: {
@@ -49,7 +83,7 @@ export default {
         },
         params: {
           fetchall: false,
-          student_id: localStorage.getItem('userID')
+          user_id: localStorage.getItem('userID')
         }
       })
         .then(response => {
@@ -58,17 +92,55 @@ export default {
         .catch(error => {
           alert(`失败: ${error.response.data.message}`);
         });
+    },
+    judgeResult(passRate) {
+      const mapping = {
+        '-1': 'PENDING',
+        '0': 'ACCEPTED',
+        '1': 'RUNERROR',
+        '2': 'WRONGANSWER',
+        '3': 'TIMELIMIT_EXCEED',
+        '4': 'MEMLIMIT_EXCEED',
+      };
+      return mapping[passRate] || 'UNKNOWN';
+    }
+  },
+  filters: {
+    formatDate(value) {
+      return new Date(value).toLocaleString();
     }
   }
 };
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+}
+.side-menu {
+  width: 200px;
+  height: 100vh;
+  border-right: 1px solid #ebeef5;
+}
+.content {
+  flex: 1;
+  padding: 20px;
+}
 h1 {
+  text-align: center;
   color: #2c3e50;
 }
-button {
-  margin: 10px;
-  padding: 5px 15px;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* 同样宽度的列 */
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center; /* 居中显示所有的列 */
+}
+th {
+  background-color: #f4f4f4;
 }
 </style>

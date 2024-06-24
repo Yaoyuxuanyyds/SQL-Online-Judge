@@ -14,6 +14,10 @@ def parse_iso_datetime(iso_str):
     dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
     return dt.strftime('%Y-%m-%d %H:%M:%S')
 
+
+
+
+
 # answer
 answer_field = {
     'id': fields.Integer,
@@ -48,7 +52,11 @@ class Answer(Resource):
             return {}, HTTP_OK
         else:
             return {"message": "该答案不存在"}, HTTP_NOT_FOUND
-        
+
+
+
+
+
 # community
 class Community(Resource):
     @auth_role(AUTH_ALL)
@@ -166,6 +174,12 @@ class CommunityList(Resource):
         return {'data': data}, HTTP_OK
 # TODO: Contest后端
 
+
+
+
+
+
+
 # judge
 # 定义返回结果的字段
 
@@ -264,6 +278,7 @@ class Judge(Resource):
             #     continue
 
             error, user_output = self.execute_sql(submit_sql)
+            print(user_output)
             if error:
                 if user_output == "TLE":
                     results[test_id] = (False, JUDGE_TIMELIMIT_EXCEED)
@@ -276,6 +291,12 @@ class Judge(Resource):
             else:
                 results[test_id] = (True, JUDGE_ACCEPTED)
         return {"results": results}, HTTP_OK
+    
+
+
+
+
+
 # login
 class Login(Resource):
     def post(self):
@@ -298,7 +319,7 @@ class Login(Resource):
             return {"message": '用户名或密码无效'}, HTTP_UNAUTHORIZED
         
     def delete(self):
-        session = request.args.get('session')
+        session = request.json.get('session')
         user = models.User.query.filter_by(session=session).first()
         if user:
             user.session = None
@@ -314,6 +335,10 @@ class Login(Resource):
             return {"id": user.id, "name": user.username, "role": user.role}, HTTP_OK
         else:
             return {"message": '身份信息无效！请重新登录。'}, HTTP_UNAUTHORIZED
+
+
+
+
 
 # manageUsers
 # Define the fields for User resource serialization
@@ -331,23 +356,10 @@ class ManageUsers(Resource):
         users = User.query.all()
         return users
 
-    # def post(self):
-    #     # Create a new user
-    #     username = request.json.get('username')
-    #     password = request.json.get('password')
-    #     role = request.json.get('role')
-
-    #     if not (username and password and role):
-    #         return {"message": "Incomplete user information. Please provide username, password, and role."}, HTTP_BAD_REQUEST
-
-    #     new_user = User(username=username, password=password, role=role)
-    #     db.session.add(new_user)
-    #     db.session.commit()
-    #     return {"message": "User created successfully."}, HTTP_CREATED
-
-    def delete(self):
+    def post(self):
         # Delete a user
-        user_id = int(request.args.get('user_id'))
+        user_id = int(request.json.get('id'))
+        print(user_id)
         user = User.query.filter_by(id=user_id).first()
 
         if not user:
@@ -359,19 +371,19 @@ class ManageUsers(Resource):
 
     def put(self):
         # Update user role
-        user_id = int(request.json.get('id'))
-        new_role = int(request.json.get('role'))
-        new_password = request.json.get('password')
-
+        user_id = request.json.get('id')
+        new_role = request.json.get('role')
         user = User.query.filter_by(id=user_id).first()
 
         if not user:
             return {"message": "User not found."}, HTTP_NOT_FOUND
 
         user.role = new_role
-        user.password = new_password
         db.session.commit()
         return {"message": "User updated successfully."}, HTTP_OK
+
+
+
 
 # questions
 question_field = {
@@ -565,8 +577,14 @@ class Submit(Resource):
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
     def get(self):
-        fetchall = bool(request.args.get('fetchall', False))
-        userid = int(request.args.get('userid')) if request.args.get('userid') else None
+        fetchall = request.args.get('fetchall')
+        if fetchall == 'true':
+            fetchall = True
+        elif fetchall == 'false':
+            fetchall = False
+        else:
+            fetchall = None  
+        userid = int(request.args.get('user_id')) if request.args.get('user_id') else None
         if fetchall:
             submits = models.Submission.query.filter_by()
         elif userid:

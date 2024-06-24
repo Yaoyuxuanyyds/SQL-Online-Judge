@@ -19,17 +19,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(user, index) in filteredUsers" :key="user.id">
+        <tr v-for="(user) in filteredUsers" :key="user.id">
           <td>{{ user.id }}</td>
           <td>{{ user.username }}</td>
           <td>{{ user.role }}</td>
           <td>
             <!-- 根据角色显示不同按钮 -->
-            <button @click="toggleUserRole(user.id, user.role, user.password)">
-              {{ user.role === 0 ? '设为教师' : '设为学生' }}
+            <button @click="toggleUserRole(user.id, user.role)">
+              {{ parseInt(user.role) === 0 ? '设为教师' : '设为学生' }}
             </button>
             <!-- 编辑密码按钮 -->
-            <button @click="editPassword(index)">编辑密码</button>
+            <button @click="deleteUser(user.id)">删除用户</button>
           </td>
         </tr>
       </tbody>
@@ -46,7 +46,6 @@ export default {
     return {
       users: [],
       searchId: '',
-      newPassword: ''
     };
   },
   computed: {
@@ -76,38 +75,30 @@ export default {
       // 可以在这里添加向后端发送搜索请求的逻辑
       // TODO
     },
-    toggleUserRole(user_id, currentRole, password) {
-      const userId = ParseInt(user_id);
-      const newPassword = password
-      const newRole = ParseInt(currentRole) === 0 ? 1 : 0;
-      axios.put(`/api/manageusers`,{id: userId, password: newPassword, role: newRole })
-        .then(response => {
-          alert(response.data.message);
-          const userIndex = this.users.findIndex(u => u.id === userId);
-          if (userIndex !== -1) {
-            this.users[userIndex].role = newRole;
-          }
-        })
+    toggleUserRole(user_id, currentRole) {
+      const userId = parseInt(user_id);
+      const newRole = parseInt(currentRole) === 0 ? 1 : 0;
+      axios.put(`/api/manageusers`,{id: userId, role: newRole})
+        .then(
+          alert('切换用户角色成功'),
+          window.location.reload()
+        )
         .catch(error => {
           alert('切换用户角色失败:', error);
         });
     },
-    editPassword(index) {
-      const userId = this.users[index].id;
-      const role = this.users[index].role;
-      // console.log('编辑密码:', userId, role);
-      const newPassword = prompt('输入新密码:');
-      if (newPassword !== null && newPassword !== '') {
-        // 发送更新密码的请求
-        axios.put(`/api/manageusers`,{id: userId}, { password: newPassword }, { role: role })
-          .then(
-            alert('密码更新成功!')
-          )
-          .catch(error => {
-            alert('密码更新失败:', error);
-          });
-      }
+    deleteUser(user_id) {
+      const userId = parseInt(user_id);
+      axios.post(`/api/manageusers`,{id: userId})
+        .then(
+          alert('删除用户成功'),
+          window.location.reload()
+        )
+        .catch(error => {
+          alert('删除用户失败:', error);
+        });
     }
+
   }
 };
 </script>

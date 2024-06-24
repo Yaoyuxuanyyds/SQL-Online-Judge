@@ -1,5 +1,4 @@
 <template>
-
   <div>
     <Navbar />
     <div class="container">
@@ -80,7 +79,7 @@ export default {
         this.questions = response.data.data;
       })
       .catch(error => {
-        console.error("Error fetching questions:", error);
+        alert("Error fetching questions:", error);
       });
     },
     enterQuestion(id) {
