@@ -502,7 +502,7 @@ class QuestionList(Resource):
         data = []
         for question in questions:
             all_submits = models.Submission.query.filter_by(question_id=question.id)
-            accepted_submits = models.Submission.query.filter_by(question_id=question.id, status=0)
+            accepted_submits = all_submits.filter_by(status=0)
             len_all_submits = len([model_to_dict(submit) for submit in all_submits])
             len_accepted_submits = len([model_to_dict(submit) for submit in accepted_submits])
             if len_all_submits:
