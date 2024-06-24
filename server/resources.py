@@ -15,10 +15,14 @@ def parse_iso_datetime(iso_str):
     return dt
 def model_to_dict(obj):
     """
-    将 SQLAlchemy 模型对象转换为字典。
+    将 SQLAlchemy 模型对象转换为字典，并将 datetime 对象转换为字符串。
     """
-    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+    def convert(value):
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d %H:%M:%S")
+        return value
 
+    return {c.name: convert(getattr(obj, c.name)) for c in obj.__table__.columns}
 
 
 
@@ -384,7 +388,7 @@ class Login(Resource):
             session_token = hashlib.sha1(os.urandom(24)).hexdigest()
             user.session = session_token
             db.session.commit()
-            return {"session": session_token, "role": user.role, "name": user.username}, HTTP_OK
+            return model_to_dict(user), HTTP_OK
         else:
             return {"message": '用户名或密码无效'}, HTTP_UNAUTHORIZED
         
