@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import Navbar from '@/components/student/Navbar.vue';
+import Navbar from '@/components/teacher/Navbar.vue';
 import axios from 'axios';
 import moment from 'moment-timezone';
 export default {
