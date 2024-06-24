@@ -118,7 +118,7 @@ export default {
         });
     },
     enterQuestion(id) {
-      this.$router.push({ name: 'answer-question', params: { id: id } });
+      this.$router.push({ name: 'answer-question-contest', params: {  questionId: id, contestId: this.$route.params.id }});
     },
     handlePageChange(newPage) {
       this.currentPage = newPage;
