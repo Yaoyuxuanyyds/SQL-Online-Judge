@@ -53,7 +53,8 @@
           is_public: true // 默认为公开题目
         },
         userAnswer: '',
-        userid: localStorage.getItem('userID')
+        userid: localStorage.getItem('userID'),
+        pass_rate: ''
       };
     },
     mounted() {
@@ -79,23 +80,46 @@
         });
       },
       submitAnswer() {
+        // 获取当前的最高pass_rate
+        const QuestionId = this.$route.params.id;
+        const examId = this.$route.params.examId;
+        const userId = localStorage.getItem('userID');
+        // 发送请求获取当前最高pass_rate
+        axios.get(`/api/submit`, {
+          headers: {
+            'session': localStorage.getItem('session'),
+          },
+          params: {
+            question_id: QuestionId,
+            exam_id: examId,
+            student_id: userId
+          }
+        })
+        .then(response => {
+          this.pass_rate = response.data.pass_rate;
+        })
+        .catch(error => {
+          alert(`获取当前最高pass_rate失败: ${error.response.data.message}`);
+        });
+        // 记录提交
         axios.post(`/api/submit`, { 
           student_id: localStorage.getItem('userID'),
-          exam_id: null,
+          exam_id: this.$route.params.examId,
           submit_sql: this.userAnswer,
           submit_time: new Date().toISOString(),
-          question_id: this.$route.params.id,
+          question_id: this.$route.params.questionId,
         }, {
           headers: {
             'session': localStorage.getItem('session'),
             'Content-Type': 'application/json'
           }
         })
+        // 判题
         .then(response => {
           const submit_id = response.data.submit_id;
           return axios.post('/api/judge', {
             submit_sql: this.userAnswer,
-            question_id: this.$route.params.id,
+            question_id: this.$route.params.questionId,
             create_code: this.question.create_code,
             submit_id: submit_id
           }, {
@@ -110,6 +134,28 @@
           // 进一步调用api更新得分
           const examId = this.$route.params.examId;
           const questionId = this.$route.params.questionId;
+          const userId = localStorage.getItem('userID');
+          const pass_rate = response.data.result.pass_rate;
+          if (pass_rate > this.pass_rate) {
+            // 更新得分
+            return axios.post('/api/update_score', {
+              exam_id: examId,
+              question_id: questionId,
+              user_id: userId,
+              old_rate: this.pass_rate,
+              new_rate: pass_rate
+            }, {
+              headers: {
+                'session': localStorage.getItem('session'),
+                'Content-Type': 'application/json'
+              }});
+          }
+        })
+        .then(response => {
+          alert(`得分更新成功: ${response.data.message}`);
+        })
+        .catch(error => {
+          alert(`更新得分失败: ${error.response.data.message}`);
         })
         .catch(error => {
           alert(`提交答案失败: ${error.response.data}`);
