@@ -228,12 +228,14 @@ class ContestList(Resource):
 class ContestQuestion(Resource):
     def get(self):
         exam_id = int(request.args.get('contest_id'))
+        print(exam_id)
         exam_questions = models.ExamQuestion.query.filter_by(exam_id=exam_id).all()
         if not exam_questions:
+            print(1)
             return jsonify({'message': 'No questions found for this exam.'}), 404
 
         question_ids = [eq.question_id for eq in exam_questions]
-
+        print(question_ids)
         return jsonify({'questionIds': question_ids})
     
     @auth_role(AUTH_TEACHER)

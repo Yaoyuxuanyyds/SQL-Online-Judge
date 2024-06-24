@@ -41,6 +41,7 @@ def create_app():
     api.add_resource(Submit, '/api/submit')
     api.add_resource(SubmitList, '/api/submitlist')
     api.add_resource(TestCase, '/api/testcase')
+    api.add_resource(UpdateScoreAPI, '/api/updatescore')
 
 
     with app.app_context():

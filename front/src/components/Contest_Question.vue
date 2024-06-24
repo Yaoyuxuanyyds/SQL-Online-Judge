@@ -93,6 +93,10 @@ export default {
         .then(response => {
           this.contestQuestions = response.data.questionIds;
           this.fetchQuestions();
+          if (this.contestQuestions.length === 0) {
+            alert("该竞赛没有题目");
+            this.$router.push({ name: 'contest-list' });
+          }
         })
         .catch(error => {
           alert("获取竞赛题目列表失败: " + error.response.data.message);
@@ -118,7 +122,7 @@ export default {
         });
     },
     enterQuestion(id) {
-      this.$router.push({ name: 'answer-question-contest', params: {  questionId: id, contestId: this.$route.params.id }});
+      this.$router.push({ name: 'answer-question-contest', params: {  questionId: id, examId: this.$route.params.id }});
     },
     handlePageChange(newPage) {
       this.currentPage = newPage;

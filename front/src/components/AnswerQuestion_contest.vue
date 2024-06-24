@@ -62,14 +62,15 @@
     },
     methods: {
       fetchQuestion() {
-        const QuestionId = this.$route.params.id;
+        const QuestionId = this.$route.params.questionId;
         // 发送请求获取题目信息
         axios.get(`/api/question`, {
           headers: {
             'session': localStorage.getItem('session'),
           },
           params: {
-            question_id: QuestionId
+            question_id: QuestionId,
+            student_id: localStorage.getItem('userID')
           }
         })
         .then(response => {
@@ -81,7 +82,7 @@
       },
       submitAnswer() {
         // 获取当前的最高pass_rate
-        const QuestionId = this.$route.params.id;
+        const QuestionId = this.$route.params.questionId;
         const examId = this.$route.params.examId;
         const userId = localStorage.getItem('userID');
         // 发送请求获取当前最高pass_rate
@@ -97,6 +98,8 @@
         })
         .then(response => {
           this.pass_rate = response.data.pass_rate;
+          //
+          alert(`当前最高pass_rate: ${this.pass_rate}`)
         })
         .catch(error => {
           alert(`获取当前最高pass_rate失败: ${error.response.data.message}`);
@@ -138,7 +141,7 @@
           const pass_rate = response.data.result.pass_rate;
           if (pass_rate > this.pass_rate) {
             // 更新得分
-            return axios.post('/api/update_score', {
+            return axios.post('/api/updatescore', {
               exam_id: examId,
               question_id: questionId,
               user_id: userId,
