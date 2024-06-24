@@ -214,7 +214,6 @@ class ContestList(Resource):
             # 查询与当前用户相关的考试ID
             student_exams = models.ExamStudent.query.filter_by(student_id=current_user_id).all()
             exam_ids = [exam.exam_id for exam in student_exams]
-            print(exam_ids)
 
             # 查询相关考试信息
             contests = models.Exam.query.filter(models.Exam.id.in_(exam_ids)).all()
@@ -228,14 +227,11 @@ class ContestList(Resource):
 class ContestQuestion(Resource):
     def get(self):
         exam_id = int(request.args.get('contest_id'))
-        print(exam_id)
         exam_questions = models.ExamQuestion.query.filter_by(exam_id=exam_id).all()
         if not exam_questions:
-            print(1)
             return jsonify({'message': 'No questions found for this exam.'}), 404
 
         question_ids = [eq.question_id for eq in exam_questions]
-        print(question_ids)
         return jsonify({'questionIds': question_ids})
     
     @auth_role(AUTH_TEACHER)

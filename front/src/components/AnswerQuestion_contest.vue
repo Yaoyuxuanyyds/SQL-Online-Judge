@@ -98,8 +98,8 @@
         })
         .then(response => {
           this.pass_rate = response.data.pass_rate;
-          //
-          alert(`当前最高pass_rate: ${this.pass_rate}`)
+          // //
+          // alert(`当前最高pass_rate: ${this.pass_rate}`)
         })
         .catch(error => {
           alert(`获取当前最高pass_rate失败: ${error.response.data.message}`);
@@ -138,7 +138,7 @@
           const questionId = this.$route.params.questionId;
           const userId = localStorage.getItem('userID');
           const pass_rate = response.data.pass_rate;
-          alert(`当前最高pass_rate: ${pass_rate
+          alert(`pass_rate: ${pass_rate
             + `\n判题结果: ${JSON.stringify(response.data.result)}`
           }`)
           if (pass_rate > this.pass_rate) {
@@ -155,9 +155,6 @@
                 'Content-Type': 'application/json'
               }});
           }
-        })
-        .then(response => {
-          alert(`得分更新成功: ${response.data.message}`);
         })
         .catch(error => {
           alert(`更新得分失败: ${error.response.data.message}`);
