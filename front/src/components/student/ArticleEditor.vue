@@ -25,7 +25,6 @@
 <script>
 import Navbar from '@/components/student/Navbar.vue';
 import axios from 'axios';
-
 export default {
   name: 'PublishArticle',
   components: {
@@ -44,6 +43,7 @@ export default {
   methods: {
     publishArticle() {
       // Construct the payload to include user_id and times
+      
       const payload = {
         ...this.article,
         user_id: localStorage.getItem('userID'), // Fetch the user ID from local storage

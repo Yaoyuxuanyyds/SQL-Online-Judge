@@ -76,26 +76,25 @@ export default {
         }
       })
         .then(response => {
-          alert(`成功: ${response.data.message}`);
-        })
-        .catch(error => {
-          alert(`失败: ${error.response.data}`);
-        }); 
-      axios.post('/api/judge', {
-        submit_sql: this.userAnswer,
-        question_id: this.$route.params.id,
-        create_code: this.question.create_code
-      }, {
+          const submit_id = response.data.submit_id;
+          return axios.post('/api/judge', {
+            submit_sql: this.userAnswer,
+            question_id: this.$route.params.id,
+            create_code: this.question.create_code,
+            submit_id: submit_id
+          }, {
         headers: {
           'session': localStorage.getItem('session'),
           'Content-Type': 'application/json'
-        }
-      }).then(response => {
-          alert(`判题结果: ${JSON.stringify(response.data.results)}`);
-        })
-        .catch(error => {
-          alert(`判题失败: ${error.response.data.message}`);
-        }); 
+        }});
+      }) .then(response => {
+        // 第二个请求成功处理
+        alert(`判题结果: ${JSON.stringify(response.data.result)}`);
+      })
+      .catch(error => {
+        // 处理两个请求的错误
+        alert(`失败: ${error.response.data}`);
+      });
     }
   }
 };

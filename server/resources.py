@@ -12,7 +12,7 @@ from sqlalchemy import func
 from datetime import datetime
 def parse_iso_datetime(iso_str):
     dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
-    return dt.strftime('%Y-%m-%d %H:%M:%S')
+    return dt
 
 
 
@@ -347,7 +347,6 @@ class Judge(Resource):
             #     continue
 
             error, user_output = self.execute_sql(submit_sql)
-            print(user_output)
             if error:
                 if user_output == "TLE":
                     results[test_id] = (False, JUDGE_TIMELIMIT_EXCEED)
@@ -359,13 +358,12 @@ class Judge(Resource):
                 results[test_id] = (False, JUDGE_WRONGANSWER)
             else:
                 results[test_id] = (True, JUDGE_ACCEPTED)
-        
         # 之后在此更新submit表的信息
         submit_id = int(data.get('submit_id')) if data.get('submit_id') else None
-        record = models.Submission.query.filter_by(id=submit_id)
+        record = models.Submission.query.filter_by(id=submit_id).first()
         finalresult = [True, 'Pending']
         error_list = []
-        for result in results:
+        for _, result in results.items():
             if not result[0]:
                 error_list.append(result[1])
                 finalresult[0] = False
@@ -386,7 +384,7 @@ class Judge(Resource):
 
         record.pass_rate = pass_rate
         db.session.commit()
-        return {"result": finalresult}, HTTP_OK
+        return {"result": tuple(finalresult)}, HTTP_OK
     
 
 
@@ -417,7 +415,6 @@ class Login(Resource):
     def delete(self):
         session = request.json.get('session')
         user = models.User.query.filter_by(session=session)
-        print(user.id)
         if user:
             user.session = None
             db.session.commit()
@@ -457,7 +454,6 @@ class ManageUsers(Resource):
     def post(self):
         # Delete a user
         user_id = int(request.json.get('id'))
-        print(user_id)
         user = User.query.filter_by(id=user_id).first()
 
         if not user:
@@ -678,8 +674,7 @@ class Submit(Resource):
         db.session.commit()
 
         # 同时返回submit的id
-        record = models.Submission.query.filter_by(submit_time=parse_iso_datetime(request.json.get('submit_time'))).first()
-        return {"message": "提交成功", "submit_id": record.id}, HTTP_CREATED
+        return {"message": "提交成功", "submit_id": s.id}, HTTP_CREATED
 
 class SubmitList(Resource):
     @auth_role(AUTH_ALL)
