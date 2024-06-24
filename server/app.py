@@ -35,6 +35,8 @@ def create_app():
     api.add_resource(SubmitList, '/api/submitlist')
     api.add_resource(ContestList, '/api/contestlist')
     api.add_resource(Contest, '/api/contest')
+    api.add_resource(ContestQuestion, '/api/contest-questions')
+
 
 
     with app.app_context():
