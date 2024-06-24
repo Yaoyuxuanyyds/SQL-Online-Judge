@@ -120,7 +120,7 @@ export default {
         });
     },
     enterQuestion(id) {
-      this.$router.push({ name: 'answer-question', params: { id: id } });
+      this.$router.push({ name: 'answer-question_t', params: { id: id } });
     },
     handlePageChange(newPage) {
       this.currentPage = newPage;

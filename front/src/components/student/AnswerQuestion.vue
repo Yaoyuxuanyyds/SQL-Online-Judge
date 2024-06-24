@@ -23,10 +23,7 @@
     <h2>输出示例:</h2>
     <p>{{ question.output_example }}</p>
   </div>
-  <div class="card">
-    <h2>参考答案示例:</h2>
-    <p>{{ question.answer_example }}</p>
-  </div>
+
   <textarea v-model="userAnswer" placeholder="在这里输入你的答案..." class="answer-textbox"></textarea>
   <button @click="submitAnswer" class="submit-btn">提交答案</button>
 </div>
