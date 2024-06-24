@@ -4,30 +4,27 @@
     <div class="container">
       <h1>题目列表</h1>
       <div class="search-bar">
-        <div class="search-input-group">
-          <el-input
-            placeholder="搜索标题..."
-            v-model="searchQuery"
-            class="search-input"
-            size="medium"
-          />
-          <el-button
-            type="primary"
-            @click="handleSearch"
-            class="search-button"
-          >
-            搜索
-          </el-button>
-        </div>
+        <el-input
+          placeholder="搜索标题..."
+          v-model="searchQuery"
+          class="search-input"
+          size="medium"
+          clearable
+        />
+        <span class="search-tip">输入标题关键词进行搜索</span>
         <el-select
           v-model="filterType"
-          placeholder="状态"
+          placeholder="按难度筛选"
           size="medium"
           class="filter-select"
+          @change="filterQuestions"
         >
           <el-option label="全部" value="all" />
-          <el-option label="已完成" value="completed" />
-          <el-option label="未完成" value="uncompleted" />
+          <el-option label="简单" value="1" />
+          <el-option label="中等" value="2" />
+          <el-option label="困难" value="3" />
+          <el-option label="挑战" value="4" />
+          <el-option label="地狱" value="5" />
         </el-select>
         <el-button
           type="primary"
@@ -47,7 +44,7 @@
         <el-table-column prop="title" label="标题" align="center" />
         <el-table-column prop="difficulty" label="难度" width="120" align="center">
           <template slot-scope="scope">
-            <span :style="{ color: getColor(scope.row.difficulty) }">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
+            <span :class="getDifficultyClass(scope.row.difficulty)">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="accuracy" label="准确率" width="120" align="center">
@@ -74,7 +71,7 @@
 </template>
 
 <script>
-import Navbar from '@/components/teacher/Navbar.vue';
+import Navbar from '@/components/student/Navbar.vue';
 import axios from 'axios';
 
 export default {
@@ -88,7 +85,8 @@ export default {
       currentPage: 1,
       pageSize: 20,
       searchQuery: '',
-      filterType: 'all' // 默认显示全部
+      filterType: 'all', // 默认显示全部
+      randomMode: false,
     }
   },
   mounted() {
@@ -96,6 +94,9 @@ export default {
   },
   computed: {
     filteredQuestions() {
+      if (this.randomMode) {
+        return this.questions.filter(question => question.id === this.randomQuestionId);
+      }
       return this.questions.filter(question => 
         this.filterQuestion(question)
       );
@@ -111,8 +112,7 @@ export default {
       .then(response => {
         // 假设后端返回的数据结构包含了 accuracy 字段
         this.questions = response.data.map(question => ({
-          ...question,
-          accuracy: Math.floor(Math.random() * 100) // 示例：随机生成准确率
+          ...question
         }));
       })
       .catch(error => {
@@ -120,14 +120,12 @@ export default {
       });
     },
     filterQuestion(question) {
+      const matchesSearch = question.title.toLowerCase().includes(this.searchQuery.toLowerCase());
       if (this.filterType === 'all') {
-        return question.title.toLowerCase().includes(this.searchQuery.toLowerCase());
-      } else if (this.filterType === 'completed') {
-        return question.completed && question.title.toLowerCase().includes(this.searchQuery.toLowerCase());
-      } else if (this.filterType === 'uncompleted') {
-        return !question.completed && question.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+        return matchesSearch;
+      } else {
+        return question.difficulty == this.filterType && matchesSearch;
       }
-      return true; // 默认情况
     },
     enterQuestion(id) {
       this.$router.push({ name: 'answer-question', params: { id: id } });
@@ -139,8 +137,9 @@ export default {
       // Placeholder for potentially updating list or analytics
     },
     randomQuestion() {
-      // Placeholder for random question functionality
-      alert("随机一题功能尚未实现！");
+      const randomIndex = Math.floor(Math.random() * this.questions.length);
+      this.randomQuestionId = this.questions[randomIndex].id;
+      this.randomMode = true;
     },
     getDifficultyLabel(difficulty) {
       switch (difficulty) {
@@ -152,15 +151,14 @@ export default {
         default: return '未知';
       }
     },
-    getColor(difficulty) {
-      switch (difficulty) {
-        case 1: return 'green';
-        case 2: return 'blue';
-        case 3: return 'orange';
-        case 4: return 'purple';
-        case 5: return 'red';
-        default: return 'black';
-      }
+    getDifficultyClass(difficulty) {
+      return {
+        'difficulty-easy': difficulty === 1,
+        'difficulty-medium': difficulty === 2,
+        'difficulty-hard': difficulty === 3,
+        'difficulty-challenge': difficulty === 4,
+        'difficulty-hell': difficulty === 5,
+      };
     }
   }
 }
@@ -169,29 +167,125 @@ export default {
 <style scoped>
 .container {
   padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
+
+h1 {
+  text-align: center;
+  font-size: 24px;
+  color: #333;
+  margin: 0;
+  padding: 20px 0;
+}
+
 .search-bar {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
 }
+
 .search-input-group {
   display: flex;
   align-items: center;
 }
+
 .search-input {
   max-width: 300px;
   margin-right: 10px;
 }
-.search-button {
+
+.search-tip {
   margin-left: 10px;
+  color: #666;
 }
+
 .filter-select {
-  width: 120px;
-  margin-left: 10px;
+  width: 150px;
+  margin-left: 20px;
 }
+
 .random-button {
-  margin-left: 10px;
+  margin-left: 20px;
+}
+
+.el-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: bold;
+  text-align: center;
+}
+
+td {
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.difficulty-easy {
+  background-color: green;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.difficulty-medium {
+  background-color: blue;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.difficulty-hard {
+  background-color: orange;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.difficulty-challenge {
+  background-color: purple;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.difficulty-hell {
+  background-color: red;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
 }
 </style>

@@ -4,16 +4,23 @@
     <div class="question-container">
       <div class="card">
         <h1>{{ question.title }}</h1>
-        <p><strong>难度:</strong> {{ question.difficulty }}</p>
+        <p><strong>难度:</strong> {{ getDifficultyLabel(question.difficulty) }}</p>
       </div>
       <div class="card">
         <h2>题目描述:</h2>
-        
         <p>{{ question.description }}</p>
       </div>
       <div class="card">
         <h2>建表语句:</h2>
         <p>{{ question.create_code }}</p>
+      </div>
+      <div class="card">
+        <h2>输入示例:</h2>
+        <p>{{ question.input_example }}</p>
+      </div>
+      <div class="card">
+        <h2>输出示例:</h2>
+        <p>{{ question.output_example }}</p>
       </div>
       <div class="card">
         <h2>参考答案示例:</h2>
@@ -27,7 +34,7 @@
 
 <script>
 import axios from 'axios';
-import Navbar from '@/components/teacher/Navbar.vue';
+import Navbar from '@/components/student/Navbar.vue';
 
 export default {
   components: {
@@ -35,7 +42,16 @@ export default {
   },
   data() {
     return {
-      question: {},
+      question: {
+        title: '',
+        create_code: '',
+        description: '',
+        input_example: '',
+        output_example: '',
+        difficulty: 1, // 默认难度为1
+        answer_example: '',
+        is_public: true // 默认为公开题目
+      },
       userAnswer: '',
       userid: localStorage.getItem('userID')
     };
@@ -46,6 +62,7 @@ export default {
   methods: {
     fetchQuestion() {
       const QuestionId = this.$route.params.id;
+      // 发送请求获取题目信息
       axios.get(`/api/question`, {
         headers: {
           'session': localStorage.getItem('session'),
@@ -58,11 +75,10 @@ export default {
         this.question = response.data;
       })
       .catch(error => {
-          alert(`失败: ${error.response.data.message}`);
-        }); 
+        alert(`获取题目信息失败: ${error.response.data.message}`);
+      });
     },
     submitAnswer() {
-      // Submit第一步：在submit表中添加一条记录
       axios.post(`/api/submit`, { 
         student_id: localStorage.getItem('userID'),
         exam_id: null,
@@ -75,26 +91,36 @@ export default {
           'Content-Type': 'application/json'
         }
       })
-        .then(response => {
-          const submit_id = response.data.submit_id;
-          return axios.post('/api/judge', {
-            submit_sql: this.userAnswer,
-            question_id: this.$route.params.id,
-            create_code: this.question.create_code,
-            submit_id: submit_id
-          }, {
-        headers: {
-          'session': localStorage.getItem('session'),
-          'Content-Type': 'application/json'
-        }});
-      }) .then(response => {
-        // 第二个请求成功处理
+      .then(response => {
+        const submit_id = response.data.submit_id;
+        return axios.post('/api/judge', {
+          submit_sql: this.userAnswer,
+          question_id: this.$route.params.id,
+          create_code: this.question.create_code,
+          submit_id: submit_id
+        }, {
+          headers: {
+            'session': localStorage.getItem('session'),
+            'Content-Type': 'application/json'
+          }
+        });
+      })
+      .then(response => {
         alert(`判题结果: ${JSON.stringify(response.data.result)}`);
       })
       .catch(error => {
-        // 处理两个请求的错误
-        alert(`失败: ${error.response.data}`);
+        alert(`提交答案失败: ${error.response.data}`);
       });
+    },
+    getDifficultyLabel(difficulty) {
+      switch (difficulty) {
+        case 1: return '简单';
+        case 2: return '中等';
+        case 3: return '困难';
+        case 4: return '挑战';
+        case 5: return '地狱';
+        default: return '未知';
+      }
     }
   }
 };
