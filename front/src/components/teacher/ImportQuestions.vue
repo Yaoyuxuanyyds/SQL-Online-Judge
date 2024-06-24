@@ -1,58 +1,50 @@
 <template>
   <div>
     <Navbar />
-    <div class="import-questions-container">
-      <h1>创建新题目</h1>
-
-      <div class="form-group">
-        <label>题目标题:</label>
-        <input v-model="newQuestion.title" class="large-input" placeholder="题目标题" />
-      </div>
-      <div class="form-group">
-        <label>建表语句:</label>
-        <input v-model="newQuestion.create_code" class="large-input code-input" placeholder="建表语句" />
-      </div>
-      <div class="form-group">
-        <label>题目描述:</label>
-        <textarea v-model="newQuestion.description" class="large-textarea code-input" placeholder="题目描述"></textarea>
-      </div>
-      <div class="form-group">
-        <label>示例输入:</label>
-        <textarea v-model="newQuestion.input_example" class="large-textarea code-input" placeholder="输入"></textarea>
-      </div>
-      <div class="form-group">
-        <label>示例输出:</label>
-        <textarea v-model="newQuestion.output_example" class="large-textarea code-input" placeholder="输出"></textarea>
-      </div>
-      <div class="form-group">
-        <label>难度:</label>
-        <select v-model="newQuestion.difficulty" class="large-input">
-          <option value="1">1 - 简单</option>
-          <option value="2">2 - 中等</option>
-          <option value="3">3 - 困难</option>
-          <option value="4">4 - 挑战</option>
-          <option value="5">5 - 地狱</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>答案示例:</label>
-        <textarea v-model="newQuestion.answer_example" class="large-textarea code-input" placeholder="答案示例"></textarea>
-      </div>
-      <div class="form-group">
-        <label>是否公开:</label>
-        <input type="checkbox" v-model="newQuestion.is_public" />
+    <div class="container">
+      <h1 class="title">创建题目</h1>
+      <div class="card">
+        <h2>题目信息</h2>
+        <input v-model="newQuestion.title" placeholder="题目标题" class="input-title" />
+        <textarea v-model="newQuestion.create_code" placeholder="建表语句" class="textarea-code"></textarea>
+        <textarea v-model="newQuestion.description" placeholder="题目描述" class="textarea-description"></textarea>
+        <div class="examples">
+          <textarea v-model="newQuestion.input_example" placeholder="输入示例" class="textarea-example"></textarea>
+          <textarea v-model="newQuestion.output_example" placeholder="输出示例" class="textarea-example"></textarea>
+        </div>
+        <div class="difficulty-public">
+          <el-select v-model="newQuestion.difficulty" placeholder="选择难度" class="select-difficulty">
+            <el-option label="1 - 简单" value="1" />
+            <el-option label="2 - 中等" value="2" />
+            <el-option label="3 - 困难" value="3" />
+            <el-option label="4 - 挑战" value="4" />
+            <el-option label="5 - 地狱" value="5" />
+          </el-select>
+          <el-checkbox v-model="newQuestion.is_public">公开题目</el-checkbox>
+        </div>
+        <textarea v-model="newQuestion.answer_example" placeholder="答案示例" class="textarea-answer"></textarea>
       </div>
 
-      <button class="create-button" @click="createQuestion">完成创建</button>
+      <div class="card">
+        <h2>添加测试点</h2>
+        <div v-for="(testCase, index) in testCases" :key="index" class="test-case">
+          <textarea v-model="testCase.input_sql" placeholder="输入数据" class="textarea-example"></textarea>
+          <textarea v-model="testCase.output" placeholder="输出数据" class="textarea-example"></textarea>
+          <el-button @click="removeTestCase(index)" type="danger" size="small" class="remove-btn">删除测试点</el-button>
+        </div>
+        <el-button @click="addTestCase" type="primary" size="small" class="add-btn">添加测试点</el-button>
+      </div>
+
+      <el-button @click="createQuestionWithTestCases" type="primary" size="large" class="submit-btn">创建题目</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 import Navbar from '@/components/teacher/Navbar.vue';
-import axios from 'axios';
-
 export default {
+  name: 'importQUestion',
   components: {
     Navbar
   },
@@ -67,13 +59,31 @@ export default {
         difficulty: '1',
         answer_example: '',
         is_public: true
-      }
+      },
+      testCases: [
+        { input_sql: '', output: '' }
+      ]
     };
   },
   methods: {
-    createQuestion() {
+    addTestCase() {
+      this.testCases.push({ input_sql: '', output: '' });
+    },
+    removeTestCase(index) {
+      this.testCases.splice(index, 1);
+    },
+    createQuestionWithTestCases() {
       axios.post(`/api/question`, { ...this.newQuestion },
         { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } })
+        .then(response => {
+          const questionId = response.data.id;
+          const testCases = this.testCases.map(testCase => ({
+            ...testCase,
+            question_id: questionId
+          }));
+          return axios.post(`/api/testcase`, { test_cases: testCases, question_id: questionId },
+            { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
+        })
         .then(response => {
           // 清空输入框
           this.newQuestion = {
@@ -82,10 +92,11 @@ export default {
             description: '',
             input_example: '',
             output_example: '',
-            difficulty: '1', // 重置难度为最简单
+            difficulty: '1',
             answer_example: '',
             is_public: true
           };
+          this.testCases = [{ input_sql: '', output: '' }];
           alert(`成功: ${response.data.message}`);
         })
         .catch(error => {
@@ -96,77 +107,152 @@ export default {
 };
 </script>
 
+
 <style scoped>
-/* 主容器样式 */
-.import-questions-container {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 30px;
+.container {
+  padding: 20px;
   background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* 表单组件样式 */
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+.title {
+  text-align: center;
+  font-size: 24px;
   color: #333;
+  margin: 0;
+  padding: 20px 0;
 }
 
-/* 输入框和文本区域样式 */
-.large-input,
-.large-textarea,
-select.large-input {
+.card {
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.card h2 {
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.input-title {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-  font-size: 16px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
 }
 
-.large-textarea {
-  height: 120px;
-  resize: vertical; /* 允许用户垂直调整大小 */
+.textarea-code,
+.textarea-description,
+.textarea-example,
+.textarea-answer {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: 'Courier New', Courier, monospace;
 }
 
-/* 按钮样式 */
-.create-button {
-  padding: 15px 25px;
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 16px;
-  transition: background-color 0.3s, transform 0.2s;
+.examples {
+  display: flex;
+  justify-content: space-between;
 }
 
-.create-button:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
+.examples .textarea-example {
+  width: 48%;
 }
 
-/* 按钮点击效果 */
-.create-button:active {
-  transform: translateY(0);
-  background-color: #003f80;
-  transition: background-color 0.1s, transform 0.1s;
+.difficulty-public {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-/* 等宽字体和代码框样式 */
-.code-input {
-  font-family: 'Source Code Pro', 'Courier New', Courier, monospace;
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.select-difficulty {
+  width: 48%;
 }
 
+.remove-btn {
+  margin-top: 10px;
+}
+
+.add-btn {
+  display: block;
+  margin: 20px 0;
+}
+
+.submit-btn {
+  display: block;
+  margin: 20px auto;
+  width: 100%;
+}
 </style>
+调整后的Vue脚本
+javascript
+复制代码
+<script>
+export default {
+  data() {
+    return {
+      newQuestion: {
+        title: '',
+        create_code: '',
+        description: '',
+        input_example: '',
+        output_example: '',
+        difficulty: '1',
+        answer_example: '',
+        is_public: true
+      },
+      testCases: [
+        { input_sql: '', output: '' }
+      ]
+    };
+  },
+  methods: {
+    addTestCase() {
+      this.testCases.push({ input_sql: '', output: '' });
+    },
+    removeTestCase(index) {
+      this.testCases.splice(index, 1);
+    },
+    createQuestionWithTestCases() {
+      axios.post(`/api/question`, { ...this.newQuestion },
+        { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } })
+        .then(response => {
+          const questionId = response.data.id;
+          const testCases = this.testCases.map(testCase => ({
+            ...testCase,
+            question_id: questionId
+          }));
+          return axios.post(`/api/testcase`, { test_cases: testCases, question_id: questionId },
+            { headers: { 'session': localStorage.getItem('session'), 'Content-Type': 'application/json' } });
+        })
+        .then(response => {
+          // 清空输入框
+          this.newQuestion = {
+            title: '',
+            create_code: '',
+            description: '',
+            input_example: '',
+            output_example: '',
+            difficulty: '1',
+            answer_example: '',
+            is_public: true
+          };
+          this.testCases = [{ input_sql: '', output: '' }];
+          alert(`成功: ${response.data.message}`);
+        })
+        .catch(error => {
+          alert(`失败: ${error.response.data.message}`);
+        });
+    }
+  }
+};
+</script>

@@ -25,6 +25,10 @@ def create_app():
     api.add_resource(AnsweredQuestions, '/api/answeredquestions')
     api.add_resource(Community, '/api/community')
     api.add_resource(CommunityList, '/api/communitylist')
+    api.add_resource(ContestList, '/api/contestlist')
+    api.add_resource(Contest, '/api/contest')
+    api.add_resource(ContestQuestion, '/api/contest-question')
+    api.add_resource(ContestStudent, '/api/contest-student')
     api.add_resource(Judge, '/api/judge')
     api.add_resource(Login, '/api/login')
     api.add_resource(ManageUsers, '/api/manageusers')
@@ -36,10 +40,7 @@ def create_app():
     api.add_resource(StudentList, '/api/studentlist')
     api.add_resource(Submit, '/api/submit')
     api.add_resource(SubmitList, '/api/submitlist')
-    api.add_resource(ContestList, '/api/contestlist')
-    api.add_resource(Contest, '/api/contest')
-    api.add_resource(ContestQuestion, '/api/contest-question')
-    api.add_resource(ContestStudent, '/api/contest-student')
+    api.add_resource(TestCase, '/api/testcase')
 
 
     with app.app_context():

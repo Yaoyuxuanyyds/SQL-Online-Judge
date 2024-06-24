@@ -564,6 +564,27 @@ class Question(Resource):
         db.session.commit()
         return {"message": "新增题目成功"}, HTTP_CREATED
 
+class TestCase(Resource):
+    @auth_role(AUTH_TEACHER)
+    def post(self):
+        test_cases = request.json.get('test_cases')
+        question_id = request.json.get('question_id')
+
+        if not test_cases or not question_id:
+            return {"message": "测试点信息不全，补全缺失项！"}, HTTP_BAD_REQUEST
+
+        for case in test_cases:
+            tc = models.TestCase()
+            tc.tablename = case.get('tablename')
+            tc.input_sql = case.get('input_sql')
+            tc.output = case.get('output')
+            tc.question_id = question_id
+
+            db.session.add(tc)
+
+        db.session.commit()
+        return {"message": "新增测试点成功"}, HTTP_CREATED
+
 # 处理题目列表的相关功能
 class QuestionList(Resource):
     @auth_role(AUTH_ALL)
