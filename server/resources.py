@@ -625,7 +625,8 @@ submit_field = {
     "exam_id": fields.Integer,
     'submit_sql': fields.String,
     'submit_time': fields.DateTime,
-    'pass_rate': fields.Float
+    'pass_rate': fields.Float,
+    'status': fields.Integer
 }
 
 class Submit(Resource):
