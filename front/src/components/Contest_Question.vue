@@ -2,43 +2,43 @@
   <div>
     <Navbar />
     <div class="container">
-    <h1 class="exam-title">{{ examName }}</h1>
-    <div class="exam-info">
-      <p>开始时间: {{ examStartTime | formatDate }}</p>
-      <p>截止时间: {{ examEndTime | formatDate }}</p>
+      <h1 class="exam-title">{{ examName }}</h1>
+      <div class="exam-info">
+        <p>开始时间: {{ examStartTime | formatDate }}</p>
+        <p>截止时间: {{ examEndTime | formatDate }}</p>
+        <p v-if="userRole == 0">当前总分: {{ totalScore }}</p>
+      </div>
+
+      <el-table
+        :data="filteredQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+        style="width: 100%"
+        border
+        stripe
+      >
+        <el-table-column prop="id" label="ID" width="100" align="center" />
+        <el-table-column prop="title" label="标题" align="center" />
+        <el-table-column prop="difficulty" label="难度" width="120" align="center">
+          <template slot-scope="scope">
+            <span :style="{ color: getColor(scope.row.difficulty) }">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="150" align="center">
+          <template #default="scope">
+            <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-pagination
+        @current-change="handlePageChange"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :page-sizes="[5, 10, 20, 30]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="filteredQuestions.length"
+      />
     </div>
-
-    <el-table
-      :data="filteredQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-      style="width: 100%"
-      border
-      stripe
-    >
-      <el-table-column prop="id" label="ID" width="100" align="center" />
-      <el-table-column prop="title" label="标题" align="center" />
-      <el-table-column prop="difficulty" label="难度" width="120" align="center">
-        <template slot-scope="scope">
-          <span :style="{ color: getColor(scope.row.difficulty) }">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="150" align="center">
-        <template #default="scope">
-          <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <el-pagination
-      @current-change="handlePageChange"
-      :current-page="currentPage"
-      :page-size="pageSize"
-      :page-sizes="[5, 10, 20, 30]"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="filteredQuestions.length"
-    />
   </div>
-  </div>
-  
 </template>
 
 <script>
@@ -59,6 +59,8 @@ export default {
       contestQuestions: [],
       currentPage: 1,
       pageSize: 20,
+      userRole: localStorage.getItem('userRole'),
+      totalScore: 0,
     };
   },
   computed: {
@@ -69,6 +71,9 @@ export default {
   mounted() {
     this.fetchExamInfo();
     this.fetchContestQuestions();
+    if (this.userRole !== 0) {
+      this.fetchTotalScore();
+    }
   },
   methods: {
     fetchExamInfo() {
@@ -121,8 +126,27 @@ export default {
           alert("获取题目列表失败: " + error.response.data.message);
         });
     },
+    fetchTotalScore() {
+      const examId = this.$route.params.id;
+      const studentId = localStorage.getItem('userID');
+      axios.get(`/api/getscore`, {
+        headers: {
+          'session': localStorage.getItem('session')
+        },
+        params: {
+          exam_id: examId,
+          student_id: studentId
+        }
+      })
+      .then(response => {
+        this.totalScore = response.data.score;
+      })
+      .catch(error => {
+        alert("获取总分失败: " + error.response.data.message);
+      });
+    },
     enterQuestion(id) {
-      this.$router.push({ name: 'answer-question-contest', params: {  questionId: id, examId: this.$route.params.id }});
+      this.$router.push({ name: 'answer-question-contest', params: { questionId: id, examId: this.$route.params.id }});
     },
     handlePageChange(newPage) {
       this.currentPage = newPage;

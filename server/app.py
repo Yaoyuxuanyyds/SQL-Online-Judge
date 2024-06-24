@@ -40,6 +40,7 @@ def create_app():
     api.add_resource(SubmitList, '/api/submitlist')
     api.add_resource(TestCase, '/api/testcase')
     api.add_resource(UpdateScoreAPI, '/api/updatescore')
+    api.add_resource(GetScore, '/api/getscore')
 
 
     with app.app_context():
