@@ -428,7 +428,7 @@ class Judge(Resource):
 
         record.pass_rate = pass_rate
         db.session.commit()
-        return {"result": tuple(finalresult)}, HTTP_OK
+        return {"result": tuple(finalresult), 'pass_pate': pass_rate}, HTTP_OK
     
 
 

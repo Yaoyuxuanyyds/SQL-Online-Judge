@@ -2,34 +2,55 @@
   <div>
     <Navbar />
     <div class="container">
-<div class="question-container">
-  <div class="card">
-    <h1>{{ question.title }}</h1>
-    <p><strong>难度:</strong> {{ getDifficultyLabel(question.difficulty) }}</p>
-  </div>
-  <div class="card">
-    <h2>题目描述:</h2>
-    <p>{{ question.description }}</p>
-  </div>
-  <div class="card">
-    <h2>建表语句:</h2>
-    <p>{{ question.create_code }}</p>
-  </div>
-  <div class="card">
-    <h2>输入示例:</h2>
-    <p>{{ question.input_example }}</p>
-  </div>
-  <div class="card">
-    <h2>输出示例:</h2>
-    <p>{{ question.output_example }}</p>
-  </div>
+      <div class="main-content">
+        <h1 class="header-title">{{ question.title }}</h1>
+        
+        <div class="card">
+          <h2 class="card-title">题目介绍</h2>
+          <p>{{ question.description }}</p>
+        </div>
 
-  <textarea v-model="userAnswer" placeholder="在这里输入你的答案..." class="answer-textbox"></textarea>
-  <button @click="submitAnswer" class="submit-btn">提交答案</button>
-</div>
-</div>
-  </div>
+        <div class="card-row">
+          <div class="card half-card">
+            <h2 class="card-title">示例输入</h2>
+            <pre class="code-block">{{ question.input_example }}</pre>
+          </div>
+          <div class="card half-card">
+            <h2 class="card-title">示例输出</h2>
+            <pre class="code-block">{{ question.output_example }}</pre>
+          </div>
+        </div>
 
+        <div class="card">
+          <h2 class="card-title">建表语句</h2>
+          <pre class="code-block">{{ question.create_code }}</pre>
+        </div>
+
+        <div v-if="parseInt(this.role) > 0" class="card">
+          <h2 class="card-title">参考答案</h2>
+          <pre class="code-block">{{ question.answer_example }}</pre>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">做题区域</h2>
+          <el-input type="textarea" v-model="userAnswer" class="answer-input" rows="10" placeholder="在这里编写你的答案"></el-input>
+          <el-button type="success" class="submit-button" @click="submitAnswer">提交代码</el-button>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="card">
+          <h2 class="card-title">题目信息</h2>
+          <p><strong>题目ID：</strong>{{ question.id }}</p>
+          <p><strong>题目难度：</strong>{{ getDifficultyLabel(question.difficulty) }}</p>
+          <p><strong>已通过：</strong>{{ question.completed ? '是' : '否' }}</p>
+          <p><strong>通过率：</strong>{{ question.accuracy }}%</p>
+          <p><strong>完成率：</strong>{{ question.completion_rate }}%</p>
+          <p><strong>提交数：</strong>{{ question.submit_count }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -43,6 +64,7 @@ export default {
   data() {
     return {
       question: {
+        id: '',
         title: '',
         create_code: '',
         description: '',
@@ -50,7 +72,12 @@ export default {
         output_example: '',
         difficulty: 1, // 默认难度为1
         answer_example: '',
-        is_public: true // 默认为公开题目
+        is_public: true, // 默认为公开题目
+        completed: false,
+        accuracy: 0,
+        completion_rate: 0,
+        submit_count: 0,
+        role: localStorage.getItem('userRole'),
       },
       userAnswer: '',
       userid: localStorage.getItem('userID')
@@ -62,7 +89,6 @@ export default {
   methods: {
     fetchQuestion() {
       const QuestionId = this.$route.params.id;
-      // 发送请求获取题目信息
       axios.get(`/api/question`, {
         headers: {
           'session': localStorage.getItem('session'),
@@ -80,7 +106,7 @@ export default {
     },
     submitAnswer() {
       axios.post(`/api/submit`, { 
-        student_id: localStorage.getItem('userID'),
+        student_id: this.userid,
         exam_id: null,
         submit_sql: this.userAnswer,
         submit_time: new Date().toISOString(),
@@ -128,41 +154,85 @@ export default {
 
 <style scoped>
 .container {
+  display: flex;
   padding: 20px;
-  margin: auto;
-  width: 80%;
+  background-color: #f9f9f9;
+  gap: 20px;
 }
-.question-container {
-  margin: auto;
+
+.main-content {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
+
+.sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header-title {
+  text-align: center;
+  color: #007bff;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
 .card {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: white;
   padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
-.answer-textbox {
-  width: 100%;
-  height: 200px;
-  margin-top: 20px;
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.card-row {
+  display: flex;
+  gap: 20px;
+}
+
+.half-card {
+  flex: 1;
+}
+
+.code-block {
+  font-family: 'Source Code Pro', 'Consolas', monospace;
+  background-color: #f5f5f5;
   padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  border-radius: 5px;
+  white-space: pre-wrap;
+  overflow-x: auto;
 }
-.submit-btn {
+
+.answer-input {
+  width: 100%;
+  font-family: 'Source Code Pro', 'Consolas', monospace;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.submit-button {
   display: block;
-  width: 100%;
-  padding: 10px;
-  margin-top: 20px;
-  background-color: #4CAF50;
+  margin: 20px auto 0;
+  background-color: #28a745;
   color: white;
   border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
-.submit-btn:hover {
-  background-color: #45a049;
+
+.submit-button:hover {
+  background-color: #218838;
 }
 </style>
