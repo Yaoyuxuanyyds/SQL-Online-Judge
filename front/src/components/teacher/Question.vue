@@ -4,35 +4,46 @@
     <div class="container">
       <h1>题目列表</h1>
       <div class="search-bar">
-        <el-input
-          placeholder="搜索标题..."
-          v-model="searchQuery"
-          class="search-input"
-          size="medium"
-          clearable
-        />
-        <span class="search-tip">输入标题关键词进行搜索</span>
-        <el-select
-          v-model="filterType"
-          placeholder="按难度筛选"
-          size="medium"
-          class="filter-select"
-          @change="filterQuestions"
-        >
-          <el-option label="全部" value="all" />
-          <el-option label="简单" value="1" />
-          <el-option label="中等" value="2" />
-          <el-option label="困难" value="3" />
-          <el-option label="挑战" value="4" />
-          <el-option label="地狱" value="5" />
-        </el-select>
-        <el-button
-          type="primary"
-          @click="randomQuestion"
-          class="random-button"
-        >
-          随机一题
-        </el-button>
+        <div class="left-controls">
+          <el-input
+            placeholder="输入标题关键词进行搜索..."
+            v-model="searchQuery"
+            class="search-input"
+            size="medium"
+            clearable
+          />
+          <span class="search-tip">难度</span>
+          <el-select
+            v-model="filterType"
+            placeholder="按难度筛选"
+            size="medium"
+            class="filter-select"
+            @change="filterQuestions"
+          >
+            <el-option label="全部" value="all" />
+            <el-option label="简单" value="1" />
+            <el-option label="中等" value="2" />
+            <el-option label="困难" value="3" />
+            <el-option label="挑战" value="4" />
+            <el-option label="地狱" value="5" />
+          </el-select>
+        </div>
+        <div class="right-controls">
+          <el-button
+            type="primary"
+            @click="randomQuestion"
+            class="random-button"
+          >
+            随机一题
+          </el-button>
+          <el-button
+            type="primary"
+            @click="fetchQuestions"
+            class="refresh-button"
+          >
+            刷新
+          </el-button>
+        </div>
       </div>
       <el-table
         :data="filteredQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
@@ -45,6 +56,11 @@
         <el-table-column prop="difficulty" label="难度" width="120" align="center">
           <template slot-scope="scope">
             <span :class="getDifficultyClass(scope.row.difficulty)">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="completed" label="是否完成" width="120" align="center">
+          <template slot-scope="scope">
+            <span :class="scope.row.AC ? 'completed-true' : 'completed-false'">{{ scope.row.AC ? '已完成' : '未完成' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="accuracy" label="准确率" width="120" align="center">
@@ -71,7 +87,7 @@
 </template>
 
 <script>
-import Navbar from '@/components/student/Navbar.vue';
+import Navbar from '@/components/teacher/Navbar.vue';
 import axios from 'axios';
 
 export default {
@@ -87,6 +103,8 @@ export default {
       searchQuery: '',
       filterType: 'all', // 默认显示全部
       randomMode: false,
+      randomQuestionId: null,
+      userId: localStorage.getItem('userID'), // Assuming userId is stored in localStorage
     }
   },
   mounted() {
@@ -107,10 +125,13 @@ export default {
       axios.get(`/api/questionlist`, {
         headers: {
           'session': localStorage.getItem('session')
+        },
+        params: {
+          student_id: this.userId
         }
       })
       .then(response => {
-        // 假设后端返回的数据结构包含了 accuracy 字段
+        // 假设后端返回的数据结构包含了 accuracy 和 completed 字段
         this.questions = response.data.map(question => ({
           ...question
         }));
@@ -182,12 +203,12 @@ h1 {
 
 .search-bar {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
   margin-bottom: 20px;
 }
 
-.search-input-group {
+.left-controls {
   display: flex;
   align-items: center;
 }
@@ -207,8 +228,17 @@ h1 {
   margin-left: 20px;
 }
 
+.right-controls {
+  display: flex;
+  align-items: center;
+}
+
 .random-button {
   margin-left: 20px;
+}
+
+.refresh-button {
+  margin-left: 10px;
 }
 
 .el-table {
@@ -283,6 +313,20 @@ button:hover {
 }
 
 .difficulty-hell {
+  background-color: red;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.completed-true {
+  background-color: green;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.completed-false {
   background-color: red;
   color: white;
   padding: 5px 10px;

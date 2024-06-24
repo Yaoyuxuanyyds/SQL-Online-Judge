@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import Navbar from '@/components/student/Navbar.vue';
+import Navbar from '@/components/teacher/Navbar.vue';
 import axios from 'axios';
 export default {
   name: 'PublishArticle',
@@ -59,7 +59,7 @@ export default {
         })
         .then(() => {
           alert('文章已发布');
-          this.$router.push('/student/community'); // Redirect to community page or wherever appropriate
+          this.$router.push('/teacher/community'); // Redirect to community page or wherever appropriate
         })
         .catch(error => {
           alert('发布失败: ' + error.response.data.message);
