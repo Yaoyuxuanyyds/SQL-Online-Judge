@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from flask_restful import Resource, fields, marshal_with, marshal, request
 import models, time, hashlib, os
 from app import db
@@ -13,6 +13,11 @@ from datetime import datetime
 def parse_iso_datetime(iso_str):
     dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
     return dt
+def model_to_dict(obj):
+    """
+    将 SQLAlchemy 模型对象转换为字典。
+    """
+    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
 
 
@@ -692,8 +697,9 @@ class SubmitList(Resource):
             submits = models.Submission.query.filter_by(id=userid)
         else:
             return {"message": "学生不存在！"}, HTTP_BAD_REQUEST
-        data = [marshal(submit, submit_field) for submit in submits]
-        return {'data': data}, HTTP_OK
+        data = [model_to_dict(submit) for submit in submits]
+        print(jsonify(data).data)
+        return jsonify(data)
 
 
 
