@@ -5,13 +5,13 @@
       <h1>题目列表</h1>
       <div class="search-bar">
         <el-input
-          placeholder="搜索标题..."
+          placeholder="输入标题关键词进行搜索..."
           v-model="searchQuery"
           class="search-input"
           size="medium"
           clearable
         />
-        <span class="search-tip">输入标题关键词进行搜索</span>
+        <span class="search-tip">难度</span>
         <el-select
           v-model="filterType"
           placeholder="按难度筛选"
@@ -93,7 +93,7 @@ export default {
       filterType: 'all', // 默认显示全部
       randomMode: false,
       randomQuestionId: null,
-      userId: localStorage.getItem('userId'), // Assuming userId is stored in localStorage
+      userId: localStorage.getItem('userID'), // Assuming userId is stored in localStorage
     }
   },
   mounted() {
@@ -116,7 +116,7 @@ export default {
           'session': localStorage.getItem('session')
         },
         params: {
-          userId: this.userId
+          student_id: this.userId
         }
       })
       .then(response => {

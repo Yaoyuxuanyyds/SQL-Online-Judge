@@ -34,27 +34,27 @@
       </div>
     </div>
     <!-- 统计信息部分 —— 饼图 -->
-    <PieChart :chart-data="chartData" />
+    <!-- <PieChart :chart-data="chartData" /> -->
   </div>
 </template>
 
 <script>
 import Navbar from '@/components/student/Navbar.vue';
-import { Pie } from 'vue-chartjs';
+//import { Pie } from 'vue-chartjs';
 
 export default {
   components: {
     Navbar,
-    PieChart: {
-      extends: Pie,
-      props: ['chartData'],
-      mounted() {
-        this.renderChart(this.chartData, {
-          responsive: true,
-          maintainAspectRatio: false
-        });
-      }
-    }
+    // PieChart: {
+    //   extends: Pie,
+    //   props: ['chartData'],
+    //   mounted() {
+    //     this.renderChart(this.chartData, {
+    //       responsive: true,
+    //       maintainAspectRatio: false
+    //     });
+    //   }
+    // }
   },
   data() {
     return {
@@ -116,7 +116,7 @@ export default {
 }
 
 .alert { background: linear-gradient(to right, #fcebeb, #ffcdd2); color: #b71c1c; }
-.notice { background: linear-gradient to right, #fff3e0, #ffe0b2); color: #e65100; }
-.progress { background: linear-gradient to right, #e1f5fe, #81d4fa); color: #01579b; }
-.success { background: linear-gradient to right, #e8f5e9, #c8e6c9); color: #2e7d32; }
+.notice { background: linear-gradient(to right, #fff3e0, #ffe0b2); color: #e65100; }
+.progress { background: linear-gradient(to right, #e1f5fe, #81d4fa); color: #01579b; }
+.success { background: linear-gradient(to right, #e8f5e9, #c8e6c9); color: #2e7d32; }
 </style>
