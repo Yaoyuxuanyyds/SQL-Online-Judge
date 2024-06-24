@@ -47,15 +47,12 @@
         <el-table-column prop="title" label="标题" align="center" />
         <el-table-column prop="difficulty" label="难度" width="120" align="center">
           <template slot-scope="scope">
-            <span v-if="scope.row.difficulty === 'easy'" style="color: green;">简单</span>
-            <span v-else-if="scope.row.difficulty === 'medium'" style="color: orange;">中等</span>
-            <span v-else-if="scope.row.difficulty === 'hard'" style="color: red;">困难</span>
+            <span :style="{ color: getColor(scope.row.difficulty) }">{{ getDifficultyLabel(scope.row.difficulty) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="150" align="center">
           <template #default="scope">
             <el-button @click="enterQuestion(scope.row.id)" type="success" size="small">进入</el-button>
-            <el-tag style="margin-left: 10px;">进入答题</el-tag>
           </template>
         </el-table-column>
       </el-table>
@@ -135,6 +132,26 @@ export default {
     randomQuestion() {
       // Placeholder for random question functionality
       alert("随机一题功能尚未实现！");
+    },
+    getDifficultyLabel(difficulty) {
+      switch (difficulty) {
+        case 1: return '简单';
+        case 2: return '中等';
+        case 3: return '困难';
+        case 4: return '挑战';
+        case 5: return '地狱';
+        default: return '未知';
+      }
+    },
+    getColor(difficulty) {
+      switch (difficulty) {
+        case 1: return 'green';
+        case 2: return 'blue';
+        case 3: return 'orange';
+        case 4: return 'purple';
+        case 5: return 'red';
+        default: return 'black';
+      }
     }
   }
 }
