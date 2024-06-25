@@ -3,7 +3,7 @@ use oj;
 
 -- 用户表 (User)
 create table User (
-    id int primary key,
+    id bigint primary key,
     username varchar(50) not null unique,
     password varchar(255) not null,
     role int not null check (role in (0, 1, 2)),
@@ -26,7 +26,7 @@ create table Question (
 -- 考试表 (Exam)
 create table Exam (
     id int auto_increment primary key,
-    teacher_id int,
+    teacher_id bigint,
     start_time timestamp not null,
     end_time timestamp not null,
     foreign key (teacher_id) references User(id),
@@ -46,7 +46,7 @@ create table Exam_Question (
 -- 考试-学生表 (Exam_Student)
 create table Exam_Student (
     exam_id int,
-    student_id int,
+    student_id bigint,
     score int not null default 0 check (score >= 0),
     primary key (exam_id, student_id),
     foreign key (exam_id) references Exam(id),
@@ -66,7 +66,7 @@ create table TestCase (
 -- 提交表 (Submission)
 create table Submission (
     id int auto_increment primary key,
-    student_id int,
+    student_id bigint,
     exam_id int,
     question_id int,
     submit_sql text not null,
@@ -82,7 +82,7 @@ create table Submission (
 create table Article (
     id int auto_increment primary key,
     title varchar(1000) not null,
-    user_id int,
+    user_id bigint,
     question_id int,
     is_notice boolean not null,
     content text not null,

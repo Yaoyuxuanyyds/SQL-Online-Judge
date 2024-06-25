@@ -18,9 +18,7 @@
           <span class="author">作者ID: {{ article.user_id }}</span>
           <span class="publish-time">发布时间: {{ formatDate(article.publish_time) }}</span>
         </div>
-        <div class="article-content">
-          <p v-html="article.content"></p>
-        </div>
+        <div class="article-content" v-html="parsedContent"></div>
       </div>
     </div>
   </div>
@@ -29,6 +27,7 @@
 <script>
 import Navbar from '@/components/Navbar.vue';
 import axios from 'axios';
+import marked from 'marked';
 
 export default {
   name: 'ArticleDetail',
@@ -84,6 +83,9 @@ export default {
         morandi: 'theme-morandi',
         'blue-black': 'theme-blue-black'
       }[this.selectedTheme];
+    },
+    parsedContent() {
+      return marked(this.article.content);
     }
   }
 }
@@ -216,5 +218,42 @@ body {
 
 .article-content p {
   margin-bottom: 20px;
+}
+
+/* Markdown 内容的样式 */
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.article-content ul,
+.article-content ol {
+  margin-left: 20px;
+}
+
+.article-content blockquote {
+  margin: 20px 0;
+  padding: 10px 20px;
+  background-color: #f5f5f5;
+  border-left: 5px solid #ddd;
+}
+
+.article-content code {
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.article-content pre {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
 }
 </style>

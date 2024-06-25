@@ -13,20 +13,20 @@
             <div class="section half-section-container">
               <div class="half-section">
                 <h3>示例输入</h3>
-                <pre class="code scrollable">{{ question.input_example }}</pre>
+                <pre v-html="highlightedCode(question.input_example, 'sql')" class="code scrollable"></pre>
               </div>
               <div class="half-section">
                 <h3>示例输出</h3>
-                <pre class="code scrollable">{{ question.output_example }}</pre>
+                <pre v-html="highlightedCode(question.output_example, 'sql')" class="code scrollable"></pre>
               </div>
             </div>
             <div class="section">
               <h3>建表语句</h3>
-              <pre class="code scrollable">{{ question.create_code }}</pre>
+              <pre v-html="highlightedCode(question.create_code, 'sql')" class="code scrollable"></pre>
             </div>
             <div v-if="userRole > 0" class="section">
               <h3>参考答案</h3>
-              <pre class="code scrollable">{{ question.answer_example }}</pre>
+              <pre v-html="highlightedCode(question.answer_example, 'sql')" class="code scrollable"></pre>
             </div>
             <div class="section">
               <h3>做题区域</h3>
@@ -69,6 +69,8 @@
 <script>
 import Navbar from '@/components/Navbar.vue';
 import axios from 'axios';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css'; // 导入highlight.js的样式
 
 export default {
   components: {
@@ -162,6 +164,9 @@ export default {
         case 5: return '地狱';
         default: return '未知';
       }
+    },
+    highlightedCode(code, language) {
+      return hljs.highlight(code, { language }).value;
     }
   }
 };
@@ -195,12 +200,12 @@ body {
 }
 
 .card {
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  padding: 16px;
+  border-radius: 8px;
 }
+
+
 
 .header-title {
   font-size: 28px;
@@ -210,6 +215,20 @@ body {
   margin-bottom: 20px;
 }
 
+.markdown {
+  text-align: left;
+  font-family: monospace;
+}
+
+.code-area {
+  width: 100%;
+  height: 100%;
+  font-family: monospace;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  box-sizing: border-box;
+}
 .card-content {
   padding: 20px;
   font-size: 16px;
@@ -246,6 +265,8 @@ p {
   border-radius: 5px;
   padding: 10px;
   font-family: 'Source Code Pro', monospace;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .scrollable {
@@ -255,7 +276,7 @@ p {
 
 .answer-input {
   width: 100%;
-  min-height: 120px;
+  min-height: 200px;
   font-family: 'Source Code Pro', monospace;
   border-radius: 5px;
   border: 1px solid #ccc;

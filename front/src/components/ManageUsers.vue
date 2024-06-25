@@ -90,7 +90,15 @@ export default {
     },
     deleteUser(user_id) {
       const userId = parseInt(user_id);
-      axios.delete(`/api/manageusers/${userId}`)
+      axios.delete(`/api/manageusers`, {
+        headers: {
+          'session': localStorage.getItem('session'),
+          'Content-Type': 'application/json'
+        },
+        params: {
+          user_id: userId
+        },
+        data: {}})
         .then(() => {
           alert('删除用户成功');
           this.fetchUsers(); // 删除用户后重新获取用户列表
