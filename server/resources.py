@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from flask_restful import Resource
-import models, time, hashlib, os
+import models, time, hashlib, os, ast
 from config import *
 from permissions import auth_role
 from sqlalchemy import create_engine, text
@@ -383,7 +383,7 @@ class Judge(Resource):
         :return: 执行结果，格式为 (error: bool, msg: str)
         """
         # 创建数据库引擎，连接到testdb数据库
-        engine = create_engine('mysql+pymysql://root:4546@localhost/test')
+        engine = create_engine('mysql+pymysql://ws:3917@localhost/test')
         Session = sessionmaker(bind=engine)
         session = Session()
 
@@ -396,16 +396,16 @@ class Judge(Resource):
 
             if result.returns_rows:  # 如果返回结果
                 output = result.fetchall()  # 获取所有结果
-                output_str = str([dict(row) if isinstance(row, dict) else row for row in output])
+                output = [dict(row) if isinstance(row, dict) else row for row in output]
             else:
-                output_str = "No rows returned"
+                output = "No data"
 
             elapsed_time = time.time() - start_time  # 计算执行时间
 
             if elapsed_time > 5:  # 判断是否超时
                 return (True, "TLE")  # 超时返回TLE
 
-            return (False, output_str)  # 返回执行结果
+            return (False, output)  # 返回执行结果
 
         except OperationalError as e:  # 捕获操作错误异常
             session.rollback()  # 回滚事务
@@ -458,7 +458,7 @@ class Judge(Resource):
         for test_case in test_cases:
             test_id = test_case.id
             input_sql = str(test_case.input_sql)
-            expected_output = test_case.output
+            expected_output = ast.literal_eval(test_case.output)
             tablename = test_case.tablename
             self.drop_tables(tablename)
 
@@ -570,7 +570,7 @@ class ManageUsers(Resource):
         user = models.User.query.filter_by(id=user_id).first()
 
         if not user:
-            return {"message": "User not found."}, HTTP_NOT_FOUND
+            return {"message": "未找到用户。"}, HTTP_NOT_FOUND
 
         db.session.delete(user)
         db.session.commit()
@@ -583,11 +583,29 @@ class ManageUsers(Resource):
         user = models.User.query.filter_by(id=user_id).first()
 
         if not user:
-            return {"message": "User not found."}, HTTP_NOT_FOUND
+            return {"message": "未找到用户。"}, HTTP_NOT_FOUND
 
         user.role = new_role
         db.session.commit()
-        return {"message": "User updated successfully."}, HTTP_OK
+        return {"message": "切换成功。"}, HTTP_OK
+    
+    def delete(self):
+        user_id = request.args.get('user_id')
+        user = models.User.query.filter_by(id=user_id).first()
+        if not user:
+            return {"message": "未找到用户。"}, HTTP_NOT_FOUND
+        
+        for exam_student in models.ExamStudent.query.filter_by(student_id=user_id).all():
+            db.session.delete(exam_student)
+        for submit in models.Submission.query.filter_by(student_id=user_id).all():
+            db.session.delete(submit)
+        for article in models.Article.query.filter_by(user_id=user_id).all():
+            db.session.delete(article)
+        for question in models.Exam.query.filter_by(teacher_id=user_id).all():
+            db.session.delete(question)
+        db.session.delete(user)
+        db.session.commit()
+        return {"message": "删除成功。"}, HTTP_OK
 
 
 class StatusCount(Resource):

@@ -48,7 +48,6 @@ def create_app():
     with app.app_context():
         config.db.create_all()
     return app
-
+app = create_app()
 if __name__ == '__main__':
-    app = create_app()
     app.run()

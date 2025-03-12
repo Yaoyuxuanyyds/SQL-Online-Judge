@@ -13,7 +13,12 @@
     "core-js": "^2.6.5",
     "echarts": "^4.2.1",
     "element-ui": "^2.8.2",
+<<<<<<< HEAD
     "marked": "^13.0.1",
+=======
+    "highlight.js": "^11.9.0",
+    "marked": "0.3.19",
+>>>>>>> e7af87d8133c18706473da3794d57150baec810c
     "moment-timezone": "^0.5.45",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
